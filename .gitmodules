@@ -1,0 +1,3 @@
+[submodule "Indigo"]
+	path = Indigo
+	url = git@gitlab.com:karmacrew/Indigo.git
