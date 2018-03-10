@@ -17,12 +17,21 @@ subscription model business & test your market!
 
 # Installation 
 
+## 1. Get the code
     git clone git@gitlab.com:karmacrew/subscription-website-builder.git
     cd subscription-website-builder
     git submodule update --init --recursive
+    
+## 2. Configure 
+
+Set your database credentials for Penguin
+    nano Indigo/Penguin/.env.example # the install will copy this over for you to .env 
+
+## 3. Run install.sh
+
     ./Indigo/install.sh
     
-Penguin install will fail with incorect db credentials. It's safe to re-run after setting your database credentials in: `nano Indigo/Penguin/.env`
+If you make a mistake with your db credentials, Penguin install will fail. Don't worry, it's safe to re-run after setting your database credentials just edit: `nano Indigo/Penguin/.env`
 
 # Running locally
 After installing simply run: 
