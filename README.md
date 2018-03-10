@@ -23,3 +23,8 @@ subscription model business & test your market!
     ./Indigo/install.sh
     
 Penguin install will fail with incorect db credentials. It's safe to re-run after setting your database credentials in: `nano Indigo/Penguin/.env`
+
+# Running locally
+After installing simply run: 
+
+    sudo ./serve.sh
