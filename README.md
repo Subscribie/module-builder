@@ -14,3 +14,12 @@ subscription model business & test your market!
 - Simple: Just give us your USPs for each service & price
 - Upload your pictures
 - Choose between Stripe & Gocardless (more coming soon!)
+
+# Installation 
+
+    git clone git@gitlab.com:karmacrew/subscription-website-builder.git
+    cd subscription-website-builder
+    git submodule update --init --recursive
+    ./Indigo/install.sh
+    
+Penguin install will fail with incorect db credentials. It's safe to re-run after setting your database credentials in: `nano Indigo/Penguin/.env`
