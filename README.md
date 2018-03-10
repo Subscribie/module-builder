@@ -24,7 +24,8 @@ subscription model business & test your market!
     
 ## 2. Configure 
 
-Set your database credentials for Penguin
+Set your database credentials for Penguin (Drupal database):
+    
     nano Indigo/Penguin/.env.example # the install will copy this over for you to .env 
 
 ## 3. Run install.sh
