@@ -1,0 +1,148 @@
+{% extends "layout.html" %}
+{% block title %}Choose your package{% endblock %}
+
+{% block hero %}
+
+        <div class="container" style="z-index:9999">
+          <div class="columns">
+            <div class="column has-text-centered-touch">
+              <h1 class="title is-1 has-text-white is-size-1-mobile">Sell your packages the easy way</h1>
+              <h2 class="subtitle has-text-white is-3 is-size-3-mobile">You deal with the product/service, we'll deal with the website.</h2>
+              <p class="has-text-white">Join us today to start selling your product or service using our easy to build webshop.</p><br />
+              <div class="button is-light is-large">Get Started Now for Free</div>
+            </div>
+            <div class="column is-one-third">
+              <img src="/static/{{ jamla['company']['start_image'] }}" style="max-width: 500px; width:75%; padding-bottom:25px" />
+            </div>
+          </div>
+        </div>
+
+        <div class="header__bg kcBlue"></div>
+        <div class="header__bg reverse kcDarkBlue"></div>
+
+{% endblock %}
+
+{% block body %}
+
+<div class="section">
+  <div class="container">
+
+    <h2 class="title is-3 has-text-left is-size-4-mobile">Show off your services</h2>
+    <p>Exhibit your range of services, subscriptions or products you sell using a friendly and simple grid, allow customers to easily compare the key selling points of each option.</p>
+
+    <div class="is-hidden-touch">
+      <p class="has-text-centered" style="margin-top:2rem;"><span class="tag is-medium"><b>Choose horizontal or vertical pricing grid</b></span></p>
+      <div style="text-align:center; margin-top:1rem; margin-bottom:2rem;">
+        <div style="display:inline-block">
+          <div class="field has-addons">
+            <p class="control">
+              <a onclick="showHorizontal()" class="button is-medium" style="min-width:150px">
+                <span class="icon is-small">
+                  <i class="fas fa-ellipsis-h"></i>
+                </span>
+                <span>Horizontal</span>
+              </a>
+            </p>
+            <p class="control">
+              <a onclick="showVertical()" class="button is-medium" style="min-width:150px">
+                <span class="icon is-small">
+                  <i class="fas fa-ellipsis-v"></i>
+                </span>
+                <span>Vertical</span>
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="is-hidden-desktop"><br /></div>
+
+    <div class="pricing-table is-horizontal" id="pricing-table-horizontal" style="max-width:1000px; margin:auto">
+      {% for item in jamla['items'] %}
+        <div class="pricing-plan">
+            <div class="plan-header" style="color:{{ item['primary_colour'] }}"><img src="{{ item['primary_icon']['src'] }}" style="width:50%;display:block; margin:auto"/>{{ item['title']|safe }}</div>
+            <div class="plan-items">
+            {% for sellingPoint in item['selling_points'] %}
+                <div class="plan-item">{{ sellingPoint|safe }}</div>
+            {% endfor %}
+            </div>
+          <div class="plan-footer">
+              <div class="plan-price" style="padding-bottom:0;">
+                  <span style="color:{{ item['primary_colour'] }}" class="plan-price-amount">
+                      <span class="plan-price-currency">&pound;</span>{{ "%.2f"|format(item['monthly_price']) }}</span>/month
+              </div>
+              <small style="margin-bottom:1rem;">Upfront cost: &pound;{{ "%.2f"|format(item['sell_price']) }}</small>
+              <a href="{{ item['oboarding_start_url'] }}" style="background-color:{{ item['primary_colour'] }}" class="button is-fullwidth is-info">Continue</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="pricing-table" id="pricing-table-vertical" style="max-width:1000px; margin:auto; display:none">
+      {% for item in jamla['items'] %}
+        <div class="pricing-plan">
+            <div class="plan-header" style="color:{{ item['primary_colour'] }}"><img src="{{ item['primary_icon']['src'] }}" style="width:50%;display:block; margin:auto"/>{{ item['title']|safe }}</div>
+            <div class="plan-items">
+            {% for sellingPoint in item['selling_points'] %}
+                <div class="plan-item">{{ sellingPoint|safe }}</div>
+            {% endfor %}
+            </div>
+          <div class="plan-footer">
+              <div class="plan-price" style="padding-bottom:0;">
+                  <span style="color:{{ item['primary_colour'] }}" class="plan-price-amount">
+                      <span class="plan-price-currency">&pound;</span>{{ "%.2f"|format(item['monthly_price']) }}</span>/month
+              </div>
+              <small style="margin-bottom:1rem;">Upfront cost: &pound;{{ "%.2f"|format(item['sell_price']) }}</small>
+              <a href="{{ item['oboarding_start_url'] }}" style="background-color:{{ item['primary_colour'] }}" class="button is-fullwidth is-info">Continue</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</div>
+
+<div class="section" style="position:relative">
+  <div class="header__bg reverse kcBlue" style="min-height:12rem;"></div>
+</div>
+
+  <div class="section">
+    <div class="container">
+
+      <h3 class="title is-3">Need Convincing?</h3>
+      {{ lipsum(n=2, html=True, min=20, max=100) }}
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="container">
+
+      <h3 class="title is-3">No really, do you?</h3>
+      {{ lipsum(n=1, html=True, min=20, max=100) }}
+
+    </div>
+  </div>
+
+
+  <script>
+    $('.pricing-plan').hover(
+         function(){ $(this).addClass('is-active') },
+         function(){ $(this).removeClass('is-active') }
+  )
+  </script>
+
+  <script>
+    function showHorizontal() {
+      document.getElementById('pricing-table-horizontal').style.display = "block";
+      document.getElementById('pricing-table-vertical').style.display = "none";
+      console.log('Button Clicked!');
+    }
+    function showVertical() {
+      document.getElementById('pricing-table-vertical').style.display = "flex";
+      document.getElementById('pricing-table-horizontal').style.display = "none";
+      console.log('Button Clicked!');
+    }
+  </script>
+
+{% endblock %}
