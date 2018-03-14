@@ -3,22 +3,17 @@
 
 {% block hero %}
 
-        <div class="container" style="z-index:9999">
-          <div class="columns">
-            <div class="column has-text-centered-touch">
-              <h1 class="title is-1 has-text-white is-size-1-mobile">Sell your packages the easy way</h1>
-              <h2 class="subtitle has-text-white is-3 is-size-3-mobile">You deal with the product/service, we'll deal with the website.</h2>
-              <p class="has-text-white">Join us today to start selling your product or service using our easy to build webshop.</p><br />
-              <div class="button is-light is-large">Get Started Now for Free</div>
-            </div>
-            <div class="column is-one-third">
-              <img src="/static/{{ jamla['company']['start_image'] }}" style="max-width: 500px; width:75%; padding-bottom:25px" />
-            </div>
-          </div>
-        </div>
-
-        <div class="header__bg kcBlue"></div>
-        <div class="header__bg reverse kcDarkBlue"></div>
+  <div class="columns">
+    <div class="column has-text-centered-touch">
+      <h1 class="title is-1 has-text-white is-size-1-mobile">Sell your packages the easy way</h1>
+      <h2 class="subtitle has-text-white is-3 is-size-3-mobile">You deal with the product/service, we'll deal with the website.</h2>
+      <p class="has-text-white">Join us today to start selling your product or service using our easy to build webshop.</p><br />
+      <div class="button is-light is-large">Get Started Now for Free</div>
+    </div>
+    <div class="column is-one-third">
+      <img src="/static/{{ jamla['company']['start_image'] }}" style="max-width: 500px; width:75%; padding-bottom:25px" />
+    </div>
+  </div>
 
 {% endblock %}
 
@@ -57,59 +52,77 @@
     </div>
     <div class="is-hidden-desktop"><br /></div>
 
-    <div class="pricing-table is-horizontal" id="pricing-table-horizontal" style="max-width:1000px; margin:auto">
-      {% for item in jamla['items'] %}
-        <div class="pricing-plan">
-            <div class="plan-header" style="color:{{ item['primary_colour'] }}"><img src="{{ item['primary_icon']['src'] }}" style="width:50%;display:block; margin:auto"/>{{ item['title']|safe }}</div>
-            <div class="plan-items">
-            {% for sellingPoint in item['selling_points'] %}
-                <div class="plan-item">{{ sellingPoint|safe }}</div>
-            {% endfor %}
-            </div>
-          <div class="plan-footer">
-              <div class="plan-price" style="padding-bottom:0;">
-                  <span style="color:{{ item['primary_colour'] }}" class="plan-price-amount">
-                      <span class="plan-price-currency">&pound;</span>{{ "%.2f"|format(item['monthly_price']) }}</span>/month
-              </div>
-              <small style="margin-bottom:1rem;">Upfront cost: &pound;{{ "%.2f"|format(item['sell_price']) }}</small>
-              <a href="{{ item['oboarding_start_url'] }}" style="background-color:{{ item['primary_colour'] }}" class="button is-fullwidth is-info">Continue</a>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
 
-    <div class="pricing-table" id="pricing-table-vertical" style="max-width:1000px; margin:auto; display:none">
-      {% for item in jamla['items'] %}
-        <div class="pricing-plan">
-            <div class="plan-header" style="color:{{ item['primary_colour'] }}"><img src="{{ item['primary_icon']['src'] }}" style="width:50%;display:block; margin:auto"/>{{ item['title']|safe }}</div>
-            <div class="plan-items">
-            {% for sellingPoint in item['selling_points'] %}
-                <div class="plan-item">{{ sellingPoint|safe }}</div>
-            {% endfor %}
-            </div>
-          <div class="plan-footer">
-              <div class="plan-price" style="padding-bottom:0;">
-                  <span style="color:{{ item['primary_colour'] }}" class="plan-price-amount">
-                      <span class="plan-price-currency">&pound;</span>{{ "%.2f"|format(item['monthly_price']) }}</span>/month
+      <h3 class="title is-4 has-text-centered is-size-4-mobile">Acme Ltd. Transport</h2>
+
+      <div class="pricing-table is-horizontal" id="pricing-table-horizontal" style="max-width:1000px; margin:auto">
+        {% for item in jamla['items'] %}
+          <div class="pricing-plan">
+              <div class="plan-header" style="color:{{ item['primary_colour'] }}"><img src="{{ item['primary_icon']['src'] }}" style="width:50%;display:block; margin:auto"/>{{ item['title']|safe }}</div>
+              <div class="plan-items">
+              {% for sellingPoint in item['selling_points'] %}
+                  <div class="plan-item">{{ sellingPoint|safe }}</div>
+              {% endfor %}
               </div>
-              <small style="margin-bottom:1rem;">Upfront cost: &pound;{{ "%.2f"|format(item['sell_price']) }}</small>
-              <a href="{{ item['oboarding_start_url'] }}" style="background-color:{{ item['primary_colour'] }}" class="button is-fullwidth is-info">Continue</a>
+            <div class="plan-footer">
+                <div class="plan-price" style="padding-bottom:0;">
+                    <span style="color:{{ item['primary_colour'] }}" class="plan-price-amount">
+                        <span class="plan-price-currency">&pound;</span>{{ "%.2f"|format(item['monthly_price']) }}</span>/month
+                </div>
+                <small style="margin-bottom:1rem;">Upfront cost: &pound;{{ "%.2f"|format(item['sell_price']) }}</small>
+                <a href="{{ item['oboarding_start_url'] }}" style="background-color:{{ item['primary_colour'] }}" class="button is-fullwidth is-info">Continue</a>
+            </div>
           </div>
+        {% endfor %}
+      </div>
+
+      <div id="pricing-table-vertical" style="display:none">
+        <div class="pricing-table" style="max-width:1000px; margin:auto;">
+          {% for item in jamla['items'] %}
+            <div class="pricing-plan">
+                <div class="plan-header" style="color:{{ item['primary_colour'] }}"><img src="{{ item['primary_icon']['src'] }}" style="width:50%;display:block; margin:auto"/>{{ item['title']|safe }}</div>
+                <div class="plan-items">
+                {% for sellingPoint in item['selling_points'] %}
+                    <div class="plan-item">{{ sellingPoint|safe }}</div>
+                {% endfor %}
+                </div>
+              <div class="plan-footer">
+                  <div class="plan-price" style="padding-bottom:0;">
+                      <span style="color:{{ item['primary_colour'] }}" class="plan-price-amount">
+                          <span class="plan-price-currency">&pound;</span>{{ "%.2f"|format(item['monthly_price']) }}</span>/month
+                  </div>
+                  <small style="margin-bottom:1rem;">Upfront cost: &pound;{{ "%.2f"|format(item['sell_price']) }}</small>
+                  <a href="{{ item['oboarding_start_url'] }}" style="background-color:{{ item['primary_colour'] }}" class="button is-fullwidth is-info">Continue</a>
+              </div>
+            </div>
+          {% endfor %}
         </div>
-      {% endfor %}
-    </div>
+        <p class="has-text-centered" style="margin-top:2rem;"><span class="tag is-medium is-info"><b>By the way on mobile, the pricing table is always vertical</b></span></p>
+      </div>
 
   </div>
 </div>
 
-<div class="section" style="position:relative">
-  <div class="header__bg reverse kcBlue" style="min-height:12rem;"></div>
+<div class="section kcDarkBlue" style="position:relative">
+  <div class="container">
+    <div class="columns" style="-webkit-box-align: center; -ms-flex-align: center; align-items: center;">
+      <div class="column">
+        <h3 class="title is-3 has-text-white">Get started today</h3>
+        <p class="subtitle is-4 has-text-white">Sign up today and start selling your products, services or subscriptions!</p>
+      </div>
+      <div class="column is-one-third">
+        <a href="#!" class="button is-large is-fullwidth is-light">Sign up for Free!</a>
+      </div>
+    </div>
+  </div>
 </div>
 
   <div class="section">
     <div class="container">
 
-      <h3 class="title is-3">Need Convincing?</h3>
+      <h3 class="title is-3">Easy to add, edit and remove</h3>
+
+
       {{ lipsum(n=2, html=True, min=20, max=100) }}
 
     </div>
@@ -118,8 +131,62 @@
   <div class="section">
     <div class="container">
 
-      <h3 class="title is-3">No really, do you?</h3>
-      {{ lipsum(n=1, html=True, min=20, max=100) }}
+      <h3 class="title is-3">Simple Customer Flow</h3>
+
+      <div class="columns" style="max-width:1000px; margin:auto">
+        <div class="column">
+          <div class="content has-text-centered">
+            <img src="/static/steps/1.svg" style="width:100%;" />
+            <p class="title is-5" style="margin:2rem 0;"><b>1. Choose an option</b></p>
+          </div>
+        </div>
+        <div class="column">
+          <div class="content has-text-centered">
+            <img src="/static/steps/2.svg" style="width:100%;" />
+            <p class="title is-5" style="margin:2rem 0;"><b>2. Customer enters contact info</b></p>
+          </div>
+        </div>
+        <div class="column">
+          <div class="content has-text-centered">
+            <img src="/static/steps/3.svg" style="width:100%;" />
+            <p class="title is-5" style="margin:2rem 0;"><b>3. Take one-off/monthly or both payment</b></p>
+          </div>
+        </div>
+        <div class="column">
+          <div class="content has-text-centered">
+            <img src="/static/steps/4.svg" style="width:100%;" />
+            <p class="title is-5" style="margin:2rem 0;"><b>4. Done!</b></p>
+          </div>
+        </div>
+      </div>
+
+      <p>We know customers get scared off when confronted with a million different form fields, that's why we keep the onboarding form easy and simple. The 4 step process allows customers to quickly and easily sign up or purchase the items you're selling.</p>
+
+      <br />
+
+      <div class="section kcDarkBlue">
+          <div class="columns" style="-webkit-box-align: center; -ms-flex-align: center; align-items: center;">
+            <div class="column">
+              <h3 class="title is-3 has-text-white">Repeat payments? Simple.</h3>
+              <p class="subtitle is-4 has-text-white">Integrate your GoCardless API to allow customers to sign up to your subscription service using Direct Debit.</p>
+            </div>
+            <div class="column is-one-third" style="padding:0; text-align:center">
+              <img src="/static/gocardless-white-rgb_2018.svg" style="width:75%;" />
+            </div>
+          </div>
+      </div>
+
+      <div class="section kcBlue">
+          <div class="columns" style="-webkit-box-align: center; -ms-flex-align: center; align-items: center;">
+            <div class="column">
+              <h3 class="title is-3 has-text-white">One Off payments? Sorted.</h3>
+              <p class="subtitle is-4 has-text-white">Integrate your GoCardless API to allow customers to sign up to your subscription service using Direct Debit.</p>
+            </div>
+            <div class="column is-one-third" style="padding:0; text-align:center">
+              <img src="/static/gocardless-white-rgb_2018.svg" style="width:75%;" />
+            </div>
+          </div>
+      </div>
 
     </div>
   </div>
@@ -139,7 +206,7 @@
       console.log('Button Clicked!');
     }
     function showVertical() {
-      document.getElementById('pricing-table-vertical').style.display = "flex";
+      document.getElementById('pricing-table-vertical').style.display = "block";
       document.getElementById('pricing-table-horizontal').style.display = "none";
       console.log('Button Clicked!');
     }

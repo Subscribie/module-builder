@@ -60,7 +60,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <section class="hero" style="position: relative;">
       <div class="hero-body">
-        {% block hero %}{% endblock %}
+        <div class="container" style="z-index:9999">
+          {% block hero %}{% endblock %}
+        </div>
+        <div class="header__bg kcBlue"></div>
+        <div class="header__bg reverse kcDarkBlue"></div>
       </div>
     </section>
     <main class="main">
