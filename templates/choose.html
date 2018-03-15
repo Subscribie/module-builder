@@ -97,7 +97,7 @@
             </div>
           {% endfor %}
         </div>
-        <p class="has-text-centered" style="margin-top:2rem;"><span class="tag is-medium is-info"><b>By the way on mobile, the pricing table is always vertical</b></span></p>
+        <p class="has-text-centered" style="margin-top:2rem;"><span class="tag is-medium is-info"><b>By the way, the pricing table is always vertical when viewed on mobile</b></span></p>
       </div>
 
   </div>
@@ -121,9 +121,145 @@
     <div class="container">
 
       <h3 class="title is-3">Easy to add, edit and remove</h3>
+      <p>No more manually editing HTML code to add and remove products, instead we use YAML files to dynamically populate your website. This simple file structures the entire site from information to payment. Saving you from having to edit 10 different pages all containing different hard-coded pricing.</p>
 
+      <br /><br />
 
-      {{ lipsum(n=2, html=True, min=20, max=100) }}
+      <div class="box" style="max-width:1000px; margin:auto; padding:0; overflow:hidden">
+        <div style="max-height: 350px; overflow-y:scroll; width:100%;">
+          <pre class="prettyprint">
+            version: 1
+            company:
+                name: "Karma Computing"
+                logo: "logo.svg"
+                start_image: "start.svg"
+            payment_providers:
+                - paypal:
+                     - sepa_direct_supported: No
+                     - subscription_supported: Yes
+                     - instant_payment_supported: Yes
+                     - variable_payments_supported: No
+                - stripe:
+                     - sepa_direct_supported: No
+                     - subscription_supported: Yes
+                     - instant_payment_supported: Yes
+                     - variable_payments_supported: No
+                - gocardless:
+                     - sepa_direct_supported: No
+                     - subscription_supported: Yes
+                     - instant_payment_supported: Yes
+                     - variable_payments_supported: Yes
+
+            items:
+                - sku: item1
+                  title: Bicycle
+                  sell_price: 5.99
+                  monthly_price: 9.99
+                  subscription: Yes
+                  subscription_terms:
+                      - minimum_term_months: 4
+                  requirements:
+                    - instant_payment: Yes
+                    - subscription: Yes
+                    - customer_address: Yes
+                    - customer_contact_details_required: Yes
+                  oboarding_start_url: /new_customer?plan=item1
+                  selling_points:
+                      - Cheap & Good Exercise
+                      - Unlimited 24/7 Usage
+                      - Only 1 month commitment!
+                      - Carbon Neutral
+                      - Helps loose weight
+                      - Not great in Winter
+                  primary_icon:
+                      src: /static/item1.svg
+                      type: image/svg+xml
+                  primary_colour: "#8dc047"
+                  icons:
+                      -
+                          - src: item1148.png
+                            size: 48x48
+                            type: image/png
+                          - src: images/item1192.png
+                            size: 192x192
+                            type: image/png
+
+                - sku: item2
+                  title: Car
+                  sell_price: 8.99
+                  monthly_price: 15.99
+                  subscription: Yes
+                  subscription_terms:
+                      - minimum_term_months: 6
+                  requirements:
+                    - instant_payment: Yes
+                    - subscription: Yes
+                    - customer_address: Yes
+                    - customer_contact_details_required: Yes
+                  oboarding_start_url: /new_customer?plan=item2
+                  selling_points:
+                      - Faster than a bike
+                      - iPod Connectivity
+                      - Unlimited 24/7 Usage
+                      - Travel the Country
+                      - So So Green Credentials
+                      - Hippies won't like you
+                  primary_colour: "#db802d"
+                  primary_icon:
+                      src: /static/item2.svg
+                      type: image/svg+xml
+                  icons:
+                      -
+                          - src: images/item2148.png
+                            size: 48x48
+                            type: image/png
+                          - src: images/item2192.png
+                            size: 192x192
+                            type: image/png
+                - sku: item3
+                  title: Rocket
+                  sell_price: 10000.00
+                  monthly_price: 25.99
+                  subscription: True
+                  subscription_terms:
+                      - minimum_term_months: 12
+                  requirements:
+                    - instant_payment: False
+                    - subscription: True
+                    - customer_address: True
+                    - customer_contact_details_required: True
+                  oboarding_start_url: /new_customer?plan=item3
+                  selling_points:
+                      - Rocket Speed
+                      - Visit Other Planets
+                      - Max 5 Lightyears per Month
+                      - Visit Aliens
+                      - Banter Cred
+                      - Just looks cool in Red
+                  primary_colour: "#e73b1a"
+                  primary_icon:
+                      src: /static/item3.svg
+                      type: image/svg+xml
+                  icons:
+                      -
+                          - src: images/item3148.png
+                            size: 48x48
+                            type: image/png
+                          - src: images/item3192.png
+                            size: 192x192
+                            type: image/png
+            pages:
+                - privacy:
+                    path: "privacy"
+                    template_file: "privacy.html"
+                - demo:
+                    path: "demo"
+                    template_file: "demo.html"
+
+          </pre>
+        </div>
+        <p class="has-text-centered" style="padding:1rem;"><span class="tag is-small is-info"><b>This box scrolls</b></span></p>
+      </div>
 
     </div>
   </div>
@@ -171,19 +307,21 @@
               <p class="subtitle is-4 has-text-white">Integrate your GoCardless API to allow customers to sign up to your subscription service using Direct Debit.</p>
             </div>
             <div class="column is-one-third" style="padding:0; text-align:center">
-              <img src="/static/gocardless-white-rgb_2018.svg" style="width:75%;" />
+              <img src="/static/gocardless-white-rgb_2018.svg" style="width:75%; max-height:100px" />
             </div>
           </div>
       </div>
+
+      <br />
 
       <div class="section kcBlue">
           <div class="columns" style="-webkit-box-align: center; -ms-flex-align: center; align-items: center;">
             <div class="column">
               <h3 class="title is-3 has-text-white">One Off payments? Sorted.</h3>
-              <p class="subtitle is-4 has-text-white">Integrate your GoCardless API to allow customers to sign up to your subscription service using Direct Debit.</p>
+              <p class="subtitle is-4 has-text-white">Take one off payments quickly and securely by utilising your Stripe account.</p>
             </div>
             <div class="column is-one-third" style="padding:0; text-align:center">
-              <img src="/static/gocardless-white-rgb_2018.svg" style="width:75%;" />
+              <img src="/static/stripe.svg" style="width:75%; max-height:100px" />
             </div>
           </div>
       </div>
@@ -211,5 +349,7 @@
       console.log('Button Clicked!');
     }
   </script>
+
+  <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
 
 {% endblock %}
