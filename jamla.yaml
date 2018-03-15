@@ -125,3 +125,6 @@ pages:
     - demo:
         path: "demo"
         template_file: "demo.html"
+    - products:
+        path: "products"
+        template_file: "products.html"
