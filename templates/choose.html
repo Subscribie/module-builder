@@ -8,7 +8,7 @@
       <h1 class="title is-1 has-text-white is-size-1-mobile">Sell your packages the easy way</h1>
       <h2 class="subtitle has-text-white is-3 is-size-3-mobile">You deal with the product/service, we'll deal with the website.</h2>
       <p class="has-text-white">Join us today to start selling your product or service using our easy to build webshop.</p><br />
-      <div class="button is-light is-large">Get Started Now for Free</div>
+      <a href="/new_customer" class="button is-light is-large">Get Started Now for Free</a>
     </div>
     <div class="column is-one-third">
       <img src="/static/{{ jamla['company']['start_image'] }}" style="max-width: 500px; width:75%; padding-bottom:25px" />
@@ -92,7 +92,7 @@
                           <span class="plan-price-currency">&pound;</span>{{ "%.2f"|format(item['monthly_price']) }}</span>/month
                   </div>
                   <small style="margin-bottom:1rem;">Upfront cost: &pound;{{ "%.2f"|format(item['sell_price']) }}</small>
-                  <a href="{{ item['oboarding_start_url'] }}" style="background-color:{{ item['primary_colour'] }}" class="button is-fullwidth is-info">Continue</a>
+                  <a href="#!" style="background-color:{{ item['primary_colour'] }}" class="button is-fullwidth is-info">Continue</a>
               </div>
             </div>
           {% endfor %}
@@ -329,6 +329,21 @@
     </div>
   </div>
 
+  <div class="section kcDarkBlue" style="position:relative">
+    <div class="container">
+      <div class="columns" style="-webkit-box-align: center; -ms-flex-align: center; align-items: center;">
+        <div class="column">
+          <h3 class="title is-3 has-text-white">Get started today</h3>
+          <p class="subtitle is-4 has-text-white">Sign up today and start selling your products, services or subscriptions!</p>
+        </div>
+        <div class="column is-one-third">
+          <a href="/new_customer" class="button is-large is-fullwidth is-light">Sign up for Free!</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<br />
 
   <script>
     $('.pricing-plan').hover(
