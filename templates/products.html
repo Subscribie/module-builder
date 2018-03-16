@@ -201,10 +201,13 @@
       $("body").on("click", ".delete", function(){
         var button = $(this).attr('id');
         if (button == "box_1") {
+          // Don't allow user to delete the first item!
           Snackbar.show({text: '<i class="fas fa-exclamation-triangle"></i><b>&nbsp;You can&#39;t delete the first/only item!</b>', showAction: false, backgroundColor: "#DB4437", textColor: "#ffffff"});
         } else {
+          // Remove the div and therefore the item
           $( "#" + button ).remove();
           Snackbar.show({text: '<i class="fas fa-times"></i><b>&nbsp;You removed an item</b>', showAction: false, backgroundColor: "#50b6d9", textColor: "#ffffff"});
+          
         }
       });
 
