@@ -18,9 +18,9 @@
         <p class=error><strong>Error:</strong> {{ error }}
       {% endif %}
       <div id="items">
-        <div class="box original">
+        <div class="box" id="box_1">
           <article class="media">
-            <figure class="media-left">
+            <figure class="media-left is-hidden-touch">
                   <i class="fas fa-box fa-3x"></i>
             </figure>
             <div class="media-content">
@@ -49,7 +49,6 @@
                             Choose a file…
                           </span>
                         </span>
-                        <span class="file-name" id="filename"><i class="fas fa-image"></i><i style="color:grey">&nbsp;&nbsp;PrettyPicture.png</i></span>
                       </label>
                     </div>
                   </div>
@@ -137,6 +136,9 @@
                 </div>
               </div>
             </div>
+            <div class="media-right">
+              <div id="box_1" class="delete"></div>
+            </div>
           </article>
         </div>
       </div>
@@ -149,15 +151,15 @@
 </div>
 
 <script>
-var file = document.getElementById("file");
-file.onchange = function(){
-    if(file.files.length > 0)
-    {
-
-      document.getElementById('filename').innerHTML = file.files[0].name;
-
-    }
-};
+//var file = document.getElementById("file");
+//file.onchange = function(){
+//    if(file.files.length > 0)
+//    {
+//
+//      document.getElementById('file-label').innerHTML = file.files[0].name;
+//
+//    }
+//};
 </script>
 
 <script>
@@ -174,7 +176,11 @@ file.onchange = function(){
 
         // Append onto the end of the 'items' div container
 
-        $('#items').append('<div class="box" id=box_' + itemCount + '><article class="media"><figure class="media-left"><i class="fas fa-box fa-3x"></i></figure><div class="media-content"><h4 class="title is-4" style="margin-bottom:0"><b>Item #' + itemCount + '</b></h4> <hr style="margin: 0.75rem 0;"/> <div class="columns"> <div class="column"> <h4 class="title is-5" style="margin:1rem 0">Item Name</h4> <div class="field"> <div class="control"> <input class="input is-large" type="text" placeholder="E.g. Rocket Ship"> </div></div></div><div class="column"> <div class="field"> <h4 class="title is-5" style="margin:1rem 0">Upload a Picture</h4><div class="file is-large is-fullwidth has-name"><label class="file-label"> <input class="file-input" id="file" type="file" name="resume"> <span class="file-cta"> <span class="file-icon"> <i class="fas fa-upload"></i> </span> <span class="file-label"> Choose a file… </span> </span> <span class="file-name" id="filename"><i class="fas fa-image"></i><i style="color:grey">&nbsp;&nbsp;PrettyPicture.png</i></span> </label> </div></div></div></div><div class="columns"> <div class="column"> <h4 class="title is-5" style="margin:0 0 1rem 0">Pricing</h4> <div class="columns"> <div class="column"> <div class="field"> <label class="label"> <input type="checkbox" name="item' + itemCount + '_price" id="item' + itemCount + '_price"> &nbsp;One-Off Price? </input> </label> <div class="control has-icons-left"> <input name="item' + itemCount + '_price_value" id="item' + itemCount + '_price_value" disabled class="input is-large" type="text" placeholder="x.xx"> <span class="icon is-left"> <p>£</p></span> </div></div><small>If the item is one-off, or there is an upfront cost, check this box and enter a one-off price</small> </div><div class="column"> <div class="field"> <label class="label"> <input name="item' + itemCount + '_r_price" id="item' + itemCount + '_r_price" type="checkbox"> &nbsp;Re-occuring Price? </input> </label> <div class="control has-icons-left"> <input name="item' + itemCount + '_r_price_value" id="item' + itemCount + '_r_price_value" disabled class="input is-large" type="text" placeholder="x.xx"> <span class="icon is-left"> <p>£</p></span> </div></div><small>If the item is a subscription, check this box and enter a monthly price</small> </div></div></div><div class="column"> <div class="field"> <h4 class="title is-5" style="margin:0 0 1rem 0">Items Selling Points</h4> <p>This is your time to shine! What makes your item special?</p><div style="margin:0.5rem 0 0.33rem 0" class="control has-icons-left"> <input class="input is-small" type="text"/> <span class="icon is-left"> <p>#1</p></span> </div><div style="margin:0.33rem 0" class="control has-icons-left"> <input class="input is-small" type="text"/> <span class="icon is-left"> <p>#2</p></span> </div><div style="margin:0.33rem 0" class="control has-icons-left"> <input class="input is-small" type="text"/> <span class="icon is-left"> <p>#3</p></span> </div><div style="margin:0.33rem 0" class="control has-icons-left"> <input class="input is-small" type="text"/> <span class="icon is-left"> <p>#4</p></span> </div><div style="margin:0.33rem 0" class="control has-icons-left"> <input class="input is-small" type="text"/> <span class="icon is-left"> <p>#5</p></span> </div><div style="margin:0.33rem 0" class="control has-icons-left"> <input class="input is-small" type="text"/> <span class="icon is-left"> <p>#6</p></span> </div></div></div></div></div></article></div>');
+        $('#items').append('<div class="box" id=box_' + itemCount + '><article class="media"><figure class="media-left is-hidden-touch"><i class="fas fa-box fa-3x"></i></figure><div class="media-content"><h4 class="title is-4" style="margin-bottom:0"><b>Item #' + itemCount + '</b></h4> <hr style="margin: 0.75rem 0;"/> <div class="columns"> <div class="column"> <h4 class="title is-5" style="margin:1rem 0">Item Name</h4> <div class="field"> <div class="control"> <input class="input is-large" type="text" placeholder="E.g. Rocket Ship"> </div></div></div><div class="column"> <div class="field"> <h4 class="title is-5" style="margin:1rem 0">Upload a Picture</h4><div class="file is-large"><label class="file-label"> <input class="file-input" id="file" type="file" name="resume"> <span class="file-cta"> <span class="file-icon"> <i class="fas fa-upload"></i> </span> <span class="file-label"> Choose a file… </span> </span> </label> </div></div></div></div><div class="columns"> <div class="column"> <h4 class="title is-5" style="margin:0 0 1rem 0">Pricing</h4> <div class="columns"> <div class="column"> <div class="field"> <label class="label"> <input type="checkbox" name="item' + itemCount + '_price" id="item' + itemCount + '_price"> &nbsp;One-Off Price? </input> </label> <div class="control has-icons-left"> <input name="item' + itemCount + '_price_value" id="item' + itemCount + '_price_value" disabled class="input is-large" type="text" placeholder="x.xx"> <span class="icon is-left"> <p>£</p></span> </div></div><small>If the item is one-off, or there is an upfront cost, check this box and enter a one-off price</small> </div><div class="column"> <div class="field"> <label class="label"> <input name="item' + itemCount + '_r_price" id="item' + itemCount + '_r_price" type="checkbox"> &nbsp;Re-occuring Price? </input> </label> <div class="control has-icons-left"> <input name="item' + itemCount + '_r_price_value" id="item' + itemCount + '_r_price_value" disabled class="input is-large" type="text" placeholder="x.xx"> <span class="icon is-left"> <p>£</p></span> </div></div><small>If the item is a subscription, check this box and enter a monthly price</small> </div></div></div><div class="column"> <div class="field"> <h4 class="title is-5" style="margin:0 0 1rem 0">Items Selling Points</h4> <p>This is your time to shine! What makes your item special?</p><div style="margin:0.5rem 0 0.33rem 0" class="control has-icons-left"> <input class="input is-small" type="text"/> <span class="icon is-left"> <p>#1</p></span> </div><div style="margin:0.33rem 0" class="control has-icons-left"> <input class="input is-small" type="text"/> <span class="icon is-left"> <p>#2</p></span> </div><div style="margin:0.33rem 0" class="control has-icons-left"> <input class="input is-small" type="text"/> <span class="icon is-left"> <p>#3</p></span> </div><div style="margin:0.33rem 0" class="control has-icons-left"> <input class="input is-small" type="text"/> <span class="icon is-left"> <p>#4</p></span> </div><div style="margin:0.33rem 0" class="control has-icons-left"> <input class="input is-small" type="text"/> <span class="icon is-left"> <p>#5</p></span> </div><div style="margin:0.33rem 0" class="control has-icons-left"> <input class="input is-small" type="text"/> <span class="icon is-left"> <p>#6</p></span> </div></div></div></div></div><div class="media-right"><div id="box_' + itemCount + '" class="delete"></div></div></article></div>');
+
+        // Show Notification
+        Snackbar.show({text: '<i class="fas fa-plus"></i><b>&nbsp;Added another item!</b>', showAction: false, backgroundColor: "#50b6d9", textColor: "#ffffff"});
+
     }));
 
       // ALLOW EDITING OF PRICES ****AFTER**** CLICKING THE TICK BOX
@@ -187,6 +193,18 @@ file.onchange = function(){
         } else {
           // User unchecked the box
             $('#' + checkbox_id + '_value').attr('disabled', 'disabled');
+        }
+      });
+
+      // ALLOW DELETING OF ALL ITEMS EXCEPT 1
+
+      $("body").on("click", ".delete", function(){
+        var button = $(this).attr('id');
+        if (button == "box_1") {
+          Snackbar.show({text: '<i class="fas fa-exclamation-triangle"></i><b>&nbsp;You can&#39;t delete the first/only item!</b>', showAction: false, backgroundColor: "#DB4437", textColor: "#ffffff"});
+        } else {
+          $( "#" + button ).remove();
+          Snackbar.show({text: '<i class="fas fa-times"></i><b>&nbsp;You removed an item</b>', showAction: false, backgroundColor: "#50b6d9", textColor: "#ffffff"});
         }
       });
 
