@@ -33,7 +33,6 @@ items:
         - subscription: Yes
         - customer_address: Yes
         - customer_contact_details_required: Yes
-      oboarding_start_url: /new_customer?plan=item1
       selling_points:
           - Cheap & Good Exercise
           - Unlimited 24/7 Usage
@@ -66,7 +65,6 @@ items:
         - subscription: Yes
         - customer_address: Yes
         - customer_contact_details_required: Yes
-      oboarding_start_url: /new_customer?plan=item2
       selling_points:
           - Faster than a bike
           - iPod Connectivity
@@ -98,7 +96,6 @@ items:
         - subscription: True
         - customer_address: True
         - customer_contact_details_required: True
-      oboarding_start_url: /new_customer?plan=item3
       selling_points:
           - Rocket Speed
           - Visit Other Planets
