@@ -22,24 +22,22 @@ payment_providers:
 
 items:
     - sku: item1
-      title: Bicycle
-      sell_price: 5.99
-      monthly_price: 9.99
+      title: Micro Business 
+      sell_price: 149
+      monthly_price: 299
       subscription: Yes
       subscription_terms:
-          - minimum_term_months: 4
+          - minimum_term_months: 2
       requirements:
         - instant_payment: Yes
         - subscription: Yes
         - customer_address: Yes
         - customer_contact_details_required: Yes
       selling_points:
-          - Cheap & Good Exercise
-          - Unlimited 24/7 Usage
-          - Only 1 month commitment!
-          - Carbon Neutral
-          - Helps loose weight
-          - Not great in Winter
+          - Test your idea quickly
+          - Get started instantly
+          - Maximum 3 items
+          - No support
       primary_icon:
           src: /static/item1.svg
           type: image/svg+xml
