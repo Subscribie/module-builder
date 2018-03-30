@@ -21,10 +21,10 @@ payment_providers:
          - variable_payments_supported: Yes
 
 items:
-    - sku: item1
-      title: Micro Business 
-      sell_price: 149
-      monthly_price: 299
+    - sku: micro
+      title: Getting Started 
+      sell_price: 1000
+      monthly_price: 0.00 
       subscription: Yes
       subscription_terms:
           - minimum_term_months: 2
@@ -34,10 +34,11 @@ items:
         - customer_address: Yes
         - customer_contact_details_required: Yes
       selling_points:
-          - Test your idea quickly
+          - Unlimited items
           - Get started instantly
-          - Maximum 3 items
-          - No support
+          - No monthly commitment
+          - Small upfront investment
+          - No support, valid for 6 months
       primary_icon:
           src: /static/item1.svg
           type: image/svg+xml
@@ -50,42 +51,10 @@ items:
               - src: images/item1192.png
                 size: 192x192
                 type: image/png
-
-    - sku: item2
-      title: Car
-      sell_price: 8.99
-      monthly_price: 15.99
-      subscription: Yes
-      subscription_terms:
-          - minimum_term_months: 6
-      requirements:
-        - instant_payment: Yes
-        - subscription: Yes
-        - customer_address: Yes
-        - customer_contact_details_required: Yes
-      selling_points:
-          - Faster than a bike
-          - iPod Connectivity
-          - Unlimited 24/7 Usage
-          - Travel the Country
-          - So So Green Credentials
-          - Hippies won't like you
-      primary_colour: "#db802d"
-      primary_icon:
-          src: /static/item2.svg
-          type: image/svg+xml
-      icons:
-          -
-              - src: images/item2148.png
-                size: 48x48
-                type: image/png
-              - src: images/item2192.png
-                size: 192x192
-                type: image/png
-    - sku: item3
-      title: Rocket
-      sell_price: 10000.00
-      monthly_price: 25.99
+    - sku: readyToGo 
+      title: Ready To Go!
+      sell_price: 500
+      monthly_price: 699
       subscription: True
       subscription_terms:
           - minimum_term_months: 12
@@ -95,12 +64,10 @@ items:
         - customer_address: True
         - customer_contact_details_required: True
       selling_points:
-          - Rocket Speed
-          - Visit Other Planets
-          - Max 5 Lightyears per Month
-          - Visit Aliens
-          - Banter Cred
-          - Just looks cool in Red
+        - Unlimited items
+        - Get started instantly
+        - Email support
+        - No minimum term
       primary_colour: "#e73b1a"
       primary_icon:
           src: /static/item3.svg
