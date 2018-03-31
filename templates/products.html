@@ -10,8 +10,15 @@
 
     <p>We're looking forward to having you onboard! To get started, enter your product(s) and/or service(s) into the form below. You can add as many or few as you'd like, starting off with three is best.</p><br />
 
-    <form action="" id="products" method=post action=/products >
-
+    <form action="#" id="products" method="post">
+        {{ form.csrf_token }}
+        {{ form.name.label }} {{ form.name }}
+        {{ form.sell_price }}
+        {{ form.monthly_price }}
+        {{ form.instant_payment }}
+        {{ form.image }}
+        {{ form.selling_points }}
+        {{ form.subscription }}
       <h3 class="title is-4 is-size-4-mobile">Your Products/Services</h3>
 
       {% if error %}
@@ -31,7 +38,7 @@
                   <h4 class="title is-5" style="margin:1rem 0">Item Name</h4>
                   <div class="field">
                     <div class="control">
-                      <input class="input is-large" type="text" placeholder="E.g. Rocket Ship">
+                      <input class="input is-large" type="text" name="name-0" placeholder="E.g. Rocket Ship">
                     </div>
                   </div>
                 </div>
@@ -40,7 +47,7 @@
                     <h4 class="title is-5" style="margin:1rem 0">Upload a Picture</h4>
                     <div class="file is-large is-fullwidth has-name">
                       <label class="file-label">
-                        <input class="file-input" id="file" type="file" name="resume">
+                        <input class="file-input" id="file" type="file" name="image-0">
                         <span class="file-cta">
                           <span class="file-icon">
                             <i class="fas fa-upload"></i>
@@ -61,7 +68,7 @@
                     <div class="column">
                       <div class="field">
                         <label class="label">
-                          <input name="item1_price" id="item1_price" type="checkbox">
+                          <input name="instant_payment-0" id="sell_price-0" type="checkbox">
                           &nbsp;One-Off Price?
                           </input>
                         </label>
@@ -77,12 +84,12 @@
                     <div class="column">
                       <div class="field">
                         <label class="label">
-                          <input name="item1_r_price" id="item1_r_price" type="checkbox">
+                          <input name="subscription-0" id="item1_r_price" type="checkbox">
                           &nbsp;Re-occuring Price?
                           </input>
                         </label>
                         <div class="control has-icons-left">
-                          <input name="item1_r_price_value" id="item1_r_price_value" disabled class="input is-large" type="text" placeholder="x.xx">
+                          <input name="monthly_price-0" id="item1_r_price_value" disabled class="input is-large" type="text" placeholder="x.xx">
                           <span class="icon is-left">
                             <p>£</p>
                           </span>
@@ -97,40 +104,23 @@
                     <h4 class="title is-5" style="margin:0 0 1rem 0">Item's Selling Points</h4>
                     <p>This is your time to shine! What makes your item special?</p>
                     <div style="margin:0.5rem 0 0.33rem 0" class="control has-icons-left">
-                      <input class="input is-small" type="text" />
+                      <input name="selling_points-0" class="input is-small" type="text" />
                       <span class="icon is-left">
                         <p>#1</p>
                       </span>
                     </div>
                     <div style="margin:0.33rem 0" class="control has-icons-left">
-                      <input class="input is-small" type="text" />
+                      <input name="selling_points-1" class="input is-small" type="text" />
                       <span class="icon is-left">
                         <p>#2</p>
                       </span>
                     </div>
                     <div style="margin:0.33rem 0" class="control has-icons-left">
-                      <input class="input is-small" type="text" />
+                      <input name="selling_points-2" class="input is-small" type="text" />
                       <span class="icon is-left">
                         <p>#3</p>
                       </span>
                     </div>
-                    <div style="margin:0.33rem 0" class="control has-icons-left">
-                      <input class="input is-small" type="text" />
-                      <span class="icon is-left">
-                        <p>#4</p>
-                      </span>
-                    </div>
-                    <div style="margin:0.33rem 0" class="control has-icons-left">
-                      <input class="input is-small" type="text" />
-                      <span class="icon is-left">
-                        <p>#5</p>
-                      </span>
-                    </div>
-                    <div style="margin:0.33rem 0" class="control has-icons-left">
-                      <input class="input is-small" type="text" />
-                      <span class="icon is-left">
-                        <p>#6</p>
-                      </span>
                     </div>
                   </div>
                 </div>
