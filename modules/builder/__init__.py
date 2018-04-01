@@ -9,8 +9,8 @@ from wtforms.validators import DataRequired
 from flask_wtf.file import FileField, FileRequired
 
 
-class MyForm(FlaskForm):
-    name = StringField('Name', [validators.DataRequired()])
+class ItemsForm(FlaskForm):
+    name = FieldList(StringField('Name', [validators.DataRequired()]), min_entries=1)
     instant_payment = FieldList(BooleanField('Up-Front Payment'), min_entries=1)
     subscription = FieldList(BooleanField('Subscription'), min_entries=1)
     sell_price = FieldList(DecimalField('Price'), min_entries=1)
@@ -20,10 +20,13 @@ class MyForm(FlaskForm):
 
 @app.route('/start-building', methods=['GET'])
 def start_building():
-    form = MyForm()
-    return render_template('products.html', jamla=jamla, form=form)
+    form = ItemsForm()
+    return render_template('start-building.html', jamla=jamla, form=form)
 
 @app.route('/start-building', methods=['POST'])
 def save_items():
-    print request.form
+    form = ItemsForm()
+    print dir(form)
+    print form.name.data
+    print form.monthly_price.data
     return render_template('preview-store.html', jamla=jamla)
