@@ -48,7 +48,6 @@ def save_items():
         item['selling_points'] = getItem(form.selling_points.data, index)
         item['subscription_terms'] = {'minimum_term_months': 12}
         item['primary_colour'] = "#e73b1a"
-        item['primary_icon'] = {'src':'/static/item3.svg', 'type': 'image/svg+xml'}
         item['icons'] = [{'src':'images/item3148.png', 
                           'size':'48x48', 'type':'image/png'},
                          {'src':'images/item3192.png', 'size':'192x192',
@@ -58,9 +57,9 @@ def save_items():
         f = getItem(form.image.data, index)
         if f:
             filename = secure_filename(f.filename)
-            f.save(os.path.join(
-                app.config['UPLOADED_IMAGES_DEST'], filename
-            ))
+            src = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
+            f.save(src)
+            item['primary_icon'] = {'src':'/static/photos/' + filename, 'type': ''}
         print item
         items.append(item)
         draftJamla['items'] = items
