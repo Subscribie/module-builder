@@ -73,7 +73,7 @@ def save_items():
 @app.route('/preview', methods=['GET'])
 def preview():
     """ Preview site before checking out."""
-    jamla = Jamla.load(os.path.join(app.instance_path, 'document.yaml'))
+    jamla = Jamla.load('document.yaml')
     return render_template('preview-store.html', jamla=jamla)
 
 def getItem(container, i, default=None):
