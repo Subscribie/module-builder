@@ -64,10 +64,9 @@ def save_items():
         print item
         items.append(item)
         draftJamla['items'] = items
-        stream = file(os.path.join(app.instance_path, 'document.yaml'), 'w')
-        yaml.dump(draftJamla, stream,default_flow_style=False)
-        import pdb;pdb.set_trace()
+        stream = file('document.yaml', 'w')
         # Save to yml
+        yaml.dump(draftJamla, stream,default_flow_style=False)
             
     return redirect('/preview') 
 
