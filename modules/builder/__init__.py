@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, session, redirect, url_for, escape, request, current_app as app
 from werkzeug.utils import secure_filename
 from jamla import Jamla
@@ -6,7 +7,8 @@ jamla = Jamla.load(app.config['JAMLA_PATH'])
 from flask_wtf import FlaskForm
 from wtforms import StringField, DecimalField, FieldList, FileField, validators, BooleanField
 from wtforms.validators import DataRequired
-from flask_wtf.file import FileField, FileRequired
+from flask_wtf.file import FileField, FileAllowed, FileRequired
+from flask_uploads import UploadSet, IMAGES
 
 
 class ItemsForm(FlaskForm):
@@ -16,7 +18,8 @@ class ItemsForm(FlaskForm):
     sell_price = FieldList(DecimalField('Price'), min_entries=1)
     monthly_price = FieldList(DecimalField('Monthly Price'), min_entries=1)
     selling_points = FieldList(FieldList(StringField('Unique Selling Point', [validators.DataRequired()]), min_entries=3), min_entries=1)
-    image = FieldList(FileField(), min_entries=1)
+    images = UploadSet('images', IMAGES)
+    image = FieldList(FileField(validators=[FileAllowed(images, 'Images only!')]), min_entries=1)
 
 @app.route('/start-building', methods=['GET'])
 def start_building():
@@ -35,6 +38,13 @@ def save_items():
         item.subscription = getItem(form.subscription.data, index)
         item.instant_payment = getItem(form.instant_payment.data, index)
         item.selling_points = getItem(form.selling_points.data, index)
+        # Image storage
+        f = getItem(form.image.data, index)
+        if f:
+            filename = secure_filename(f.filename)
+            f.save(os.path.join(
+                app.config['UPLOADED_IMAGES_DEST'], filename
+            ))
         print item.subscription
         from pprint import pprint
         pprint(vars(item))
