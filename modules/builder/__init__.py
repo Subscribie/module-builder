@@ -5,18 +5,20 @@ from jamla import Jamla
 jamla = Jamla.load(app.config['JAMLA_PATH'])
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, DecimalField, FieldList, FileField, validators, BooleanField
+from wtforms import StringField, FloatField, FieldList, FileField, validators, BooleanField
 from wtforms.validators import DataRequired
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from flask_uploads import UploadSet, IMAGES
+import yaml
+from yaml import load, dump
 
 
 class ItemsForm(FlaskForm):
     title = FieldList(StringField('Title', [validators.DataRequired()]), min_entries=1)
     instant_payment = FieldList(BooleanField('Up-Front Payment'), min_entries=1)
     subscription = FieldList(BooleanField('Subscription'), min_entries=1)
-    sell_price = FieldList(DecimalField('Price'), min_entries=1)
-    monthly_price = FieldList(DecimalField('Monthly Price'), min_entries=1)
+    sell_price = FieldList(FloatField('Price'), min_entries=1)
+    monthly_price = FieldList(FloatField('Monthly Price'), min_entries=1)
     selling_points = FieldList(FieldList(StringField('Unique Selling Point', [validators.DataRequired()]), min_entries=3), min_entries=1)
     images = UploadSet('images', IMAGES)
     image = FieldList(FileField(validators=[FileAllowed(images, 'Images only!')]), min_entries=1)
@@ -26,18 +28,32 @@ def start_building():
     form = ItemsForm()
     return render_template('start-building.html', jamla=jamla, form=form)
 
+
+
 @app.route('/start-building', methods=['POST'])
 def save_items():
+    draftJamla = {}
+    draftJamla['version'] = 1
+    draftJamla['company'] = {'name':'Karma', 'logo':'', 'start_image':''}
+    items = []
     form = ItemsForm()
     for index, item in enumerate(form.title.data):
-        item = Item()
-        item.title = getItem(form.title.data, index)
-        item.sku = getItem(form.title.data, index)
-        item.sell_price = getItem(form.sell_price.data, index)
-        item.monthly_price = getItem(form.monthly_price.data, index)
-        item.subscription = getItem(form.subscription.data, index)
-        item.instant_payment = getItem(form.instant_payment.data, index)
-        item.selling_points = getItem(form.selling_points.data, index)
+        item = {}
+        item['title'] = getItem(form.title.data, index)
+        item['sku'] = getItem(form.title.data, index)
+        item['sell_price'] = getItem(form.sell_price.data, index) or 0
+        item['monthly_price'] = getItem(form.monthly_price.data, index) or 0
+        item['subscription'] = getItem(form.subscription.data, index)
+        item['instant_payment'] = getItem(form.instant_payment.data, index)
+        item['selling_points'] = getItem(form.selling_points.data, index)
+        item['subscription_terms'] = {'minimum_term_months': 12}
+        item['primary_colour'] = "#e73b1a"
+        item['primary_icon'] = {'src':'/static/item3.svg', 'type': 'image/svg+xml'}
+        item['icons'] = [{'src':'images/item3148.png', 
+                          'size':'48x48', 'type':'image/png'},
+                         {'src':'images/item3192.png', 'size':'192x192',
+                          'type':'image/png'}]
+        item['modules'] = ['builder']
         # Image storage
         f = getItem(form.image.data, index)
         if f:
@@ -45,10 +61,20 @@ def save_items():
             f.save(os.path.join(
                 app.config['UPLOADED_IMAGES_DEST'], filename
             ))
-        print item.subscription
-        from pprint import pprint
-        pprint(vars(item))
+        print item
+        items.append(item)
+        draftJamla['items'] = items
+        stream = file(os.path.join(app.instance_path, 'document.yaml'), 'w')
+        yaml.dump(draftJamla, stream,default_flow_style=False)
+        import pdb;pdb.set_trace()
+        # Save to yml
             
+    return redirect('/preview') 
+
+@app.route('/preview', methods=['GET'])
+def preview():
+    """ Preview site before checking out."""
+    jamla = Jamla.load(os.path.join(app.instance_path, 'document.yaml'))
     return render_template('preview-store.html', jamla=jamla)
 
 def getItem(container, i, default=None):
@@ -56,13 +82,4 @@ def getItem(container, i, default=None):
         return container[i]
     except IndexError:
         return default
-
-class Item:
-    title = str()
-    sku =  str()
-    sell_price = int()
-    monthly_price = int()
-    subscription = bool()
-    instant_payment = bool()
-    selling_points = []
 
