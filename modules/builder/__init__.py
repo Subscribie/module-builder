@@ -10,12 +10,12 @@ from flask_wtf.file import FileField, FileRequired
 
 
 class ItemsForm(FlaskForm):
-    name = FieldList(StringField('Name', [validators.DataRequired()]), min_entries=1)
+    title = FieldList(StringField('Title', [validators.DataRequired()]), min_entries=1)
     instant_payment = FieldList(BooleanField('Up-Front Payment'), min_entries=1)
     subscription = FieldList(BooleanField('Subscription'), min_entries=1)
     sell_price = FieldList(DecimalField('Price'), min_entries=1)
     monthly_price = FieldList(DecimalField('Monthly Price'), min_entries=1)
-    selling_points = FieldList(StringField('Unique Selling Point', [validators.DataRequired()]), min_entries=3)
+    selling_points = FieldList(FieldList(StringField('Unique Selling Point', [validators.DataRequired()]), min_entries=3), min_entries=1)
     image = FieldList(FileField(), min_entries=1)
 
 @app.route('/start-building', methods=['GET'])
@@ -26,7 +26,33 @@ def start_building():
 @app.route('/start-building', methods=['POST'])
 def save_items():
     form = ItemsForm()
-    print dir(form)
-    print form.name.data
-    print form.monthly_price.data
+    for index, item in enumerate(form.title.data):
+        item = Item()
+        item.title = getItem(form.title.data, index)
+        item.sku = getItem(form.title.data, index)
+        item.sell_price = getItem(form.sell_price.data, index)
+        item.monthly_price = getItem(form.monthly_price.data, index)
+        item.subscription = getItem(form.subscription.data, index)
+        item.instant_payment = getItem(form.instant_payment.data, index)
+        item.selling_points = getItem(form.selling_points.data, index)
+        print item.subscription
+        from pprint import pprint
+        pprint(vars(item))
+            
     return render_template('preview-store.html', jamla=jamla)
+
+def getItem(container, i, default=None):
+    try:
+        return container[i]
+    except IndexError:
+        return default
+
+class Item:
+    title = str()
+    sku =  str()
+    sell_price = int()
+    monthly_price = int()
+    subscription = bool()
+    instant_payment = bool()
+    selling_points = []
+
