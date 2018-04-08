@@ -1,4 +1,4 @@
-import os
+import os, re
 from flask import Flask, render_template, session, redirect, url_for, escape, request, current_app as app
 from werkzeug.utils import secure_filename
 from jamla import Jamla
@@ -72,6 +72,8 @@ def save_items():
         stream = file('document.yaml', 'w')
         # Save to yml
         yaml.dump(draftJamla, stream,default_flow_style=False)
+        # Generate site
+        create_subdomain(jamla=draftJamla)
             
     return redirect('/preview') 
 
@@ -81,8 +83,12 @@ def preview():
     jamla = Jamla.load('document.yaml')
     return render_template('preview-store.html', jamla=jamla)
 
-def create_subdomain():
-    subdomain = urlsafe_b64encode(os.urandom(5)).replace('=', '')
+def create_subdomain(jamla=None):
+    if jamla is None:
+        subdomain = urlsafe_b64encode(os.urandom(5)).replace('=', '')
+    else:
+        subdomain = re.sub(r'\s+', '', jamla['company']['name'])
+
     headers = { 
         'Content-Type': 'application/x-www-form-urlencoded',
     }
