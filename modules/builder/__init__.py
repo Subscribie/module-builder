@@ -11,6 +11,8 @@ from flask_wtf.file import FileField, FileAllowed, FileRequired
 from flask_uploads import UploadSet, IMAGES
 import yaml
 from yaml import load, dump
+import requests
+from base64 import urlsafe_b64encode
 
 
 class ItemsForm(FlaskForm):
@@ -76,6 +78,22 @@ def preview():
     """ Preview site before checking out."""
     jamla = Jamla.load('document.yaml')
     return render_template('preview-store.html', jamla=jamla)
+
+def create_subdomain():
+    subdomain = urlsafe_b64encode(os.urandom(5)).replace('=', '')
+    headers = { 
+        'Content-Type': 'application/x-www-form-urlencoded',
+    }
+    data = [
+        ('sub-auth-id', app.config["BUILDER_SUB_AUTH_ID"]),
+        ('auth-password', app.config["BUILDER_SUB_AUTH_PASSWORD"]),
+        ('domain-name', 'subscriby.shop'),
+        ('record-type', 'A'),
+        ('host', subdomain),
+        ('record', app.config['KARMA_WEB_HOST']),
+        ('ttl', 60),
+    ]
+    r = requests.post('https://api.cloudns.net/dns/add-record.json', headers=headers, data=data)
 
 def getItem(container, i, default=None):
     try:
