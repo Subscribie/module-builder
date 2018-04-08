@@ -5,7 +5,7 @@ from jamla import Jamla
 jamla = Jamla.load(app.config['JAMLA_PATH'])
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, FloatField, FieldList, FileField, validators, BooleanField
+from wtforms import StringField, FloatField, FieldList, FileField, validators, BooleanField, TextField
 from wtforms.validators import DataRequired
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from flask_uploads import UploadSet, IMAGES
@@ -17,6 +17,7 @@ from base64 import urlsafe_b64encode
 
 class ItemsForm(FlaskForm):
     title = FieldList(StringField('Title', [validators.DataRequired()]), min_entries=1)
+    company_name = TextField('company_name')
     instant_payment = FieldList(BooleanField('Up-Front Payment'), min_entries=1)
     subscription = FieldList(BooleanField('Subscription'), min_entries=1)
     sell_price = FieldList(FloatField('Price'), min_entries=1)
@@ -35,10 +36,11 @@ def start_building():
 @app.route('/start-building', methods=['POST'])
 def save_items():
     draftJamla = {}
-    draftJamla['version'] = 1
-    draftJamla['company'] = {'name':'Karma', 'logo':'', 'start_image':''}
-    items = []
     form = ItemsForm()
+    draftJamla['version'] = 1
+    company_name = form.company_name.data
+    draftJamla['company'] = {'name':company_name, 'logo':'', 'start_image':''}
+    items = []
     for index, item in enumerate(form.title.data):
         item = {}
         item['title'] = getItem(form.title.data, index)
