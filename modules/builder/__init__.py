@@ -69,26 +69,24 @@ def save_items():
         print item
         items.append(item)
         draftJamla['items'] = items
-        stream = file('document.yaml', 'w')
+        subdomain = create_subdomain_string(draftJamla)
+        stream = file(subdomain + '.yaml', 'w')
         # Save to yml
         yaml.dump(draftJamla, stream,default_flow_style=False)
         # Generate site
         create_subdomain(jamla=draftJamla)
             
-    return redirect('/preview') 
+    return redirect('/preview?mysite=' + subdomain) 
 
 @app.route('/preview', methods=['GET'])
 def preview():
     """ Preview site before checking out."""
-    jamla = Jamla.load('document.yaml')
+    name = str(request.args.get('mysite'))
+    jamla = Jamla.load(name + '.yaml')
     return render_template('preview-store.html', jamla=jamla)
 
 def create_subdomain(jamla=None):
-    if jamla is None:
-        subdomain = urlsafe_b64encode(os.urandom(5)).replace('=', '')
-    else:
-        subdomain = re.sub(r'\s+', '', jamla['company']['name'])
-
+    subdomain = create_subdomain_string(jamla)
     headers = { 
         'Content-Type': 'application/x-www-form-urlencoded',
     }
