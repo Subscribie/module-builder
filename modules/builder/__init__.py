@@ -100,6 +100,22 @@ def create_subdomain(jamla=None):
         ('ttl', 60),
     ]
     r = requests.post('https://api.cloudns.net/dns/add-record.json', headers=headers, data=data)
+    deployJamla(subdomain + '.yaml')
+
+@app.route('/sendJamla')
+def deployJamla(filename):
+    url = app.config['JAMLA_DEPLOY_URL']
+    files = {'file': open(filename, 'rb')}
+    r = requests.post(url, files=files)
+    return "Sent jamla file for deployment"
+
+def create_subdomain_string(jamla=None):
+    if jamla is None:
+        subdomain = urlsafe_b64encode(os.urandom(5)).replace('=', '')
+    else: 
+        subdomain = re.sub(r'\s+', '', jamla['company']['name'])
+    return subdomain
+
 
 def getItem(container, i, default=None):
     try:
