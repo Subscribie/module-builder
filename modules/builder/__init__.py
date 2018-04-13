@@ -66,6 +66,8 @@ def save_items():
             src = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
             f.save(src)
             item['primary_icon'] = {'src':'/static/photos/' + filename, 'type': ''}
+        else:
+            item['primary_icon'] = {'src':False, 'type': False}
         print item
         items.append(item)
         draftJamla['items'] = items
