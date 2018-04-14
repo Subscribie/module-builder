@@ -14,6 +14,8 @@ from yaml import load, dump
 import requests
 from base64 import urlsafe_b64encode
 
+# Load builder module env
+app.config.from_envvar('BUILDER_SETTINGS')
 
 class ItemsForm(FlaskForm):
     title = FieldList(StringField('Title', [validators.DataRequired()]), min_entries=1)
@@ -124,4 +126,3 @@ def getItem(container, i, default=None):
         return container[i]
     except IndexError:
         return default
-
