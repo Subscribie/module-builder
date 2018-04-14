@@ -41,6 +41,11 @@ def deploy():
         shutil.copy2(dstDir + 'hedgehog/shortly/.env.example', dstDir + 'hedgehog/shortly/.env')
         # Copy Jamla file into repo
         shutil.move(dstDir + filename + '.yaml', dstDir + 'jamla.yaml')
+        # Copy over default templates folder 
+        shutil.copytree(dstDir + 'hedgehog/shortly/templates', dstDir + 'templates')
+        # Copy over default static folder
+        shutil.copytree(dstDir + 'hedgehog/shortly/static', dstDir + 'static')
+
         # Set JAMLA path
         jamlaPath = dstDir + 'jamla.yaml'
         fp = open(dstDir + "hedgehog/shortly/.env", "a+")
