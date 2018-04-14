@@ -74,12 +74,13 @@ def save_items():
         print item
         items.append(item)
         draftJamla['items'] = items
-        subdomain = create_subdomain_string(draftJamla)
-        stream = file(subdomain + '.yaml', 'w')
-        # Save to yml
-        yaml.dump(draftJamla, stream,default_flow_style=False)
-        # Generate site
-        create_subdomain(jamla=draftJamla)
+
+    subdomain = create_subdomain_string(draftJamla)
+    stream = file(subdomain + '.yaml', 'w')
+    # Save to yml
+    yaml.dump(draftJamla, stream,default_flow_style=False)
+    # Generate site
+    create_subdomain(jamla=draftJamla)
             
     return redirect('/preview?mysite=' + subdomain) 
 
