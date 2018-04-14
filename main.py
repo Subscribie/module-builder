@@ -46,10 +46,12 @@ def deploy():
         # Copy over default static folder
         shutil.copytree(dstDir + 'hedgehog/shortly/static', dstDir + 'static')
 
-        # Set JAMLA path
+        # Set JAMLA path, STATIC_FOLDER, and TEMPLATE_FOLDER
         jamlaPath = dstDir + 'jamla.yaml'
         fp = open(dstDir + "hedgehog/shortly/.env", "a+")
-        fp.write('JAMLA_PATH="' + jamlaPath + '"' + "\n")
+        fp.write(''.join(['JAMLA_PATH="', jamlaPath, '"', "\n"]))
+        fp.write(''.join(['STATIC_FOLDER="../../static','"',"\n"]))
+        fp.write(''.join(['TEMPLATE_FOLDER="../../templates','"',"\n"]))
         fp.close()
 
         # Append new site to apache config
