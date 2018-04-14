@@ -4,7 +4,9 @@ from werkzeug.utils import secure_filename
 import git
 
 app = Flask(__name__)
-app.config.from_envvar('DEPLOYER_SETTINGS')
+# Load .env settings
+curDir = os.path.dirname(os.path.realpath(__file__))
+app.config.from_pyfile('/'.join([curDir, '.env']))
 
 @app.route('/deploy', methods=['GET', 'POST'])
 def deploy():
