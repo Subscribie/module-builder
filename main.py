@@ -54,6 +54,12 @@ def deploy():
         fp.write(''.join(['TEMPLATE_FOLDER="../../templates','"',"\n"]))
         fp.close()
 
+        # Store submitted icons in sites staic folder
+        if 'icons' in request.files:
+            for icon in request.files.getlist('icons'):
+                iconFilename = secure_filename(icon.filename)
+                icon.save(os.path.join(dstDir + 'static', iconFilename))
+
         # Append new site to apache config
         vhost = " ".join(["Use VHost", webaddress, app.config['APACHE_USER'], dstDir])
         #Verify Vhost isn't already present
