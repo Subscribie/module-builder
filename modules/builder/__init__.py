@@ -15,7 +15,8 @@ import requests
 from base64 import urlsafe_b64encode
 
 # Load builder module env
-app.config.from_envvar('BUILDER_SETTINGS')
+curDir = os.path.dirname(os.path.realpath(__file__))
+app.config.from_pyfile('/'.join([curDir, '.env']))
 
 class ItemsForm(FlaskForm):
     title = FieldList(StringField('Title', [validators.DataRequired()]), min_entries=1)
