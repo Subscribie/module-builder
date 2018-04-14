@@ -1,0 +1,41 @@
+# Created by Christopher Simpson 04/14/2018 
+# Based on mass hosting config for lamp stacks 10/05/2016 21:01
+# Documentation Reference: https://httpd.apache.org/docs/current/vhosts/mass.html
+
+# get the server name from the Host: header
+UseCanonicalName Off
+
+# this log format cab be split per-virtual-host based on the first field
+# using the split-logfile utility.
+LogFormat "%V %h %l %u %t \"%r\" %s %b" vcommon
+CustomLog "/var/log/apache2/access_log" vcommon
+
+
+<Macro VHost $host $uid $dir>
+
+  <VirtualHost *:80>
+    ServerName $host
+    ServerAlias www.$host
+    DocumentRoot $dir
+    RewriteEngine On
+
+    # Public document root
+
+    <Directory $dir/hedgehog/shortly>
+        Order allow,deny
+        Allow from all
+        Require all granted
+    </Directory>
+
+    WSGIScriptAlias / $dir/hedgehog/shortly/Hedgehog.py
+    WSGIDaemonProcess $host user=$uid group=$uid processes=2 python-path=$dir/hedgehog/shortly display-name=$host
+    WSGIProcessGroup $host
+    ErrorLog /var/log/apache2/subscriber$host.log
+
+  </VirtualHost>
+</Macro>
+
+WSGISocketPrefix /var/run/wsgi
+
+# Example host. Add another line to add another host. mod_macro will loop over each site.
+# Use VHost subdomain.example.com username /path/to/sites/subdomain.example.com/

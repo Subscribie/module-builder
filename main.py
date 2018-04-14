@@ -47,7 +47,8 @@ def deploy():
         fp.close()
 
         # Append new site to apache config
-        vhost = "Use VHost " + webaddress + " " app.config['APACHE_USER'] + " " + dstDir
+        vhost = " ".join(["Use VHost", webaddress, app.config['APACHE_USER'], dstDir])
+        pdb.set_trace()
 	fp = open(app.config['APACHE_CONF_FILE'], "a+")
         fp.write(vhost + "\n")
         fp.close()
