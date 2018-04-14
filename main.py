@@ -39,7 +39,6 @@ def deploy():
         shutil.copy2(dstDir + 'hedgehog/shortly/.env.example', dstDir + 'hedgehog/shortly/.env')
         # Copy Jamla file into repo
         shutil.move(dstDir + filename + '.yaml', dstDir + 'jamla.yaml')
-        import pdb;pdb.set_trace()
         # Set JAMLA path
         jamlaPath = dstDir + 'jamla.yaml'
         fp = open(dstDir + "hedgehog/shortly/.env", "a+")
@@ -48,12 +47,22 @@ def deploy():
 
         # Append new site to apache config
         vhost = " ".join(["Use VHost", webaddress, app.config['APACHE_USER'], dstDir])
-        pdb.set_trace()
-	fp = open(app.config['APACHE_CONF_FILE'], "a+")
-        fp.write(vhost + "\n")
-        fp.close()
-        # Reload apache with new vhost
-        subprocess.call("sudo /etc/init.d/apache2 reload", shell=True)
+        #Verify Vhost isn't already present
+        try: 
+            fp = open(app.config['APACHE_CONF_FILE'], "a+")
+            for line in fp:
+                if webaddress in line:
+                    fp.close()
+                    raise
+
+            fp = open(app.config['APACHE_CONF_FILE'], "a+")
+            fp.write(vhost + "\n")
+            fp.close()
+            # Reload apache with new vhost
+            subprocess.call("sudo /etc/init.d/apache2 reload", shell=True)
+        except:
+            print "Skipping as " + webaddress + "already exists."
+            pass
 
         
         return 'Stored & crated site'
