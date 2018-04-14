@@ -111,8 +111,19 @@ def create_subdomain(jamla=None):
 @app.route('/sendJamla')
 def deployJamla(filename):
     url = app.config['JAMLA_DEPLOY_URL']
-    files = {'file': open(filename, 'rb')}
-    r = requests.post(url, files=files)
+    #Prepare post data
+    multiple_files = [
+    ]
+    #Add jamla file to post data
+    multiple_files.append(('file', (filename, open(filename, 'rb'))))
+    #Get primary icons
+    icon_paths = Jamla.get_primary_icons(Jamla.load(filename))
+    for icon_path in icon_paths:
+        iconFileName = os.path.split(icon_path)[1]
+        src = os.path.join(app.config['UPLOADED_IMAGES_DEST'], iconFileName)
+        multiple_files.append(('icons', (iconFileName, open(src, 'rb'))))
+
+    r = requests.post(url, files=multiple_files)
     return "Sent jamla file for deployment"
 
 def create_subdomain_string(jamla=None):
