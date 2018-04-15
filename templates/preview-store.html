@@ -3,23 +3,30 @@
 
 {% block hero %}
 	<style>
-	#preview-text {
+    #preview-text {
 		position: absolute;
 		font-size: 20vh;
 		color: lightgray;
 		transform: rotate(300deg);
-		margin-left: 25vh;
-		z-index: 100;
-		height: 100vh;
 		width: 100vh;
+		height: 50vh;
+		top: 50%;
+		left: 50%;
+		margin-left: -50vh; /* margin is -0.5 * dimension */
+		margin-top: -25vh;
 		opacity: 0.55;
 	}
+    body {
+        overflow: hidden;
+    }
 	</style>
-	<div id="preview-text">
-	Preview <br />
-	Preview <br />
-	Preview <br />
-	</div>
+	<div>
+      <div id="preview-text">
+		Preview <br />
+		Preview <br />
+		Preview <br />
+	  </div>
+    </div>
 
   <div class="columns">
     <div class="column has-text-centered-touch">
@@ -37,9 +44,7 @@
 
 <div class="section">
   <div class="container">
-
       <h3 class="title is-4 has-text-centered is-size-4-mobile">Choose from {{ jamla['items']|length }} subscriptions</h2>
-
       <div id="pricing-table-vertical">
         <div class="pricing-table" style="max-width:1000px; margin:auto;">
           {% for item in jamla['items'] %}
@@ -62,10 +67,24 @@
           {% endfor %}
         </div>
       </div>
-
   </div>
 </div>
 
+<div class="section kcDarkBlue" style="position:relative">                       
+  <div class="container">                                                        
+    <div class="columns" style="-webkit-box-align: center; -ms-flex-align: center; align-items: center;">
+      <div class="column">                                                       
+        <h3 class="title is-3 has-text-white">We're ready, are you?</h3>             
+        <p class="subtitle is-4 has-text-white">Activate your subscription website now and begin taking orders!</p>
+        <small style="color:#fff">Once activated, you can edit your site, and start receiving orders right away!
+        What are you waiting for?</small>
+      </div>                                                                     
+      <div class="column is-one-third">                                          
+          <a href="/start-building" class="button is-fullwidth is-light is-large">Activate Site Now</a>
+      </div>                                                                     
+    </div>                                                                       
+  </div>                                                                         
+</div>
 
   <script>
     $('.pricing-plan').hover(
