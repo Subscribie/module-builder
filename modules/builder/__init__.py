@@ -91,7 +91,12 @@ def preview():
     """ Preview site before checking out."""
     name = str(request.args.get('mysite'))
     jamla = Jamla.load(name + '.yaml')
-    return render_template('preview-store.html', jamla=jamla)
+    return render_template('preview-store.html', jamla=jamla, sitename=name)
+
+
+@app.route('/activate/<sitename>')
+def choose_package(sitename=None):
+    return render_template('select-package.html', jamla=jamla)
 
 def create_subdomain(jamla=None):
     subdomain = create_subdomain_string(jamla)
