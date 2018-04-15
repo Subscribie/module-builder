@@ -1,11 +1,13 @@
 import os, re
-from flask import Flask, render_template, session, redirect, url_for, escape, request, current_app as app
+from flask import (Flask, render_template, session, redirect, url_for, escape, 
+    request, current_app as app)
 from werkzeug.utils import secure_filename
 from jamla import Jamla
 jamla = Jamla.load(app.config['JAMLA_PATH'])
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, FloatField, FieldList, FileField, validators, BooleanField, TextField
+from wtforms import (StringField, FloatField, FieldList, FileField, validators, 
+    BooleanField, TextField)
 from wtforms.validators import DataRequired
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from flask_uploads import UploadSet, IMAGES
