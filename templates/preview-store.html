@@ -2,6 +2,24 @@
 {% block title %} {{ jamla['company']['name'] }} Store {% endblock %}
 
 {% block hero %}
+	<style>
+	#preview-text {
+		position: absolute;
+		font-size: 20vh;
+		color: lightgray;
+		transform: rotate(300deg);
+		margin-left: 25vh;
+		z-index: 100;
+		height: 100vh;
+		width: 100vh;
+		opacity: 0.55;
+	}
+	</style>
+	<div id="preview-text">
+	Preview <br />
+	Preview <br />
+	Preview <br />
+	</div>
 
   <div class="columns">
     <div class="column has-text-centered-touch">
@@ -20,9 +38,7 @@
 <div class="section">
   <div class="container">
 
-      <h2 class="title is-3 has-text-left is-size-4-mobile">{{ jamla['items']|length }} Great Offers:</h2>
-
-      <h3 class="title is-4 has-text-centered is-size-4-mobile">Choose your package now</h2>
+      <h3 class="title is-4 has-text-centered is-size-4-mobile">Choose from {{ jamla['items']|length }} subscriptions</h2>
 
       <div id="pricing-table-vertical">
         <div class="pricing-table" style="max-width:1000px; margin:auto;">
@@ -40,7 +56,7 @@
                           <span class="plan-price-currency">&pound;</span>{{ "%.2f"|format(item['monthly_price']/100) }}</span>/month
                   </div>
                   <small style="margin-bottom:1rem;">Upfront cost: &pound;{{ "%.2f"|format(item['sell_price']/100) }}</small>
-                  <a href="/new_customer?plan={{ item['sku'] }}" style="background-color:{{ item['primary_colour'] }}" class="button is-fullwidth is-info">Choose</a>
+                  <span style="background-color:{{ item['primary_colour'] }}" class="button is-fullwidth is-info">Buy Now</span>
               </div>
             </div>
           {% endfor %}
