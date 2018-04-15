@@ -68,7 +68,7 @@ def save_items():
             filename = secure_filename(f.filename)
             src = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
             f.save(src)
-            item['primary_icon'] = {'src': app.config['UPLOADED_IMAGES_DEST'] + filename, 'type': ''}
+            item['primary_icon'] = {'src': '/static/' + filename, 'type': ''}
         else:
             item['primary_icon'] = {'src':False, 'type': False}
         print item
