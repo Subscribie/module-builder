@@ -28,57 +28,54 @@ def deploy():
         try:
             dstDir = app.config['SITES_DIRECTORY'] + webaddress + '/'
             os.mkdir(dstDir)
+            file.save(os.path.join(dstDir, filename + '.yaml'))
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
-	# Clone hedgehog repo
+	# Clone hedgehog repo & set-up .env files
         try:
             git.Git(dstDir).clone("git@gitlab.com:karmacrew/hedgehog.git")
-        except:
-            pass
-        file.save(os.path.join(dstDir, filename + '.yaml'))
-        # Generate .env file
-        shutil.copy2(dstDir + 'hedgehog/shortly/.env.example', dstDir + 'hedgehog/shortly/.env')
-        # Copy Jamla file into repo
-        shutil.move(dstDir + filename + '.yaml', dstDir + 'jamla.yaml')
-        # Copy over default templates folder 
-        shutil.copytree(dstDir + 'hedgehog/shortly/templates', dstDir + 'templates')
-        # Copy over default static folder
-        shutil.copytree(dstDir + 'hedgehog/shortly/static', dstDir + 'static')
+            # Generate .env file
+            shutil.copy2(dstDir + 'hedgehog/shortly/.env.example', dstDir + 'hedgehog/shortly/.env')
+            # Copy Jamla file into repo
+            shutil.move(dstDir + filename + '.yaml', dstDir + 'jamla.yaml')
+            # Copy over default templates folder 
+            shutil.copytree(dstDir + 'hedgehog/shortly/templates', dstDir + 'templates')
+            # Copy over default static folder
+            shutil.copytree(dstDir + 'hedgehog/shortly/static', dstDir + 'static')
 
-        # Set JAMLA path, STATIC_FOLDER, and TEMPLATE_FOLDER
-        jamlaPath = dstDir + 'jamla.yaml'
-        fp = open(dstDir + "hedgehog/shortly/.env", "a+")
-        fp.write(''.join(['JAMLA_PATH="', jamlaPath, '"', "\n"]))
-        fp.write(''.join(['STATIC_FOLDER="../../static','"',"\n"]))
-        fp.write(''.join(['TEMPLATE_FOLDER="../../templates','"',"\n"]))
-        fp.close()
-
-        # Store submitted icons in sites staic folder
-        if 'icons' in request.files:
-            for icon in request.files.getlist('icons'):
-                iconFilename = secure_filename(icon.filename)
-                icon.save(os.path.join(dstDir + 'static', iconFilename))
-
-        # Append new site to apache config
-        vhost = " ".join(["Use VHost", webaddress, app.config['APACHE_USER'], dstDir])
-        #Verify Vhost isn't already present
-        try: 
-            fp = open(app.config['APACHE_CONF_FILE'], "a+")
-            for line in fp:
-                if webaddress in line:
-                    fp.close()
-                    raise
-
-            fp = open(app.config['APACHE_CONF_FILE'], "a+")
-            fp.write(vhost + "\n")
+            # Set JAMLA path, STATIC_FOLDER, and TEMPLATE_FOLDER
+            jamlaPath = dstDir + 'jamla.yaml'
+            fp = open(dstDir + "hedgehog/shortly/.env", "a+")
+            fp.write(''.join(['JAMLA_PATH="', jamlaPath, '"', "\n"]))
+            fp.write(''.join(['STATIC_FOLDER="../../static','"',"\n"]))
+            fp.write(''.join(['TEMPLATE_FOLDER="../../templates','"',"\n"]))
             fp.close()
-            # Reload apache with new vhost
-            subprocess.call("sudo /etc/init.d/apache2 reload", shell=True)
-        except:
-            print "Skipping as " + webaddress + "already exists."
-            pass
+            # Store submitted icons in sites staic folder
+            if 'icons' in request.files:
+                for icon in request.files.getlist('icons'):
+                    iconFilename = secure_filename(icon.filename)
+                    icon.save(os.path.join(dstDir + 'static', iconFilename))
+            # Append new site to apache config
+            vhost = " ".join(["Use VHost", webaddress, app.config['APACHE_USER'], dstDir])
+            #Verify Vhost isn't already present
+            try: 
+                fp = open(app.config['APACHE_CONF_FILE'], "a+")
+                for line in fp:
+                    if webaddress in line:
+                        fp.close()
+                        raise
 
+                fp = open(app.config['APACHE_CONF_FILE'], "a+")
+                fp.write(vhost + "\n")
+                fp.close()
+                # Reload apache with new vhost
+                subprocess.call("sudo /etc/init.d/apache2 reload", shell=True)
+            except:
+                print "Skipping as " + webaddress + "already exists."
+                pass
+        except:
+            pass #Failed to deploy Hedgehog
         
         return 'Stored & crated site'
 
