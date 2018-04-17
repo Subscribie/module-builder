@@ -59,8 +59,7 @@ def deploy():
             fp.write(''.join(['STATIC_FOLDER="../../static','"',"\n"]))
             fp.write(''.join(['TEMPLATE_FOLDER="../../templates','"',"\n"]))
             fp.write(''.join(['DB_FULL_PATH="', dstDir, 'data.db', '"', "\n"]))
-            fp.write(''.join(['CRAB_URL="', 'http://', webaddress ,
-                              '/up-front-payment/', '"', "\n"]))
+            fp.write(''.join(['CRAB_URL="', 'http://', webaddress ,'/up-front-payment/', '"', "\n"]))
 
             fp.close()
             # Store submitted icons in sites staic folder
@@ -98,14 +97,16 @@ def deploy():
             shutil.copy2(dstDir + 'Crab/.env.example', dstDir + 'Crab/.env')
             # Set .env values
             fp = open(dstDir + "Crab/.env", "a+")
-            fp.write(''.join(['ENV="', 'testing', "\n"]))
-            fp.write(''.join(['CRAB_IP="', '127.0.0.1', "\n"]))
-            fp.write(''.join(['CRAB_PORT=', '5001', "\n"]))
-            fp.write(''.join(['STRIPE_API_KEY=', 'sk_test_D1dVenFiwWCObU7vUFHbWgdN', "\n"]))
-            fp.write(''.join(['DB_PATH=', '../../data.db', "\n"]))
-            fp.write(''.join(['ON_SUCCESS_URL=','https://', webaddress, '/establish_mandate', "\n"]))
-            fp.write(''.join(['JAMLA_PATH=','../jamla.yaml', "\n"]))
-            fp.write(''.join(['DB_PATH=','../data.db', "\n"]))
+            fp.write(''.join(['ENV="', 'testing', '"', "\n"]))
+            fp.write(''.join(['CRAB_IP="', '127.0.0.1', '"', "\n"]))
+            fp.write(''.join(['CRAB_PORT="', '5001', '"', "\n"]))
+            fp.write(''.join(['STRIPE_API_KEY="',
+                              'sk_test_D1dVenFiwWCObU7vUFHbWgdN', '"', "\n"]))
+            fp.write(''.join(['DB_PATH="', '../../data.db', '"', "\n"]))
+            fp.write(''.join(['ON_SUCCESS_URL="','https://', webaddress,
+                              '/establish_mandate', '"', "\n"]))
+            fp.write(''.join(['JAMLA_PATH="','../jamla.yaml', '"", "\n"]))
+            fp.write(''.join(['DB_PATH="','../data.db', ,'"', "\n"]))
             fp.close()
         except:
             print "Problem cloning Crab"
