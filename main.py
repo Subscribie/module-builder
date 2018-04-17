@@ -44,12 +44,21 @@ def deploy():
             # Copy over default static folder
             shutil.copytree(dstDir + 'hedgehog/shortly/static', dstDir + 'static')
 
+            # Createsqlite3 db
+            try:
+                execfile(dstDir + '/hedgehog/shortly/createdb.py')
+                shutil.move('data.db', dstDir)
+            except:
+                print "Error creating or moving data.db in createdb.py")
+                pass
+
             # Set JAMLA path, STATIC_FOLDER, and TEMPLATE_FOLDER
             jamlaPath = dstDir + 'jamla.yaml'
             fp = open(dstDir + "hedgehog/shortly/.env", "a+")
             fp.write(''.join(['JAMLA_PATH="', jamlaPath, '"', "\n"]))
             fp.write(''.join(['STATIC_FOLDER="../../static','"',"\n"]))
             fp.write(''.join(['TEMPLATE_FOLDER="../../templates','"',"\n"]))
+            fp.write(''.join(['DB_FULL_PATH=', dstDir,"\n"]))
             fp.close()
             # Store submitted icons in sites staic folder
             if 'icons' in request.files:
