@@ -20,7 +20,16 @@ CustomLog "/var/log/apache2/access_log" vcommon
     RewriteEngine On
 
     # Public document root
+    <Directory $dir/Crab>
+        Order allow,deny
+        Allow from all
+        Require all granted
+    </Directory>
 
+    # Crab instant payments
+		Alias "/up-front-payment" "$dir/Crab"
+
+    # Hedgehog subscription service
     <Directory $dir/hedgehog/shortly>
         Order allow,deny
         Allow from all
@@ -36,6 +45,5 @@ CustomLog "/var/log/apache2/access_log" vcommon
 </Macro>
 
 WSGISocketPrefix /var/run/wsgi
-
 # Example host. Add another line to add another host. mod_macro will loop over each site.
 # Use VHost subdomain.example.com username /path/to/sites/subdomain.example.com/
