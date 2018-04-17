@@ -58,7 +58,7 @@ def deploy():
             fp.write(''.join(['JAMLA_PATH="', jamlaPath, '"', "\n"]))
             fp.write(''.join(['STATIC_FOLDER="../../static','"',"\n"]))
             fp.write(''.join(['TEMPLATE_FOLDER="../../templates','"',"\n"]))
-            fp.write(''.join(['DB_FULL_PATH=', dstDir,"\n"]))
+            fp.write(''.join(['DB_FULL_PATH=', dstDir, 'data.db', "\n"]))
             fp.close()
             # Store submitted icons in sites staic folder
             if 'icons' in request.files:
