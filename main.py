@@ -102,6 +102,7 @@ def deploy():
             fp.write(''.join(['DB_PATH=', '../../data.db', "\n"]))
             fp.write(''.join(['ON_SUCCESS_URL=','https://', webaddress, '/establish_mandate', "\n"]))
             fp.write(''.join(['JAMLA_PATH=','../jamla.yaml', "\n"]))
+            fp.write(''.join(['DB_PATH=','../data.db', "\n"]))
             fp.close()
         except:
             print "Problem cloning Crab"
