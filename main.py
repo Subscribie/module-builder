@@ -62,6 +62,7 @@ def deploy():
             fp.write(''.join(['DB_FULL_PATH="', dstDir, 'data.db', '"', "\n"]))
             fp.write(''.join(['CRAB_URL="', 'http://', webaddress ,'/up-front-payment/', '"', "\n"]))
             fp.write(''.join(['GOCARDLESS_TOKEN="','sandbox_Di_44XAq2FlkshCOyIi7FmFUWQLSUHTEBxaCmE_p', '"',"\n"]))
+            fp.write(''.join(['SUCCESS_REDIRECT_URL="','http://', webaddress, '/complete_mandate', '"',"\n"]))
             fp.write(''.join(['THANKYOU_URL="','http://', webaddress, '/thankyou', '"',"\n"]))
 
             fp.close()
