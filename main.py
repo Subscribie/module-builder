@@ -106,6 +106,9 @@ def deploy():
             fp.write(''.join(['JAMLA_PATH="','../jamla.yaml', '"', "\n"]))
             fp.write(''.join(['DB_PATH="','../data.db', '"', "\n"]))
             fp.close()
+            # Set stripe public env key
+            shutil.move(dstDir + "Crab/js_env/STRIPE_PUBLIC_KEY.env.example",
+                        dstDir + "Crab/js_env/STRIPE_PUBLIC_KEY.env")
         except:
             print "Problem cloning Crab"
             pass
