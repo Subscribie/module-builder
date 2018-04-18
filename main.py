@@ -1,4 +1,5 @@
-import os, errno, shutil, subprocess
+import os, errno, shutil
+import subprocess32
 from flask import Flask, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import git
@@ -81,7 +82,7 @@ def deploy():
                 fp.write(vhost + "\n")
                 fp.close()
                 # Reload apache with new vhost
-                subprocess.call("sudo /etc/init.d/apache2 reload", shell=True)
+                subprocess32.call("sudo /etc/init.d/apache2 reload", shell=True)
             except:
                 print "Skipping as " + webaddress + "already exists."
                 pass
@@ -108,6 +109,9 @@ def deploy():
             # Set stripe public env key
             shutil.move(dstDir + "Crab/js_env/STRIPE_PUBLIC_KEY.env.example",
                         dstDir + "Crab/js_env/STRIPE_PUBLIC_KEY.env")
+            # Perform composer install
+            subprocess32.call("cd " + dstDir + "Crab; composer install",
+                            shell=True)
         except:
             print "Problem cloning Crab"
             pass
