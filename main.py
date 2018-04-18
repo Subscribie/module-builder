@@ -113,7 +113,8 @@ def deploy():
             shutil.move(dstDir + "Crab/js_env/STRIPE_PUBLIC_KEY.env.example",
                         dstDir + "Crab/js_env/STRIPE_PUBLIC_KEY.env")
             # Perform composer install
-            subprocess32.call("composer install -d=" + dstDir + "Crab", shell=True)
+            subprocess32.Popen("composer install -d=" + dstDir + "Crab", shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
+
         except:
             print "Problem cloning Crab"
             pass
