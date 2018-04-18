@@ -81,7 +81,7 @@ def save_items():
     session['site-url'] = 'http://' + subdomain.lower() + '.subscriby.shop'
     stream = file(subdomain + '.yaml', 'w')
     # Save to yml
-    yaml.dump(draftJamla, stream,default_flow_style=False)
+    yaml.safe_dump(draftJamla, stream,default_flow_style=False)
     # Generate site
     create_subdomain(jamla=draftJamla)
             
