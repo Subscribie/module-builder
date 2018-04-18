@@ -100,7 +100,6 @@ def deploy():
             fp.write(''.join(['CRAB_PORT="', '5001', '"', "\n"]))
             fp.write(''.join(['STRIPE_API_KEY="',
                               'sk_test_D1dVenFiwWCObU7vUFHbWgdN', '"', "\n"]))
-            fp.write(''.join(['DB_PATH="', '../../data.db', '"', "\n"]))
             fp.write(''.join(['ON_SUCCESS_URL="','https://', webaddress,
                               '/establish_mandate', '"', "\n"]))
             fp.write(''.join(['JAMLA_PATH="','../jamla.yaml', '"', "\n"]))
