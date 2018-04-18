@@ -93,9 +93,7 @@ def deploy():
         try:
             git.Git(dstDir).clone("git@gitlab.com:karmacrew/Crab.git")
 
-            # Generate .env file
-            shutil.copy2(dstDir + 'Crab/.env.example', dstDir + 'Crab/.env')
-            # Set .env values
+            # Create .env file
             fp = open(dstDir + "Crab/.env", "a+")
             fp.write(''.join(['ENV="', 'testing', '"', "\n"]))
             fp.write(''.join(['CRAB_IP="', '127.0.0.1', '"', "\n"]))
@@ -105,8 +103,8 @@ def deploy():
             fp.write(''.join(['DB_PATH="', '../../data.db', '"', "\n"]))
             fp.write(''.join(['ON_SUCCESS_URL="','https://', webaddress,
                               '/establish_mandate', '"', "\n"]))
-            fp.write(''.join(['JAMLA_PATH="','../jamla.yaml', '"", "\n"]))
-            fp.write(''.join(['DB_PATH="','../data.db', ,'"', "\n"]))
+            fp.write(''.join(['JAMLA_PATH="','../jamla.yaml', '"', "\n"]))
+            fp.write(''.join(['DB_PATH="','../data.db', '"', "\n"]))
             fp.close()
         except:
             print "Problem cloning Crab"
