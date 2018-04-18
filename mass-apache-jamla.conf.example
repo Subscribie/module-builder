@@ -37,7 +37,7 @@ CustomLog "/var/log/apache2/access_log" vcommon
     </Directory>
 
     WSGIScriptAlias / $dir/hedgehog/shortly/Hedgehog.py
-    WSGIDaemonProcess $host user=$uid group=$uid processes=2 python-path=$dir/hedgehog/shortly display-name=$host
+    WSGIDaemonProcess $host user=$uid group=$uid processes=2 socket-user=$uid python-path=$dir/hedgehog/shortly display-name=$host
     WSGIProcessGroup $host
     ErrorLog /var/log/apache2/subscriber$host.log
 
