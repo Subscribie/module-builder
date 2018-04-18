@@ -103,7 +103,7 @@ def deploy():
             fp.write(''.join(['ON_SUCCESS_URL="','https://', webaddress,
                               '/establish_mandate', '"', "\n"]))
             fp.write(''.join(['JAMLA_PATH="','../jamla.yaml', '"', "\n"]))
-            fp.write(''.join(['DB_PATH="','../data.db', '"', "\n"]))
+            fp.write(''.join(['DB_PATH="', dstDir , 'data.db', '"', "\n"]))
             fp.close()
             # Set stripe public env key
             shutil.move(dstDir + "Crab/js_env/STRIPE_PUBLIC_KEY.env.example",
