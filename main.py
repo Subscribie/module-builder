@@ -73,6 +73,7 @@ def deploy():
                     icon.save(os.path.join(dstDir + 'static', iconFilename))
             # Append new site to apache config
             vhost = " ".join(["Use VHost", webaddress, app.config['APACHE_USER'], dstDir])
+            ssl = " ".join(["Use SSL", webaddress, app.config['APACHE_USER'], '443', dstDir])
             #Verify Vhost isn't already present
             try: 
                 fp = open(app.config['APACHE_CONF_FILE'], "a+")
@@ -83,6 +84,7 @@ def deploy():
 
                 fp = open(app.config['APACHE_CONF_FILE'], "a+")
                 fp.write(vhost + "\n")
+                fp.write(ssl + "\n")
                 fp.close()
                 # Reload apache with new vhost
                 subprocess32.call("sudo /etc/init.d/apache2 reload", shell=True)
