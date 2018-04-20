@@ -60,10 +60,10 @@ def deploy():
             fp.write(''.join(['STATIC_FOLDER="../../static','"',"\n"]))
             fp.write(''.join(['TEMPLATE_FOLDER="../../templates','"',"\n"]))
             fp.write(''.join(['DB_FULL_PATH="', dstDir, 'data.db', '"', "\n"]))
-            fp.write(''.join(['CRAB_URL="', 'http://', webaddress ,'/up-front-payment/', '"', "\n"]))
+            fp.write(''.join(['CRAB_URL="', 'https://', webaddress ,'/up-front-payment/', '"', "\n"]))
             fp.write(''.join(['GOCARDLESS_TOKEN="','sandbox_Di_44XAq2FlkshCOyIi7FmFUWQLSUHTEBxaCmE_p', '"',"\n"]))
-            fp.write(''.join(['SUCCESS_REDIRECT_URL="','http://', webaddress, '/complete_mandate', '"',"\n"]))
-            fp.write(''.join(['THANKYOU_URL="','http://', webaddress, '/thankyou', '"',"\n"]))
+            fp.write(''.join(['SUCCESS_REDIRECT_URL="','https://', webaddress, '/complete_mandate', '"',"\n"]))
+            fp.write(''.join(['THANKYOU_URL="','https://', webaddress, '/thankyou', '"',"\n"]))
 
             fp.close()
             # Store submitted icons in sites staic folder
