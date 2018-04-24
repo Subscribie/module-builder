@@ -1,3 +1,4 @@
 jamlaenv
 serve.sh
 static/photos/*
+*.pyc

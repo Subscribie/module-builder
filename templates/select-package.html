@@ -1,0 +1,129 @@
+{% extends "layout.html" %}
+{% block title %}Subscription Website Builder | Karma Computing{% endblock %}
+
+{% block hero %}
+
+  <div class="columns">
+    <div class="column has-text-centered-touch">
+      <h1 class="title is-1 has-text-white is-size-1-mobile">Activate Your
+          Subscription Website</h1>
+      <h2 class="subtitle has-text-white is-3 is-size-3-mobile">Make your
+          website live in 3 minutes!</h2>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block body %}
+
+  <div class="section">
+    <div class="container">
+
+      <h3 class="title is-3">Great! We've set it all up for you</h3>
+
+      <div class="columns" style="max-width:1000px; margin:auto">
+        <div class="column">
+          <div class="content has-text-centered">
+            <img src="/static/steps/1.svg" style="width:100%;" />
+            <p class="title is-5" style="margin:2rem 0;"><b>1. Customer chooses a package</b></p>
+          </div>
+        </div>
+        <div class="column">
+          <div class="content has-text-centered">
+            <img src="/static/steps/2.svg" style="width:100%;" />
+            <p class="title is-5" style="margin:2rem 0;"><b>2. Customer enters contact info</b></p>
+          </div>
+        </div>
+        <div class="column">
+          <div class="content has-text-centered">
+            <img src="/static/steps/3.svg" style="width:100%;" />
+            <p class="title is-5" style="margin:2rem 0;"><b>3. Take one-off/monthly or both payment</b></p>
+          </div>
+        </div>
+        <div class="column">
+          <div class="content has-text-centered">
+            <img src="/static/steps/4.svg" style="width:100%;" />
+            <p class="title is-5" style="margin:2rem 0;"><b>4. Done!</b></p>
+          </div>
+        </div>
+      </div>
+
+<div class="section">
+  <div class="container">
+
+    <h2 class="title is-3 has-text-left is-size-4-mobile">Now Choose Your Plan</h2>
+
+      <h3 class="title is-4 has-text-centered is-size-4-mobile">Your site is ready. Are you?</h2>
+
+      <div id="pricing-table-vertical">
+        <div class="pricing-table" style="max-width:1000px; margin:auto;">
+          {% for item in jamla['items'] %}
+            <div class="pricing-plan">
+                <div class="plan-header" style="color:{{ item['primary_colour'] }}"><img src="{{ item['primary_icon']['src'] }}" style="width:50%;display:block; margin:auto"/>{{ item['title']|safe }}</div>
+                <div class="plan-items">
+                {% for sellingPoint in item['selling_points'] %}
+                    <div class="plan-item">{{ sellingPoint|safe }}</div>
+                {% endfor %}
+                </div>
+              <div class="plan-footer">
+                  <div class="plan-price" style="padding-bottom:0;">
+                      <span style="color:{{ item['primary_colour'] }}" class="plan-price-amount">
+                          <span class="plan-price-currency">&pound;</span>{{ "%.2f"|format(item['monthly_price']/100) }}</span>/month
+                  </div>
+                  <small style="margin-bottom:1rem;">Upfront cost: &pound;{{ "%.2f"|format(item['sell_price']/100) }}</small>
+                  <a href="{{ url_for('new_customer') }}?plan={{ item['sku'] }}"
+                      style="background-color:{{ item['primary_colour'] }}"
+                      class="button is-fullwidth is-info">Activate!</a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+  </div>
+</div>
+
+
+
+      <div class="section kcDarkBlue">
+          <div class="columns" style="-webkit-box-align: center; -ms-flex-align: center; align-items: center;">
+            <div class="column">
+              <h3 class="title is-3 has-text-white">Repeat payments? Simple.</h3>
+              <p class="subtitle is-4 has-text-white">Your shop can take reoccurring payments from your customers. We've done all the technical work so you don't have to!</p>
+            </div>
+            <div class="column is-one-third" style="padding:0; text-align:center">
+              <img src="/static/gocardless-white-rgb_2018.svg" style="width:75%; max-height:100px" />
+            </div>
+          </div>
+      </div>
+
+      <br />
+
+      <div class="section kcBlue">
+          <div class="columns" style="-webkit-box-align: center; -ms-flex-align: center; align-items: center;">
+            <div class="column">
+              <h3 class="title is-3 has-text-white">One Off payments? Sorted.</h3>
+              <p class="subtitle is-4 has-text-white">Take one off payments quickly and securely by utilising Stripe payments.</p>
+            </div>
+            <div class="column is-one-third" style="padding:0; text-align:center">
+              <img src="/static/stripe.svg" style="width:75%; max-height:100px" />
+            </div>
+          </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <br />
+
+  <script>
+    $('.pricing-plan').hover(
+         function(){ $(this).addClass('is-active') },
+         function(){ $(this).removeClass('is-active') }
+  )
+  </script>
+
+  <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+
+{% endblock %}

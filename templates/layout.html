@@ -22,6 +22,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link href="https://fonts.googleapis.com/css?family=Karla" rel="stylesheet"/>
 
 <body>
+<script>
+if ( plan = new URL(document.location).searchParams.get('plan'))
+{
+    localStorage.setItem('plan', plan )
+}
+
+</script>
 
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5K5C9DR"

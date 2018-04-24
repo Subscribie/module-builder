@@ -1,11 +1,13 @@
 import os, re
-from flask import Flask, render_template, session, redirect, url_for, escape, request, current_app as app
+from flask import (Flask, render_template, session, redirect, url_for, escape, 
+    request, current_app as app)
 from werkzeug.utils import secure_filename
 from jamla import Jamla
 jamla = Jamla.load(app.config['JAMLA_PATH'])
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, FloatField, FieldList, FileField, validators, BooleanField, TextField
+from wtforms import (StringField, FloatField, FieldList, FileField, validators, 
+    BooleanField, TextField)
 from wtforms.validators import DataRequired
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from flask_uploads import UploadSet, IMAGES
@@ -14,13 +16,16 @@ from yaml import load, dump
 import requests
 from base64 import urlsafe_b64encode
 
+# Load builder module env
+curDir = os.path.dirname(os.path.realpath(__file__))
+app.config.from_pyfile('/'.join([curDir, '.env']))
 
 class ItemsForm(FlaskForm):
     title = FieldList(StringField('Title', [validators.DataRequired()]), min_entries=1)
     company_name = TextField('company_name')
     instant_payment = FieldList(BooleanField('Up-Front Payment'), min_entries=1)
     subscription = FieldList(BooleanField('Subscription'), min_entries=1)
-    sell_price = FieldList(FloatField('Price'), min_entries=1)
+    sell_price = FieldList(FloatField('Sell Price'), min_entries=1)
     monthly_price = FieldList(FloatField('Monthly Price'), min_entries=1)
     selling_points = FieldList(FieldList(StringField('Unique Selling Point', [validators.DataRequired()]), min_entries=3), min_entries=1)
     images = UploadSet('images', IMAGES)
@@ -65,18 +70,20 @@ def save_items():
             filename = secure_filename(f.filename)
             src = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
             f.save(src)
-            item['primary_icon'] = {'src':'/static/photos/' + filename, 'type': ''}
+            item['primary_icon'] = {'src': '/static/' + filename, 'type': ''}
         else:
             item['primary_icon'] = {'src':False, 'type': False}
         print item
         items.append(item)
         draftJamla['items'] = items
-        subdomain = create_subdomain_string(draftJamla)
-        stream = file(subdomain + '.yaml', 'w')
-        # Save to yml
-        yaml.dump(draftJamla, stream,default_flow_style=False)
-        # Generate site
-        create_subdomain(jamla=draftJamla)
+
+    subdomain = create_subdomain_string(draftJamla)
+    session['site-url'] = 'https://' + subdomain.lower() + '.subscriby.shop'
+    stream = file(subdomain + '.yaml', 'w')
+    # Save to yml
+    yaml.safe_dump(draftJamla, stream,default_flow_style=False)
+    # Generate site
+    create_subdomain(jamla=draftJamla)
             
     return redirect('/preview?mysite=' + subdomain) 
 
@@ -85,7 +92,12 @@ def preview():
     """ Preview site before checking out."""
     name = str(request.args.get('mysite'))
     jamla = Jamla.load(name + '.yaml')
-    return render_template('preview-store.html', jamla=jamla)
+    return render_template('preview-store.html', jamla=jamla, sitename=name)
+
+
+@app.route('/activate/<sitename>')
+def choose_package(sitename=None):
+    return render_template('select-package.html', jamla=jamla)
 
 def create_subdomain(jamla=None):
     subdomain = create_subdomain_string(jamla)
@@ -107,8 +119,19 @@ def create_subdomain(jamla=None):
 @app.route('/sendJamla')
 def deployJamla(filename):
     url = app.config['JAMLA_DEPLOY_URL']
-    files = {'file': open(filename, 'rb')}
-    r = requests.post(url, files=files)
+    #Prepare post data
+    multiple_files = [
+    ]
+    #Add jamla file to post data
+    multiple_files.append(('file', (filename, open(filename, 'rb'))))
+    #Get primary icons
+    icon_paths = Jamla.get_primary_icons(Jamla.load(filename))
+    for icon_path in icon_paths:
+        iconFileName = os.path.split(icon_path)[1]
+        src = os.path.join(app.config['UPLOADED_IMAGES_DEST'], iconFileName)
+        multiple_files.append(('icons', (iconFileName, open(src, 'rb'))))
+
+    r = requests.post(url, files=multiple_files)
     return "Sent jamla file for deployment"
 
 def create_subdomain_string(jamla=None):
@@ -124,4 +147,3 @@ def getItem(container, i, default=None):
         return container[i]
     except IndexError:
         return default
-
