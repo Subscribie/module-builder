@@ -116,6 +116,7 @@ def deploy():
                         dstDir + "Crab/js_env/STRIPE_PUBLIC_KEY.env")
             # Perform composer install
             subprocess32.Popen("composer install -d=" + dstDir + "Crab", shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
+            return "Built site" # Allows Parent process to close cleanly
 
         except:
             print "Problem cloning Crab"
