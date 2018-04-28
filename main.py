@@ -53,6 +53,14 @@ def deploy():
                 print "Error creating or moving data.db in createdb.py"
                 pass
 
+
+            # Run core migrations
+            migrationsDir =  ''.join([dstDir, 'hedgehog/shortly/migrations/'])
+            migrations = sorted(os.listdir(migrationsDir));
+
+            for migration in migrations:
+                subprocess32.call(''.join([migrationsDir, migration, ' -up']))
+            
             # Set JAMLA path, STATIC_FOLDER, and TEMPLATE_FOLDER
             jamlaPath = dstDir + 'jamla.yaml'
             fp = open(dstDir + "hedgehog/shortly/.env", "a+")
