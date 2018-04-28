@@ -84,8 +84,8 @@ def save_items():
     yaml.safe_dump(draftJamla, stream,default_flow_style=False)
     # Generate site
     create_subdomain(jamla=draftJamla)
-            
-    return redirect('/preview?mysite=' + subdomain) 
+    url = 'https://' + request.host + '/preview?mysite=' + subdomain
+    return redirect(url) 
 
 @app.route('/preview', methods=['GET'])
 def preview():
