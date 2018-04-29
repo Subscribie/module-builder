@@ -24,7 +24,6 @@ def deploy():
         filename = secure_filename(file.filename)
         filename = filename.split('.')[0]
         webaddress = filename.lower() + '.subscriby.shop'
-
         # Create directory for site
         try:
             dstDir = app.config['SITES_DIRECTORY'] + webaddress + '/'
@@ -52,55 +51,54 @@ def deploy():
             except:
                 print "Error creating or moving data.db in createdb.py"
                 pass
-
-
-            # Run core migrations
-            migrationsDir =  ''.join([dstDir, 'hedgehog/shortly/migrations/'])
-            migrations = sorted(os.listdir(migrationsDir));
-
-            for migration in migrations:
-                subprocess32.call(''.join([migrationsDir, migration, ' -up']))
-            
-            # Set JAMLA path, STATIC_FOLDER, and TEMPLATE_FOLDER
-            jamlaPath = dstDir + 'jamla.yaml'
-            fp = open(dstDir + "hedgehog/shortly/.env", "a+")
-            fp.write(''.join(['JAMLA_PATH="', jamlaPath, '"', "\n"]))
-            fp.write(''.join(['STATIC_FOLDER="../../static','"',"\n"]))
-            fp.write(''.join(['TEMPLATE_FOLDER="../../templates','"',"\n"]))
-            fp.write(''.join(['DB_FULL_PATH="', dstDir, 'data.db', '"', "\n"]))
-            fp.write(''.join(['CRAB_URL="', 'https://', webaddress ,'/up-front-payment/', '"', "\n"]))
-            fp.write(''.join(['GOCARDLESS_TOKEN="','sandbox_Di_44XAq2FlkshCOyIi7FmFUWQLSUHTEBxaCmE_p', '"',"\n"]))
-            fp.write(''.join(['SUCCESS_REDIRECT_URL="','https://', webaddress, '/complete_mandate', '"',"\n"]))
-            fp.write(''.join(['THANKYOU_URL="','https://', webaddress, '/thankyou', '"',"\n"]))
-
-            fp.close()
-            # Store submitted icons in sites staic folder
-            if 'icons' in request.files:
-                for icon in request.files.getlist('icons'):
-                    iconFilename = secure_filename(icon.filename)
-                    icon.save(os.path.join(dstDir + 'static', iconFilename))
-            # Append new site to apache config
-            vhost = " ".join(["Use VHost", webaddress, app.config['APACHE_USER'], dstDir])
-            ssl = " ".join(["Use SSL", webaddress, '443', app.config['APACHE_USER'], dstDir])
-            #Verify Vhost isn't already present
-            try: 
-                fp = open(app.config['APACHE_CONF_FILE'], "a+")
-                for line in fp:
-                    if webaddress in line:
-                        fp.close()
-                        raise
-
-                fp = open(app.config['APACHE_CONF_FILE'], "a+")
-                fp.write(vhost + "\n")
-                fp.write(ssl + "\n")
-                fp.close()
-                # Reload apache with new vhost
-                subprocess32.call("sudo /etc/init.d/apache2 reload", shell=True)
-            except:
-                print "Skipping as " + webaddress + "already exists."
-                pass
         except:
-            pass #Failed to deploy Hedgehog
+            pass #Did not clone Hedgehog
+
+        # Run core migrations
+        migrationsDir =  ''.join([dstDir, 'hedgehog/shortly/migrations/'])
+        migrations = sorted(os.listdir(migrationsDir));
+
+        for migration in migrations:
+            subprocess32.call(''.join([migrationsDir, migration, ' -db ', dstDir, 'data.db -up']), shell=True)
+        
+        # Set JAMLA path, STATIC_FOLDER, and TEMPLATE_FOLDER
+        jamlaPath = dstDir + 'jamla.yaml'
+        fp = open(dstDir + "hedgehog/shortly/.env", "a+")
+        fp.write(''.join(['JAMLA_PATH="', jamlaPath, '"', "\n"]))
+        fp.write(''.join(['STATIC_FOLDER="../../static','"',"\n"]))
+        fp.write(''.join(['TEMPLATE_FOLDER="../../templates','"',"\n"]))
+        fp.write(''.join(['DB_FULL_PATH="', dstDir, 'data.db', '"', "\n"]))
+        fp.write(''.join(['CRAB_URL="', 'https://', webaddress ,'/up-front-payment/', '"', "\n"]))
+        fp.write(''.join(['GOCARDLESS_TOKEN="','sandbox_Di_44XAq2FlkshCOyIi7FmFUWQLSUHTEBxaCmE_p', '"',"\n"]))
+        fp.write(''.join(['SUCCESS_REDIRECT_URL="','https://', webaddress, '/complete_mandate', '"',"\n"]))
+        fp.write(''.join(['THANKYOU_URL="','https://', webaddress, '/thankyou', '"',"\n"]))
+
+        fp.close()
+        # Store submitted icons in sites staic folder
+        if 'icons' in request.files:
+            for icon in request.files.getlist('icons'):
+                iconFilename = secure_filename(icon.filename)
+                icon.save(os.path.join(dstDir + 'static', iconFilename))
+        # Append new site to apache config
+        vhost = " ".join(["Use VHost", webaddress, app.config['APACHE_USER'], dstDir])
+        ssl = " ".join(["Use SSL", webaddress, '443', app.config['APACHE_USER'], dstDir])
+        #Verify Vhost isn't already present
+        try: 
+            fp = open(app.config['APACHE_CONF_FILE'], "a+")
+            for line in fp:
+                if webaddress in line:
+                    fp.close()
+                    raise
+
+            fp = open(app.config['APACHE_CONF_FILE'], "a+")
+            fp.write(vhost + "\n")
+            fp.write(ssl + "\n")
+            fp.close()
+            # Reload apache with new vhost
+            subprocess32.call("sudo /etc/init.d/apache2 reload", shell=True)
+        except:
+            print "Skipping as " + webaddress + "already exists."
+            pass
 
         
         # Clone Crab repo for instant payments & set-up .env files
