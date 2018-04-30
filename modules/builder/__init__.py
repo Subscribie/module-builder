@@ -79,6 +79,31 @@ def save_items():
         items.append(item)
         draftJamla['items'] = items
 
+    # Payment provider information
+    draftJamla['payment_providers'] = {}
+    draftJamla['payment_providers']['stripe'] = {}
+    draftJamla['payment_providers']['gocardless'] = {}
+    draftJamla['payment_providers']['paypal'] = {}
+
+    # Paypal 
+    draftJamla['payment_providers']['paypal']['sepa_direct_supported'] = False
+    draftJamla['payment_providers']['paypal']['subscription_supported'] = True
+    draftJamla['payment_providers']['paypal']['instant_payment_supported'] = True
+    draftJamla['payment_providers']['paypal']['variable_payments_supported'] = False
+
+    # Stripe 
+    draftJamla['payment_providers']['stripe']['sepa_direct_supported'] = True
+    draftJamla['payment_providers']['stripe']['subscription_supported'] = True
+    draftJamla['payment_providers']['stripe']['instant_payment_supported'] = True
+    draftJamla['payment_providers']['stripe']['variable_payments_supported'] = True 
+
+    # Gocardless
+    draftJamla['payment_providers']['gocardless']['sepa_direct_supported'] = True
+    draftJamla['payment_providers']['gocardless']['subscription_supported'] = True
+    draftJamla['payment_providers']['gocardless']['instant_payment_supported'] = True
+    draftJamla['payment_providers']['gocardless']['variable_payments_supported'] = True 
+    
+
     subdomain = create_subdomain_string(draftJamla)
     session['site-url'] = 'https://' + subdomain.lower() + '.subscriby.shop'
     stream = file(subdomain + '.yaml', 'w')
