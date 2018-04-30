@@ -23,6 +23,7 @@ app.config.from_pyfile('/'.join([curDir, '.env']))
 class ItemsForm(FlaskForm):
     title = FieldList(StringField('Title', [validators.DataRequired()]), min_entries=1)
     company_name = TextField('company_name')
+    email = TextField('email', [validators.Email(), validators.DataRequired()])
     instant_payment = FieldList(BooleanField('Up-Front Payment'), min_entries=1)
     subscription = FieldList(BooleanField('Subscription'), min_entries=1)
     sell_price = FieldList(FloatField('Sell Price'), min_entries=1)
@@ -43,6 +44,7 @@ def save_items():
     draftJamla = {}
     form = ItemsForm()
     draftJamla['version'] = 1
+    draftJamla['users'] = [form.email.data]
     company_name = form.company_name.data
     draftJamla['company'] = {'name':company_name, 'logo':'', 'start_image':''}
     items = []
