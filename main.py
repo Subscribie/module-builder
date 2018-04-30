@@ -88,6 +88,7 @@ def deploy():
         fp.write(''.join(['GOCARDLESS_TOKEN="','sandbox_Di_44XAq2FlkshCOyIi7FmFUWQLSUHTEBxaCmE_p', '"',"\n"]))
         fp.write(''.join(['SUCCESS_REDIRECT_URL="','https://', webaddress, '/complete_mandate', '"',"\n"]))
         fp.write(''.join(['THANKYOU_URL="','https://', webaddress, '/thankyou', '"',"\n"]))
+        fp.write(''.join(['EMAIL_HOST="', app.config['DEPLOY_EMAIL_HOST'], '"',"\n"]))
 
         fp.close()
         # Store submitted icons in sites staic folder
