@@ -23,6 +23,7 @@ app.config.from_pyfile('/'.join([curDir, '.env']))
 class ItemsForm(FlaskForm):
     title = FieldList(StringField('Title', [validators.DataRequired()]), min_entries=1)
     company_name = TextField('company_name')
+    email = TextField('email', [validators.Email(), validators.DataRequired()])
     instant_payment = FieldList(BooleanField('Up-Front Payment'), min_entries=1)
     subscription = FieldList(BooleanField('Subscription'), min_entries=1)
     sell_price = FieldList(FloatField('Sell Price'), min_entries=1)
@@ -43,6 +44,7 @@ def save_items():
     draftJamla = {}
     form = ItemsForm()
     draftJamla['version'] = 1
+    draftJamla['users'] = [form.email.data]
     company_name = form.company_name.data
     draftJamla['company'] = {'name':company_name, 'logo':'', 'start_image':''}
     items = []
@@ -77,6 +79,35 @@ def save_items():
         items.append(item)
         draftJamla['items'] = items
 
+    # Payment provider information
+    draftJamla['payment_providers'] = {}
+    draftJamla['payment_providers']['stripe'] = {}
+    draftJamla['payment_providers']['gocardless'] = {}
+    draftJamla['payment_providers']['paypal'] = {}
+
+    # Paypal 
+    draftJamla['payment_providers']['paypal']['sepa_direct_supported'] = False
+    draftJamla['payment_providers']['paypal']['subscription_supported'] = True
+    draftJamla['payment_providers']['paypal']['instant_payment_supported'] = True
+    draftJamla['payment_providers']['paypal']['variable_payments_supported'] = False
+
+    # Stripe 
+    draftJamla['payment_providers']['stripe']['sepa_direct_supported'] = True
+    draftJamla['payment_providers']['stripe']['subscription_supported'] = True
+    draftJamla['payment_providers']['stripe']['instant_payment_supported'] = True
+    draftJamla['payment_providers']['stripe']['variable_payments_supported'] = True 
+    draftJamla['payment_providers']['stripe']['publishable_key'] = ''
+    draftJamla['payment_providers']['stripe']['secret_key'] = ''
+
+    # Gocardless
+    draftJamla['payment_providers']['gocardless']['sepa_direct_supported'] = True
+    draftJamla['payment_providers']['gocardless']['subscription_supported'] = True
+    draftJamla['payment_providers']['gocardless']['instant_payment_supported'] = True
+    draftJamla['payment_providers']['gocardless']['variable_payments_supported'] = True 
+    draftJamla['payment_providers']['gocardless']['access_token'] = ''
+    draftJamla['payment_providers']['gocardless']['environment'] = ''
+    
+
     subdomain = create_subdomain_string(draftJamla)
     session['site-url'] = 'https://' + subdomain.lower() + '.subscriby.shop'
     stream = file(subdomain + '.yaml', 'w')
@@ -84,8 +115,8 @@ def save_items():
     yaml.safe_dump(draftJamla, stream,default_flow_style=False)
     # Generate site
     create_subdomain(jamla=draftJamla)
-            
-    return redirect('/preview?mysite=' + subdomain) 
+    url = 'https://' + request.host + '/preview?mysite=' + subdomain
+    return redirect(url) 
 
 @app.route('/preview', methods=['GET'])
 def preview():
