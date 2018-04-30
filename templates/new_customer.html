@@ -21,6 +21,8 @@
 
   <form action="" id="new_customer" method=post action=/new_customer >
 
+    {{ form.csrf_token }}
+
     {% if error %}
       <p class=error><stong>Error:</strong> {{ error }}
     {% endif %}
