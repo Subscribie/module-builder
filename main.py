@@ -3,6 +3,9 @@ import subprocess32
 from flask import Flask, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import git
+import yaml
+import sqlite3
+import datetime
 
 app = Flask(__name__)
 # Load .env settings
@@ -60,6 +63,19 @@ def deploy():
 
         for migration in migrations:
             subprocess32.call(''.join([migrationsDir, migration, ' -db ', dstDir, 'data.db -up']), shell=True)
+
+        # Seed users table with site owners email address so they can login
+        fp = open(dstDir + 'jamla.yaml', 'r')
+        jamla =  yaml.load(fp)
+        for email in jamla['users']:
+            con = sqlite3.connect(dstDir + 'data.db')
+            con.text_factory = str
+            cur = con.cursor()                                                   
+            now = datetime.datetime.now()
+            random = str(os.urandom(24))
+            cur.execute("INSERT INTO user (email, created_at, active, login_token) VALUES (?,?,?,?)", (email, now, 1, random,)) 
+            con.commit()                                                         
+            con.close()
         
         # Set JAMLA path, STATIC_FOLDER, and TEMPLATE_FOLDER
         jamlaPath = dstDir + 'jamla.yaml'
