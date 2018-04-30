@@ -96,12 +96,16 @@ def save_items():
     draftJamla['payment_providers']['stripe']['subscription_supported'] = True
     draftJamla['payment_providers']['stripe']['instant_payment_supported'] = True
     draftJamla['payment_providers']['stripe']['variable_payments_supported'] = True 
+    draftJamla['payment_providers']['stripe']['publishable_key'] = ''
+    draftJamla['payment_providers']['stripe']['secret_key'] = ''
 
     # Gocardless
     draftJamla['payment_providers']['gocardless']['sepa_direct_supported'] = True
     draftJamla['payment_providers']['gocardless']['subscription_supported'] = True
     draftJamla['payment_providers']['gocardless']['instant_payment_supported'] = True
     draftJamla['payment_providers']['gocardless']['variable_payments_supported'] = True 
+    draftJamla['payment_providers']['gocardless']['access_token'] = ''
+    draftJamla['payment_providers']['gocardless']['environment'] = ''
     
 
     subdomain = create_subdomain_string(draftJamla)
