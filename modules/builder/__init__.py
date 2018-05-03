@@ -56,8 +56,6 @@ def save_items():
         item['sell_price'] = item['sell_price'] * 100  
         item['monthly_price'] = getItem(form.monthly_price.data, index) or 0
         item['monthly_price'] = item['monthly_price'] * 100 
-        item['subscription'] = getItem(form.subscription.data, index)
-        item['instant_payment'] = getItem(form.instant_payment.data, index)
         item['selling_points'] = getItem(form.selling_points.data, index)
         item['subscription_terms'] = {'minimum_term_months': 12}
         item['primary_colour'] = "#e73b1a"
@@ -65,6 +63,10 @@ def save_items():
                           'size':'48x48', 'type':'image/png'},
                          {'src':'images/item3192.png', 'size':'192x192',
                           'type':'image/png'}]
+        # Item requirements
+        item['requirements'] = {};
+        item['requirements']['instant_payment'] = getItem(form.instant_payment.data, index)
+        item['requirements']['subscription'] = getItem(form.subscription.data, index)
         item['modules'] = ['builder']
         # Image storage
         f = getItem(form.image.data, index)
