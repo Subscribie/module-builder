@@ -34,6 +34,7 @@ class ItemsForm(FlaskForm):
 
 @app.route('/start-building', methods=['GET'])
 def start_building():
+    session['plan'] = str(request.args.get('plan'))
     form = ItemsForm()
     return render_template('start-building.html', jamla=jamla, form=form)
 
@@ -130,7 +131,19 @@ def preview():
 
 @app.route('/activate/<sitename>')
 def choose_package(sitename=None):
+    try:
+        plan = session['plan']
+        if session['plan'] and is_valid_sku(plan):
+           return redirect(url_for('new_customer', plan=plan))
+    except Exception:
+        pass
     return render_template('select-package.html', jamla=jamla)
+
+def is_valid_sku(sku):
+    for item in jamla['items']:
+        if item['sku'] == sku:
+            return True
+    return False
 
 def create_subdomain(jamla=None):
     subdomain = create_subdomain_string(jamla)
