@@ -21,7 +21,6 @@ def deploy():
     # submit a empty part without filename
     if file.filename == '':
         return 'No selected file'
-       
     if file:
         # Store submitted jamla file in its site folder
         filename = secure_filename(file.filename)
@@ -39,17 +38,17 @@ def deploy():
         try:
             git.Git(dstDir).clone("git@gitlab.com:karmacrew/hedgehog.git")
             # Generate .env file
-            shutil.copy2(dstDir + 'hedgehog/shortly/.env.example', dstDir + 'hedgehog/shortly/.env')
+            shutil.copy2(dstDir + 'hedgehog/.env.example', dstDir + 'hedgehog/.env')
             # Copy Jamla file into repo
             shutil.move(dstDir + filename + '.yaml', dstDir + 'jamla.yaml')
             # Copy over default templates folder 
-            shutil.copytree(dstDir + 'hedgehog/shortly/templates', dstDir + 'templates')
+            shutil.copytree(dstDir + 'hedgehog/templates', dstDir + 'templates')
             # Copy over default static folder
-            shutil.copytree(dstDir + 'hedgehog/shortly/static', dstDir + 'static')
+            shutil.copytree(dstDir + 'hedgehog/static', dstDir + 'static')
 
             # Createsqlite3 db
             try:
-                execfile(dstDir + '/hedgehog/shortly/createdb.py')
+                execfile(dstDir + '/hedgehog/createdb.py')
                 shutil.move('data.db', dstDir)
             except:
                 print "Error creating or moving data.db in createdb.py"
@@ -58,7 +57,7 @@ def deploy():
             pass #Did not clone Hedgehog
 
         # Run core migrations
-        migrationsDir =  ''.join([dstDir, 'hedgehog/shortly/migrations/'])
+        migrationsDir =  ''.join([dstDir, 'hedgehog/migrations/'])
         migrations = sorted(os.listdir(migrationsDir));
 
         for migration in migrations:
@@ -79,7 +78,7 @@ def deploy():
         
         # Set JAMLA path, STATIC_FOLDER, and TEMPLATE_FOLDER
         jamlaPath = dstDir + 'jamla.yaml'
-        fp = open(dstDir + "hedgehog/shortly/.env", "a+")
+        fp = open(dstDir + "hedgehog/.env", "a+")
         fp.write(''.join(['JAMLA_PATH="', jamlaPath, '"', "\n"]))
         fp.write(''.join(['STATIC_FOLDER="../../static','"',"\n"]))
         fp.write(''.join(['TEMPLATE_FOLDER="../../templates','"',"\n"]))
