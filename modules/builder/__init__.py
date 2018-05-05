@@ -1,9 +1,11 @@
 import os, re
+import sys
+sys.path.append('../../Indigo/hedgehog/')
 from flask import (Flask, render_template, session, redirect, url_for, escape, 
     request, current_app as app)
 from werkzeug.utils import secure_filename
-from jamla import Jamla
-jamla = Jamla.load(app.config['JAMLA_PATH'])
+from hedgehog import jamla
+jamla = jamla.Jamla.load(app.config['JAMLA_PATH'])
 
 from flask_wtf import FlaskForm
 from wtforms import (StringField, FloatField, FieldList, FileField, validators, 
@@ -11,14 +13,19 @@ from wtforms import (StringField, FloatField, FieldList, FileField, validators,
 from wtforms.validators import DataRequired
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from flask_uploads import UploadSet, IMAGES
+from flask_mail import Mail, Message
 import yaml
 from yaml import load, dump
 import requests
 from base64 import urlsafe_b64encode
+from contextlib import contextmanager
+from hedgehog import journey_complete
 
 # Load builder module env
 curDir = os.path.dirname(os.path.realpath(__file__))
 app.config.from_pyfile('/'.join([curDir, '.env']))
+mail = Mail(app)
+
 
 class ItemsForm(FlaskForm):
     title = FieldList(StringField('Title', [validators.DataRequired()]), min_entries=1)
@@ -139,6 +146,13 @@ def choose_package(sitename=None):
         pass
     return render_template('select-package.html', jamla=jamla)
 
+def journey_complete_subscriber(sender, **kw):
+    msg  = Message("Subscription Website Activated",
+                   sender="enquiries@localhost",
+                   recipients=["chris@karmacomputing.co.uk"])
+    mail.send(msg)
+    print "Journery Complete! Send an email or something.."
+
 def is_valid_sku(sku):
     for item in jamla['items']:
         if item['sku'] == sku:
@@ -193,3 +207,6 @@ def getItem(container, i, default=None):
         return container[i]
     except IndexError:
         return default
+
+# Subscribers
+journey_complete.connect(journey_complete_subscriber)
