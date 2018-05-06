@@ -4,9 +4,6 @@ sys.path.append('../../Indigo/hedgehog/')
 from flask import (Flask, render_template, session, redirect, url_for, escape, 
     request, current_app as app)
 from werkzeug.utils import secure_filename
-from hedgehog import jamla
-jamla = jamla.Jamla.load(app.config['JAMLA_PATH'])
-
 from flask_wtf import FlaskForm
 from wtforms import (StringField, FloatField, FieldList, FileField, validators, 
     BooleanField, TextField)
@@ -19,7 +16,11 @@ from yaml import load, dump
 import requests
 from base64 import urlsafe_b64encode
 from contextlib import contextmanager
-from hedgehog import journey_complete
+from hedgehog import Jamla, journey_complete
+
+# Load Jamla
+jamlaApp = Jamla()
+jamla = jamlaApp.load(app.config['JAMLA_PATH'])
 
 # Load builder module env
 curDir = os.path.dirname(os.path.realpath(__file__))
