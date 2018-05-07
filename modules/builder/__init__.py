@@ -1,6 +1,6 @@
 import os, re
 import sys
-sys.path.append('../../Indigo/hedgehog/')
+sys.path.append('../../Indigo/hedgehog/hedgehog/')
 from flask import (Flask, render_template, session, redirect, url_for, escape, 
     request, current_app as app)
 from werkzeug.utils import secure_filename
@@ -16,7 +16,9 @@ from yaml import load, dump
 import requests
 from base64 import urlsafe_b64encode
 from contextlib import contextmanager
-from hedgehog import Jamla, journey_complete
+from hedgehog import app, Jamla, journey_complete
+
+
 
 # Load Jamla
 jamlaApp = Jamla()
@@ -133,7 +135,8 @@ def save_items():
 def preview():
     """ Preview site before checking out."""
     name = str(request.args.get('mysite'))
-    jamla = Jamla.load(name + '.yaml')
+    jamlaApp = Jamla()
+    jamla = jamlaApp.load(name + '.yaml')
     return render_template('preview-store.html', jamla=jamla, sitename=name)
 
 
@@ -186,7 +189,8 @@ def deployJamla(filename):
     #Add jamla file to post data
     multiple_files.append(('file', (filename, open(filename, 'rb'))))
     #Get primary icons
-    icon_paths = Jamla.get_primary_icons(Jamla.load(filename))
+    jamlaApp = Jamla()
+    icon_paths = jamlaApp.get_primary_icons(jamlaApp.load(filename))
     for icon_path in icon_paths:
         iconFileName = os.path.split(icon_path)[1]
         src = os.path.join(app.config['UPLOADED_IMAGES_DEST'], iconFileName)
