@@ -38,17 +38,17 @@ def deploy():
         try:
             git.Git(dstDir).clone("git@gitlab.com:karmacrew/hedgehog.git")
             # Generate .env file
-            shutil.copy2(dstDir + 'hedgehog/.env.example', dstDir + 'hedgehog/.env')
+            shutil.copy2(dstDir + 'hedgehog/hedgehog/.env.example', dstDir + 'hedgehog/hedgehog/.env')
             # Copy Jamla file into repo
             shutil.move(dstDir + filename + '.yaml', dstDir + 'jamla.yaml')
             # Copy over default templates folder 
-            shutil.copytree(dstDir + 'hedgehog/templates', dstDir + 'templates')
+            shutil.copytree(dstDir + 'hedgehog/hedgehog/templates', dstDir + 'templates')
             # Copy over default static folder
-            shutil.copytree(dstDir + 'hedgehog/static', dstDir + 'static')
+            shutil.copytree(dstDir + 'hedgehog/hedgehog/static', dstDir + 'static')
 
             # Createsqlite3 db
             try:
-                execfile(dstDir + '/hedgehog/createdb.py')
+                execfile(dstDir + '/hedgehog/hedgehog/createdb.py')
                 shutil.move('data.db', dstDir)
             except:
                 print "Error creating or moving data.db in createdb.py"
@@ -57,7 +57,7 @@ def deploy():
             pass #Did not clone Hedgehog
 
         # Run core migrations
-        migrationsDir =  ''.join([dstDir, 'hedgehog/migrations/'])
+        migrationsDir =  ''.join([dstDir, 'hedgehog/hedgehog/migrations/'])
         migrations = sorted(os.listdir(migrationsDir));
 
         for migration in migrations:
@@ -78,10 +78,10 @@ def deploy():
         
         # Set JAMLA path, STATIC_FOLDER, and TEMPLATE_FOLDER
         jamlaPath = dstDir + 'jamla.yaml'
-        fp = open(dstDir + "hedgehog/.env", "a+")
+        fp = open(dstDir + "hedgehog/hedgehog/.env", "a+")
         fp.write(''.join(['JAMLA_PATH="', jamlaPath, '"', "\n"]))
-        fp.write(''.join(['STATIC_FOLDER="../../static','"',"\n"]))
-        fp.write(''.join(['TEMPLATE_FOLDER="../../templates','"',"\n"]))
+        fp.write(''.join(['STATIC_FOLDER="../../../static','"',"\n"]))
+        fp.write(''.join(['TEMPLATE_FOLDER="../../../templates','"',"\n"]))
         fp.write(''.join(['DB_FULL_PATH="', dstDir, 'data.db', '"', "\n"]))
         fp.write(''.join(['CRAB_URL="', 'https://', webaddress ,'/up-front-payment/', '"', "\n"]))
         fp.write(''.join(['CRAB_PATH="', dstDir, 'Crab/', '"', "\n"]))
