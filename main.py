@@ -80,8 +80,8 @@ def deploy():
         jamlaPath = dstDir + 'jamla.yaml'
         fp = open(dstDir + "hedgehog/hedgehog/.env", "a+")
         fp.write(''.join(['JAMLA_PATH="', jamlaPath, '"', "\n"]))
-        fp.write(''.join(['STATIC_FOLDER="../../../static','"',"\n"]))
-        fp.write(''.join(['TEMPLATE_FOLDER="../../../templates','"',"\n"]))
+        fp.write(''.join(['STATIC_FOLDER="../../static','"',"\n"]))
+        fp.write(''.join(['TEMPLATE_FOLDER="../../templates','"',"\n"]))
         fp.write(''.join(['DB_FULL_PATH="', dstDir, 'data.db', '"', "\n"]))
         fp.write(''.join(['CRAB_URL="', 'https://', webaddress ,'/up-front-payment/', '"', "\n"]))
         fp.write(''.join(['CRAB_PATH="', dstDir, 'Crab/', '"', "\n"]))
