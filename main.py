@@ -6,6 +6,8 @@ import git
 import yaml
 import sqlite3
 import datetime
+from base64 import b64encode, urlsafe_b64encode
+import random
 
 app = Flask(__name__)
 # Load .env settings
@@ -71,8 +73,8 @@ def deploy():
             con.text_factory = str
             cur = con.cursor()                                                   
             now = datetime.datetime.now()
-            random = str(os.urandom(24))
-            cur.execute("INSERT INTO user (email, created_at, active, login_token) VALUES (?,?,?,?)", (email, now, 1, random,)) 
+            login_token = str(urlsafe_b64encode(os.urandom(24)))
+            cur.execute("INSERT INTO user (email, created_at, active, login_token) VALUES (?,?,?,?)", (email, now, 1, login_token,)) 
             con.commit()                                                         
             con.close()
         
@@ -141,14 +143,11 @@ def deploy():
                         dstDir + "Crab/js_env/STRIPE_PUBLIC_KEY.env")
             # Perform composer install
             subprocess32.Popen("composer install -d=" + dstDir + "Crab", shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
-            return "Built site" # Allows Parent process to close cleanly
-
         except:
             print "Problem cloning Crab"
             pass
-        
-        return 'Stored & crated site'
+    login_url = ''.join(['https://', webaddress, '/login/', login_token])
 
-    return "Deployed site probably!"
+    return login_url
 
 application = app
