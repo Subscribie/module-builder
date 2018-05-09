@@ -16,7 +16,7 @@ from yaml import load, dump
 import requests
 from base64 import urlsafe_b64encode
 from contextlib import contextmanager
-from hedgehog import app, Jamla, journey_complete
+from hedgehog import app, Jamla, journey_complete, generate_login_url
 
 
 
@@ -56,6 +56,7 @@ def save_items():
     form = ItemsForm()
     draftJamla['version'] = 1
     draftJamla['users'] = [form.email.data]
+    session['email'] = form.email.data
     company_name = form.company_name.data
     draftJamla['company'] = {'name':company_name, 'logo':'', 'start_image':''}
     items = []
@@ -145,17 +146,25 @@ def choose_package(sitename=None):
     try:
         plan = session['plan']
         if session['plan'] and is_valid_sku(plan):
-           return redirect(url_for('new_customer', plan=plan))
+           return redirect(url_for('hedgehog.new_customer', plan=plan))
     except Exception:
         pass
     return render_template('select-package.html', jamla=jamla)
 
 def journey_complete_subscriber(sender, **kw):
-    msg  = Message("Subscription Website Activated",
-                   sender="enquiries@localhost",
-                   recipients=["chris@karmacomputing.co.uk"])
-    mail.send(msg)
     print "Journery Complete! Send an email or something.."
+    try:
+        email = kw['email']
+        sender = "enquiries@karmacomputing.co.uk"
+        login_url = session['login-url']
+        msg  = Message(subject="Subscription Website Activated",
+                       body=login_url,
+                       sender=sender,
+                       recipients=[email])
+        mail.send(msg)
+    except Exception:
+        print "Error sending journey_complete_subscriber email"
+        pass
 
 def is_valid_sku(sku):
     for item in jamla['items']:
@@ -197,6 +206,7 @@ def deployJamla(filename):
         multiple_files.append(('icons', (iconFileName, open(src, 'rb'))))
 
     r = requests.post(url, files=multiple_files)
+    session['login-url'] = r.text
     return "Sent jamla file for deployment"
 
 def create_subdomain_string(jamla=None):
