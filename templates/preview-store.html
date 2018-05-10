@@ -1,6 +1,27 @@
 {% extends "layout.html" %}
 {% block title %} {{ jamla['company']['name'] }} Store {% endblock %}
 
+{% block top %}
+      <div class="section kcBlue" style="position:relative">                       
+        <div class="container">                                                        
+          <div class="columns" style="-webkit-box-align: center; -ms-flex-align: center; align-items: center;">
+            <div class="column">                                                       
+              <h3 class="title is-3 has-text-white">We're ready, are you?</h3>         
+              <p class="subtitle is-4 has-text-white">Activate your subscription website now and begin taking orders!</p>
+              <small style="color:#fff">Once activated, you can edit your site, and start receiving orders right away!
+              What are you waiting for?</small>                                        
+            </div>                                                                     
+            <div class="column is-one-third">                                          
+                <a href="/activate/{{ sitename }}" class="button is-fullwidth is-light is-large">Activate Site Now</a>
+            </div>                                                                     
+          </div>                                                                       
+        </div>                                                                         
+      </div>
+
+      <div class="section kcDarkBlue" style="position:relative">                       
+      </div>
+{% endblock top %}
+
 {% block hero %}
 	<style>
     #preview-text {
