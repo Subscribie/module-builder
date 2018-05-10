@@ -115,13 +115,17 @@ def deploy():
             fp.write(vhost + "\n")
             fp.write(ssl + "\n")
             fp.close()
-            # Reload apache with new vhost
-            subprocess32.call("sudo /etc/init.d/apache2 reload", shell=True)
         except:
             print "Skipping as " + webaddress + "already exists."
             pass
+        try:
+            # Reload apache with new vhost
+            subprocess32.call("sudo /etc/init.d/apache2 reload", shell=True)
+        except Exception as e:
+            print "Problem reloading apache:"
+            print e
+            pass
 
-        
         # Clone Crab repo for instant payments & set-up .env files
         try:
             git.Git(dstDir).clone("git@gitlab.com:karmacrew/Crab.git")
