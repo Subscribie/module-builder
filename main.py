@@ -118,13 +118,6 @@ def deploy():
         except:
             print "Skipping as " + webaddress + "already exists."
             pass
-        try:
-            # Reload apache with new vhost
-            subprocess32.call("sudo /etc/init.d/apache2 reload", shell=True)
-        except Exception as e:
-            print "Problem reloading apache:"
-            print e
-            pass
 
         # Clone Crab repo for instant payments & set-up .env files
         try:
@@ -149,6 +142,14 @@ def deploy():
             subprocess32.Popen("composer install -d=" + dstDir + "Crab", shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
         except:
             print "Problem cloning Crab"
+            pass
+
+        try:
+            # Reload apache with new vhost
+            subprocess32.call("sudo /etc/init.d/apache2 reload", shell=True)
+        except Exception as e:
+            print "Problem reloading apache:"
+            print e
             pass
     login_url = ''.join(['https://', webaddress, '/login/', login_token])
 
