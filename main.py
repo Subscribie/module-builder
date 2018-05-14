@@ -91,6 +91,7 @@ def deploy():
         fp.write(''.join(['SUCCESS_REDIRECT_URL="','https://', webaddress, '/complete_mandate', '"',"\n"]))
         fp.write(''.join(['THANKYOU_URL="','https://', webaddress, '/thankyou', '"',"\n"]))
         fp.write(''.join(['EMAIL_HOST="', app.config['DEPLOY_EMAIL_HOST'], '"',"\n"]))
+        fp.write(''.join(['GOCARDLESS_ENVIRONMENT="', 'LIVE', '"',"\n"]))
         fp.write(''.join(['GOCARDLESS_CLIENT_ID="', app.config['DEPLOY_GOCARDLESS_CLIENT_ID'], '"',"\n"]))
         fp.write(''.join(['GOCARDLESS_CLIENT_SECRET="', app.config['DEPLOY_GOCARDLESS_CLIENT_SECRET'], '"',"\n"]))
 
