@@ -68,6 +68,7 @@ def save_items():
     draftJamla = {}
     form = ItemsForm()
     draftJamla['version'] = 1
+    draftJamla['modules_path'] = '../../../'
     draftJamla['users'] = [form.email.data]
     session['email'] = form.email.data
     company_name = form.company_name.data
