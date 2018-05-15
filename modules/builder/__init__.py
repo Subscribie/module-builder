@@ -30,7 +30,20 @@ app.config.from_pyfile('/'.join([curDir, '.env']))
 mail = Mail(app)
 
 
-class ItemsForm(FlaskForm):
+class StripWhitespaceForm(FlaskForm):
+    class Meta:
+        def bind_field(self, form, unbound_field, options):
+            filters = unbound_field.kwargs.get('filters', [])
+            if unbound_field.field_class is not FieldList:
+                filters.append(strip_whitespace)
+            return unbound_field.bind(form=form, filters=filters, **options)
+
+def strip_whitespace(value):
+    if value is not None and hasattr(value, 'strip'):
+        return value.strip()
+    return value
+
+class ItemsForm(StripWhitespaceForm):
     title = FieldList(StringField('Title', [validators.DataRequired()]), min_entries=1)
     company_name = TextField('company_name')
     email = TextField('email', [validators.Email(), validators.DataRequired()])
@@ -64,7 +77,7 @@ def save_items():
     for index, item in enumerate(form.title.data):
         item = {}
         item['title'] = getItem(form.title.data, index)
-        item['sku'] = getItem(form.title.data.strip(), index)
+        item['sku'] = getItem(form.title.data, index)
         item['sell_price'] = getItem(form.sell_price.data, index) or 0
         item['sell_price'] = item['sell_price'] * 100  
         item['monthly_price'] = getItem(form.monthly_price.data, index) or 0
@@ -223,6 +236,7 @@ def getItem(container, i, default=None):
         return container[i]
     except IndexError:
         return default
+
 
 # Subscribers
 journey_complete.connect(journey_complete_subscriber)
