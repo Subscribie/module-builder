@@ -16,38 +16,6 @@
 
 {% block body %}
 
-  <div class="section">
-    <div class="container">
-
-      <h3 class="title is-3">Great! We've set it all up for you</h3>
-
-      <div class="columns" style="max-width:1000px; margin:auto">
-        <div class="column">
-          <div class="content has-text-centered">
-            <img src="/static/steps/1.svg" style="width:100%;" />
-            <p class="title is-5" style="margin:2rem 0;"><b>1. Customer chooses a package</b></p>
-          </div>
-        </div>
-        <div class="column">
-          <div class="content has-text-centered">
-            <img src="/static/steps/2.svg" style="width:100%;" />
-            <p class="title is-5" style="margin:2rem 0;"><b>2. Customer enters contact info</b></p>
-          </div>
-        </div>
-        <div class="column">
-          <div class="content has-text-centered">
-            <img src="/static/steps/3.svg" style="width:100%;" />
-            <p class="title is-5" style="margin:2rem 0;"><b>3. Take one-off/monthly or both payment</b></p>
-          </div>
-        </div>
-        <div class="column">
-          <div class="content has-text-centered">
-            <img src="/static/steps/4.svg" style="width:100%;" />
-            <p class="title is-5" style="margin:2rem 0;"><b>4. Done!</b></p>
-          </div>
-        </div>
-      </div>
-
 <div class="section">
   <div class="container">
 
@@ -79,43 +47,8 @@
           {% endfor %}
         </div>
       </div>
-
   </div>
 </div>
-
-
-
-      <div class="section kcDarkBlue">
-          <div class="columns" style="-webkit-box-align: center; -ms-flex-align: center; align-items: center;">
-            <div class="column">
-              <h3 class="title is-3 has-text-white">Repeat payments? Simple.</h3>
-              <p class="subtitle is-4 has-text-white">Your shop can take reoccurring payments from your customers. We've done all the technical work so you don't have to!</p>
-            </div>
-            <div class="column is-one-third" style="padding:0; text-align:center">
-              <img src="/static/gocardless-white-rgb_2018.svg" style="width:75%; max-height:100px" />
-            </div>
-          </div>
-      </div>
-
-      <br />
-
-      <div class="section kcBlue">
-          <div class="columns" style="-webkit-box-align: center; -ms-flex-align: center; align-items: center;">
-            <div class="column">
-              <h3 class="title is-3 has-text-white">One Off payments? Sorted.</h3>
-              <p class="subtitle is-4 has-text-white">Take one off payments quickly and securely by utilising Stripe payments.</p>
-            </div>
-            <div class="column is-one-third" style="padding:0; text-align:center">
-              <img src="/static/stripe.svg" style="width:75%; max-height:100px" />
-            </div>
-          </div>
-      </div>
-
-    </div>
-  </div>
-
-
-  <br />
 
   <script>
     $('.pricing-plan').hover(
@@ -123,7 +56,4 @@
          function(){ $(this).removeClass('is-active') }
   )
   </script>
-
-  <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
-
 {% endblock %}
