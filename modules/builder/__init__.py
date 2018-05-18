@@ -170,7 +170,7 @@ def journey_complete_subscriber(sender, **kw):
     print "Journery Complete! Send an email or something.."
     try:
         email = kw['email']
-        sender = "enquiries@karmacomputing.co.uk"
+        sender = "hello@subscriptionwebsitebuilder.co.uk"
         login_url = session['login-url']
         msg  = Message(subject="Subscription Website Activated",
                        body=login_url,
