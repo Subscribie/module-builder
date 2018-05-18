@@ -228,7 +228,7 @@ def create_subdomain_string(jamla=None):
     if jamla is None:
         subdomain = urlsafe_b64encode(os.urandom(5)).replace('=', '')
     else: 
-        subdomain = re.sub(r'\s+', '', jamla['company']['name'])
+        subdomain = re.sub(r'\W+', '', jamla['company']['name'])
     return subdomain
 
 
