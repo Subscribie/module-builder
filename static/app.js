@@ -29,6 +29,21 @@ $("body").on("change", "input[type=file]", function(){
   })
 ;
 
+
+// ALLOW EDITING OF PRICES ****AFTER**** CLICKING THE TICK BOX
+
+$("body").on("click", "input[type='checkbox']", function(){
+  var checkbox_id = $(this).attr('id');
+  if ($(this).is(':checked')) {
+    // User checked the box, make the input *appear* enabled
+    document.querySelector('#' + checkbox_id + '_container').classList.remove("is-hidden");
+  } else {
+    // User unchecked the box, clear the input and make *appear* disabled
+      input = document.querySelector('#' + checkbox_id + '_container');
+      input.classList.add("is-hidden");
+  }
+});
+
 // Modals
 
 jQuery(document).ready(function ($) {
