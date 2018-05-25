@@ -107,35 +107,5 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </body>
 
 <script src="/static/app.js"></script>
-<script src="/static/example.js"></script>
-
-<script type="application/javascript">
-    jQuery(document).ready(function ($) {
-      $('.modal-button').click(function() {
-        console.log("Modal Opened");
-        var target = $(this).data('target');
-        $('html').addClass('is-clipped');
-        $('#' + target).addClass('is-active');
-      });
-      $('.modal-background, .modal-close').click(function() {
-        $('html').removeClass('is-clipped');
-        $('.modal').removeClass('is-active');
-      });
-      $('.modal-card-head .delete').click(function() {
-        $('html').removeClass('is-clipped');
-        $('.modal').removeClass('is-active');
-      });
-      $('.modal-card-body #close').click(function() {
-        $('html').removeClass('is-clipped');
-        $('.modal').removeClass('is-active');
-      });
-      $(document).on('keyup',function(e) {
-        if (e.keyCode == 27) {
-          $('html').removeClass('is-clipped');
-          $('.modal').removeClass('is-active');
-        }
-      });
-    });
-  </script>
 
 </html>
