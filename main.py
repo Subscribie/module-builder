@@ -85,8 +85,6 @@ def deploy():
         fp.write(''.join(['STATIC_FOLDER="../../static','"',"\n"]))
         fp.write(''.join(['TEMPLATE_FOLDER="../../templates/','"',"\n"]))
         fp.write(''.join(['DB_FULL_PATH="', dstDir, 'data.db', '"', "\n"]))
-        fp.write(''.join(['CRAB_URL="', 'https://', webaddress ,'/up-front-payment/', '"', "\n"]))
-        fp.write(''.join(['CRAB_PATH="', dstDir, 'Crab/', '"', "\n"]))
         fp.write(''.join(['GOCARDLESS_TOKEN="','sandbox_Di_44XAq2FlkshCOyIi7FmFUWQLSUHTEBxaCmE_p', '"',"\n"]))
         fp.write(''.join(['SUCCESS_REDIRECT_URL="','https://', webaddress, '/complete_mandate', '"',"\n"]))
         fp.write(''.join(['THANKYOU_URL="','https://', webaddress, '/thankyou', '"',"\n"]))
@@ -118,33 +116,6 @@ def deploy():
             fp.close()
         except:
             print "Skipping as " + webaddress + "already exists."
-            pass
-
-        # Clone Crab repo for instant payments & set-up .env files
-        try:
-            git.Git(dstDir).clone("git@gitlab.com:karmacrew/Crab.git")
-
-            # Create .env file
-            fp = open(dstDir + "Crab/.env", "a+")
-            fp.write(''.join(['ENV="', 'testing', '"', "\n"]))
-            fp.write(''.join(['CRAB_IP="', '127.0.0.1', '"', "\n"]))
-            fp.write(''.join(['CRAB_PORT="', '5001', '"', "\n"]))
-            fp.write(''.join(['STRIPE_API_KEY="',
-                              'sk_test_D1dVenFiwWCObU7vUFHbWgdN', '"', "\n"]))
-            fp.write(''.join(['ESTABLISH_MANDATE_URL="', 'https://', webaddress, 
-                              '/establish_mandate', '"', "\n"]))
-            fp.write(''.join(['ON_SUCCESS_URL="','https://', webaddress,
-                              '/thankyou', '"', "\n"]))
-            fp.write(''.join(['JAMLA_PATH="','../jamla.yaml', '"', "\n"]))
-            fp.write(''.join(['DB_PATH="', dstDir , 'data.db', '"', "\n"]))
-            fp.close()
-            # Set stripe public env key
-            shutil.move(dstDir + "Crab/js_env/STRIPE_PUBLIC_KEY.env.example",
-                        dstDir + "Crab/js_env/STRIPE_PUBLIC_KEY.env")
-            # Perform composer install
-            subprocess32.Popen("composer install -d=" + dstDir + "Crab", shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
-        except:
-            print "Problem cloning Crab"
             pass
 
         try:
