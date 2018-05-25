@@ -82,7 +82,7 @@ def deploy():
         jamlaPath = dstDir + 'jamla.yaml'
         fp = open(dstDir + "hedgehog/hedgehog/.env", "a+")
         fp.write(''.join(['JAMLA_PATH="', jamlaPath, '"', "\n"]))
-        fp.write(''.join(['STATIC_FOLDER="../../static','"',"\n"]))
+        fp.write(''.join(['STATIC_FOLDER="../../static/','"',"\n"]))
         fp.write(''.join(['TEMPLATE_FOLDER="../../templates/','"',"\n"]))
         fp.write(''.join(['DB_FULL_PATH="', dstDir, 'data.db', '"', "\n"]))
         fp.write(''.join(['GOCARDLESS_TOKEN="','sandbox_Di_44XAq2FlkshCOyIi7FmFUWQLSUHTEBxaCmE_p', '"',"\n"]))
