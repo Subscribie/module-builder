@@ -1,11 +1,11 @@
 import os, re
 import sys
 sys.path.append('../../Indigo/hedgehog/hedgehog/')
-from flask import (Flask, render_template, session, redirect, url_for, escape, 
+from flask import (Flask, render_template, session, redirect, url_for, escape,
     request, current_app as app)
 from werkzeug.utils import secure_filename
 from flask_wtf import FlaskForm
-from wtforms import (StringField, FloatField, FieldList, FileField, validators, 
+from wtforms import (StringField, FloatField, FieldList, FileField, validators,
     BooleanField, TextField)
 from wtforms.validators import DataRequired
 from flask_wtf.file import FileField, FileAllowed, FileRequired
@@ -80,13 +80,13 @@ def save_items():
         item['title'] = getItem(form.title.data, index)
         item['sku'] = getItem(form.title.data, index)
         item['sell_price'] = getItem(form.sell_price.data, index) or 0
-        item['sell_price'] = item['sell_price'] * 100  
+        item['sell_price'] = item['sell_price'] * 100
         item['monthly_price'] = getItem(form.monthly_price.data, index) or 0
-        item['monthly_price'] = item['monthly_price'] * 100 
+        item['monthly_price'] = item['monthly_price'] * 100
         item['selling_points'] = getItem(form.selling_points.data, index)
         item['subscription_terms'] = {'minimum_term_months': 12}
         item['primary_colour'] = "#e73b1a"
-        item['icons'] = [{'src':'images/item3148.png', 
+        item['icons'] = [{'src':'images/item3148.png',
                           'size':'48x48', 'type':'image/png'},
                          {'src':'images/item3192.png', 'size':'192x192',
                           'type':'image/png'}]
@@ -114,17 +114,17 @@ def save_items():
     draftJamla['payment_providers']['gocardless'] = {}
     draftJamla['payment_providers']['paypal'] = {}
 
-    # Paypal 
+    # Paypal
     draftJamla['payment_providers']['paypal']['sepa_direct_supported'] = False
     draftJamla['payment_providers']['paypal']['subscription_supported'] = True
     draftJamla['payment_providers']['paypal']['instant_payment_supported'] = True
     draftJamla['payment_providers']['paypal']['variable_payments_supported'] = False
 
-    # Stripe 
+    # Stripe
     draftJamla['payment_providers']['stripe']['sepa_direct_supported'] = True
     draftJamla['payment_providers']['stripe']['subscription_supported'] = True
     draftJamla['payment_providers']['stripe']['instant_payment_supported'] = True
-    draftJamla['payment_providers']['stripe']['variable_payments_supported'] = True 
+    draftJamla['payment_providers']['stripe']['variable_payments_supported'] = True
     draftJamla['payment_providers']['stripe']['publishable_key'] = ''
     draftJamla['payment_providers']['stripe']['secret_key'] = ''
 
@@ -132,10 +132,10 @@ def save_items():
     draftJamla['payment_providers']['gocardless']['sepa_direct_supported'] = True
     draftJamla['payment_providers']['gocardless']['subscription_supported'] = True
     draftJamla['payment_providers']['gocardless']['instant_payment_supported'] = True
-    draftJamla['payment_providers']['gocardless']['variable_payments_supported'] = True 
+    draftJamla['payment_providers']['gocardless']['variable_payments_supported'] = True
     draftJamla['payment_providers']['gocardless']['access_token'] = ''
     draftJamla['payment_providers']['gocardless']['environment'] = ''
-    
+
 
     subdomain = create_subdomain_string(draftJamla)
     session['site-url'] = 'https://' + subdomain.lower() + '.subscriby.shop'
@@ -144,17 +144,8 @@ def save_items():
     yaml.safe_dump(draftJamla, stream,default_flow_style=False)
     # Generate site
     create_subdomain(jamla=draftJamla)
-    url = 'https://' + request.host + '/preview?mysite=' + subdomain
+    url = 'https://' + request.host + '/activate/' + subdomain
     return redirect(url) 
-
-@app.route('/preview', methods=['GET'])
-def preview():
-    """ Preview site before checking out."""
-    name = str(request.args.get('mysite'))
-    jamlaApp = Jamla()
-    jamla = jamlaApp.load(name + '.yaml')
-    return render_template('preview-store.html', jamla=jamla, sitename=name)
-
 
 @app.route('/activate/<sitename>')
 def choose_package(sitename=None):
@@ -189,7 +180,7 @@ def is_valid_sku(sku):
 
 def create_subdomain(jamla=None):
     subdomain = create_subdomain_string(jamla)
-    headers = { 
+    headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
     }
     data = [
@@ -227,7 +218,7 @@ def deployJamla(filename):
 def create_subdomain_string(jamla=None):
     if jamla is None:
         subdomain = urlsafe_b64encode(os.urandom(5)).replace('=', '')
-    else: 
+    else:
         subdomain = re.sub(r'\W+', '', jamla['company']['name'])
     return subdomain
 
