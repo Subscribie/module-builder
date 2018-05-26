@@ -80,9 +80,9 @@ def save_items():
         item['title'] = getItem(form.title.data, index)
         item['sku'] = getItem(form.title.data, index)
         item['sell_price'] = getItem(form.sell_price.data, index) or 0
-        item['sell_price'] = item['sell_price'] * 100
+        item['sell_price'] = int(item['sell_price'] * 100)
         item['monthly_price'] = getItem(form.monthly_price.data, index) or 0
-        item['monthly_price'] = item['monthly_price'] * 100
+        item['monthly_price'] = int(item['monthly_price'] * 100)
         item['selling_points'] = getItem(form.selling_points.data, index)
         item['subscription_terms'] = {'minimum_term_months': 12}
         item['primary_colour'] = "#e73b1a"
