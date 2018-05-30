@@ -84,6 +84,7 @@ def deploy():
         fp.write(''.join(['JAMLA_PATH="', jamlaPath, '"', "\n"]))
         fp.write(''.join(['STATIC_FOLDER="../../static/','"',"\n"]))
         fp.write(''.join(['TEMPLATE_FOLDER="../../templates/','"',"\n"]))
+        fp.write(''.join(['UPLOADED_IMAGES_DEST="', dstDir, 'static/"', "\n"]))
         fp.write(''.join(['DB_FULL_PATH="', dstDir, 'data.db', '"', "\n"]))
         fp.write(''.join(['GOCARDLESS_TOKEN="','sandbox_Di_44XAq2FlkshCOyIi7FmFUWQLSUHTEBxaCmE_p', '"',"\n"]))
         fp.write(''.join(['SUCCESS_REDIRECT_URL="','https://', webaddress, '/complete_mandate', '"',"\n"]))
