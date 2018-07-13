@@ -47,7 +47,7 @@ def save_items():
     session['email'] = form.email.data
     company_name = form.company_name.data
     draftJamla['company'] = {'name':company_name, 'logo':'', 'start_image':''}
-    draftJamla['theme'] = { 'name': 'jesmond' }
+    draftJamla['theme'] = { 'name': 'jesmond', 'static_folder': './static/' }
     items = []
     for index, item in enumerate(form.title.data):
         item = {}
