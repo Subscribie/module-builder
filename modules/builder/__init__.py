@@ -20,8 +20,8 @@ from subscribie import (current_app, Jamla)
 from subscribie.db import get_jamla
 from flask import Blueprint
 
-
 builder = Blueprint('builder', __name__, template_folder='templates')
+#import pdb;pdb.set_trace()
 
 @builder.route('/start-building', methods=['GET'])
 def start_building():
@@ -161,7 +161,7 @@ def create_subdomain(jamla=None):
         ('domain-name', 'subscriby.shop'),
         ('record-type', 'A'),
         ('host', subdomain),
-        ('record', app.config['KARMA_WEB_HOST']),
+        ('record', app.config['BUILDER_DEPLOY_WEB_HOST']),
         ('ttl', 60),
     ]
     r = requests.post('https://api.cloudns.net/dns/add-record.json', headers=headers, data=data)
