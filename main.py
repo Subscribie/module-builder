@@ -33,33 +33,37 @@ def deploy():
             dstDir = app.config['SITES_DIRECTORY'] + webaddress + '/'
             os.mkdir(dstDir)
             file.save(os.path.join(dstDir, filename + '.yaml'))
+            # Rename to jamla.yaml
+            shutil.move(os.path.join(dstDir, filename + '.yaml'), dstDir + 'jamla.yaml')
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
-	# Clone hedgehog repo & set-up .env files
+	# Clone subscribie repo & set-up .env files
         try:
-            git.Git(dstDir).clone("git@gitlab.com:karmacrew/hedgehog.git")
+            git.Git(dstDir).clone("https://github.com/Subscribie/subscribie")
             # Generate .env file
-            shutil.copy2(dstDir + 'hedgehog/hedgehog/.env.example', dstDir + 'hedgehog/hedgehog/.env')
+            shutil.copy2(dstDir + 'subscribie/subscribie/.env.example', dstDir + 'subscribie/subscribie/.env')
             # Copy Jamla file into repo
             shutil.move(dstDir + filename + '.yaml', dstDir + 'jamla.yaml')
             # Copy over default templates folder 
-            shutil.copytree(dstDir + 'hedgehog/hedgehog/templates', dstDir + 'templates')
+            shutil.copytree(dstDir + 'subscribie/subscribie/templates', dstDir + 'templates')
             # Copy over default static folder
-            shutil.copytree(dstDir + 'hedgehog/hedgehog/static', dstDir + 'static')
+            shutil.copytree(dstDir + 'subscribie/subscribie/static', dstDir + 'static')
 
             # Createsqlite3 db
             try:
-                execfile(dstDir + '/hedgehog/hedgehog/createdb.py')
+                execfile(dstDir + '/subscribie/subscribie/createdb.py')
                 shutil.move('data.db', dstDir)
             except:
                 print "Error creating or moving data.db in createdb.py"
                 pass
-        except:
-            pass #Did not clone Hedgehog
+        except Exception as e:
+            print "Did not clone subscribie for some reason"
+            print e.message, e.args
+            pass
 
         # Run core migrations
-        migrationsDir =  ''.join([dstDir, 'hedgehog/hedgehog/migrations/'])
+        migrationsDir =  ''.join([dstDir, 'subscribie/subscribie/migrations/'])
         migrations = sorted(os.listdir(migrationsDir));
 
         for migration in migrations:
@@ -80,7 +84,7 @@ def deploy():
         
         # Set JAMLA path, STATIC_FOLDER, and TEMPLATE_FOLDER
         jamlaPath = dstDir + 'jamla.yaml'
-        fp = open(dstDir + "hedgehog/hedgehog/.env", "a+")
+        fp = open(dstDir + "subscribie/subscribie/.env", "a+")
         fp.write(''.join(['JAMLA_PATH="', jamlaPath, '"', "\n"]))
         fp.write(''.join(['STATIC_FOLDER="../../static/','"',"\n"]))
         fp.write(''.join(['TEMPLATE_FOLDER="../../templates/','"',"\n"]))
