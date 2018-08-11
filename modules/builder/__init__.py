@@ -14,30 +14,25 @@ from yaml import load, dump
 import requests
 from base64 import urlsafe_b64encode
 from contextlib import contextmanager
-from subscribie import (app, Jamla, journey_complete, generate_login_url, 
-                      ItemsForm)
+from subscribie.signals import journey_complete
+from subscribie.forms import ItemsForm
+from subscribie import (current_app, Jamla)
+from subscribie.db import get_jamla
+from flask import Blueprint
 
 
+builder = Blueprint('builder', __name__, template_folder='templates')
 
-# Load Jamla
-jamlaApp = Jamla()
-jamla = jamlaApp.load(app.config['JAMLA_PATH'])
-
-# Load builder module env
-curDir = os.path.dirname(os.path.realpath(__file__))
-app.config.from_pyfile('/'.join([curDir, '.env']))
-mail = Mail(app)
-
-
-@app.route('/start-building', methods=['GET'])
+@builder.route('/start-building', methods=['GET'])
 def start_building():
+    jamla = get_jamla()
     session['plan'] = str(request.args.get('plan'))
     form = ItemsForm()
     return render_template('start-building.html', jamla=jamla, form=form)
 
 
 
-@app.route('/start-building', methods=['POST'])
+@builder.route('/start-building', methods=['POST'])
 def save_items():
     draftJamla = {}
     form = ItemsForm()
@@ -121,8 +116,9 @@ def save_items():
     url = 'https://' + request.host + '/activate/' + subdomain
     return redirect(url) 
 
-@app.route('/activate/<sitename>')
+@builder.route('/activate/<sitename>')
 def choose_package(sitename=None):
+    jamla = get_jamla()
     try:
         plan = session['plan']
         if session['plan'] and is_valid_sku(plan):
@@ -141,6 +137,8 @@ def journey_complete_subscriber(sender, **kw):
                        body=login_url,
                        sender=sender,
                        recipients=[email])
+        # Load builder module env
+        mail = Mail(current_app)
         mail.send(msg)
     except Exception:
         print "Error sending journey_complete_subscriber email"
@@ -169,7 +167,7 @@ def create_subdomain(jamla=None):
     r = requests.post('https://api.cloudns.net/dns/add-record.json', headers=headers, data=data)
     deployJamla(subdomain + '.yaml')
 
-@app.route('/sendJamla')
+@builder.route('/sendJamla')
 def deployJamla(filename):
     url = app.config['JAMLA_DEPLOY_URL']
     #Prepare post data
