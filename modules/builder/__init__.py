@@ -122,7 +122,7 @@ def choose_package(sitename=None):
     try:
         plan = session['plan']
         if session['plan'] and is_valid_sku(plan):
-           return redirect(url_for('hedgehog.new_customer', plan=plan))
+           return redirect(url_for('views.new_customer', plan=plan))
     except Exception:
         pass
     return render_template('select-package.html', jamla=jamla)
