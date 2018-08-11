@@ -1,6 +1,6 @@
 import os, re
 import sys
-sys.path.append('../../Indigo/hedgehog/hedgehog/')
+sys.path.append('../../Indigo/subscribie/subscribie/')
 from flask import (Flask, render_template, session, redirect, url_for, escape,
     request, current_app as app)
 from werkzeug.utils import secure_filename
@@ -14,7 +14,7 @@ from yaml import load, dump
 import requests
 from base64 import urlsafe_b64encode
 from contextlib import contextmanager
-from hedgehog import (app, Jamla, journey_complete, generate_login_url, 
+from subscribie import (app, Jamla, journey_complete, generate_login_url, 
                       ItemsForm)
 
 
