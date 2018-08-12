@@ -1,4 +1,5 @@
 import os, errno, shutil
+import urllib2
 import subprocess32
 from flask import Flask, request, redirect, url_for
 from werkzeug.utils import secure_filename
@@ -14,6 +15,7 @@ app = Flask(__name__)
 curDir = os.path.dirname(os.path.realpath(__file__))
 app.config.from_pyfile('/'.join([curDir, '.env']))
 
+@app.route('/', methods=['GET', 'POST'])
 @app.route('/deploy', methods=['GET', 'POST'])
 def deploy():
     if 'file' not in request.files:
@@ -41,33 +43,26 @@ def deploy():
 	# Clone subscribie repo & set-up .env files
         try:
             git.Git(dstDir).clone("https://github.com/Subscribie/subscribie")
-            # Generate .env file
-            shutil.copy2(dstDir + 'subscribie/subscribie/.env.example', dstDir + 'subscribie/subscribie/.env')
+            # Generate config.py file
+            response = urllib2.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/config.py.example')
+            configfile = response.read()
+            with open(dstDir + 'subscribie' + '/instance/config.py', 'wb') as fh:
+                fh.write(configfile)
+
             # Copy Jamla file into repo
             shutil.move(dstDir + filename + '.yaml', dstDir + 'jamla.yaml')
-            # Copy over default templates folder 
-            shutil.copytree(dstDir + 'subscribie/subscribie/templates', dstDir + 'templates')
-            # Copy over default static folder
-            shutil.copytree(dstDir + 'subscribie/subscribie/static', dstDir + 'static')
 
-            # Createsqlite3 db
-            try:
-                execfile(dstDir + '/subscribie/subscribie/createdb.py')
-                shutil.move('data.db', dstDir)
-            except:
-                print "Error creating or moving data.db in createdb.py"
-                pass
         except Exception as e:
             print "Did not clone subscribie for some reason"
             print e.message, e.args
             pass
-
-        # Run core migrations
-        migrationsDir =  ''.join([dstDir, 'subscribie/subscribie/migrations/'])
-        migrations = sorted(os.listdir(migrationsDir));
-
-        for migration in migrations:
-            subprocess32.call(''.join([migrationsDir, migration, ' -db ', dstDir, 'data.db -up']), shell=True)
+        # Run subscribie_cli init
+        subprocess32.call('subscribie init', cwd= ''.join([dstDir, 'subscribie']), shell=True)
+	shutil.move(''.join([dstDir, 'subscribie/', 'data.db']), dstDir)
+        # Run subscribie_cli migrations
+        subprocess32.call('subscribie migrate --DB_FULL_PATH ' + dstDir + \
+                          'data.db', \
+                          cwd = ''.join([dstDir, 'subscribie']), shell=True)
 
         # Seed users table with site owners email address so they can login
         fp = open(dstDir + 'jamla.yaml', 'r')
@@ -84,18 +79,24 @@ def deploy():
         
         # Set JAMLA path, STATIC_FOLDER, and TEMPLATE_FOLDER
         jamlaPath = dstDir + 'jamla.yaml'
-        fp = open(dstDir + "subscribie/subscribie/.env", "a+")
-        fp.write(''.join(['JAMLA_PATH="', jamlaPath, '"', "\n"]))
-        fp.write(''.join(['STATIC_FOLDER="../../static/','"',"\n"]))
-        fp.write(''.join(['TEMPLATE_FOLDER="../../templates/','"',"\n"]))
-        fp.write(''.join(['UPLOADED_IMAGES_DEST="', dstDir, 'static/"', "\n"]))
-        fp.write(''.join(['DB_FULL_PATH="', dstDir, 'data.db', '"', "\n"]))
-        fp.write(''.join(['GOCARDLESS_TOKEN="','sandbox_Di_44XAq2FlkshCOyIi7FmFUWQLSUHTEBxaCmE_p', '"',"\n"]))
-        fp.write(''.join(['SUCCESS_REDIRECT_URL="','https://', webaddress, '/complete_mandate', '"',"\n"]))
-        fp.write(''.join(['THANKYOU_URL="','https://', webaddress, '/thankyou', '"',"\n"]))
-        fp.write(''.join(['EMAIL_HOST="', app.config['DEPLOY_EMAIL_HOST'], '"',"\n"]))
-        fp.write(''.join(['GOCARDLESS_CLIENT_ID="', app.config['DEPLOY_GOCARDLESS_CLIENT_ID'], '"',"\n"]))
-        fp.write(''.join(['GOCARDLESS_CLIENT_SECRET="', app.config['DEPLOY_GOCARDLESS_CLIENT_SECRET'], '"',"\n"]))
+        cliWorkingDir = ''.join([dstDir, 'subscribie'])
+        theme_folder = ''.join([dstDir, 'subscribie', '/themes/'])
+        static_folder = ''.join([theme_folder, 'theme-jesmond/static/'])
+
+        settings = ' '.join([
+            '--JAMLA_PATH', jamlaPath,
+            '--TEMPLATE_FOLDER', theme_folder,
+            '--STATIC_FOLDER', static_folder, 
+            '--UPLOADED_IMAGES_DEST', dstDir + 'static/',
+            '--DB_FULL_PATH', dstDir + 'data.db',
+            '--SUCCESS_REDIRECT_URL', 'https://' + webaddress + '/complete_mandate',
+            '--THANKYOU_URL', 'https://' + webaddress + '/thankyou',
+            '--EMAIL_HOST', app.config['DEPLOY_EMAIL_HOST'],
+            '--GOCARDLESS_CLIENT_ID', app.config['DEPLOY_GOCARDLESS_CLIENT_ID'],
+            '--GOCARDLESS_CLIENT_SECRET', app.config['DEPLOY_GOCARDLESS_CLIENT_SECRET'],
+        ])
+        subprocess32.call('subscribie setconfig ' + settings, cwd = cliWorkingDir\
+                          , shell=True)
 
         fp.close()
         # Store submitted icons in sites staic folder
