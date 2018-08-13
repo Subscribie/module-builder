@@ -103,7 +103,7 @@ def deploy():
         if 'icons' in request.files:
             for icon in request.files.getlist('icons'):
                 iconFilename = secure_filename(icon.filename)
-                icon.save(os.path.join(dstDir + 'static', iconFilename))
+                icon.save(os.path.join(static_folder, iconFilename))
         # Append new site to apache config
         vhost = " ".join(["Use VHost", webaddress, app.config['APACHE_USER'], dstDir])
         ssl = " ".join(["Use SSL", webaddress, '443', app.config['APACHE_USER'], dstDir])
