@@ -105,6 +105,12 @@ def save_items():
     draftJamla['payment_providers']['gocardless']['access_token'] = ''
     draftJamla['payment_providers']['gocardless']['environment'] = ''
 
+    # Integrations
+    draftJamla['integrations'] = {}
+    draftJamla['integrations']['google_tag_manager'] = {}
+    draftJamla['integrations']['google_tag_manager']['active'] = False
+    draftJamla['integrations']['google_tag_manager']['container_id'] = '' 
+
 
     subdomain = create_subdomain_string(draftJamla)
     session['site-url'] = 'https://' + subdomain.lower() + '.subscriby.shop'
