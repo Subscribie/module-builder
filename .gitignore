@@ -1,2 +1,5 @@
+jamlaenv
+serve.sh
+static/photos/*
 config.py
 *.pyc
