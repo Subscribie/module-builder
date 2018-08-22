@@ -20,7 +20,6 @@ from subscribie.db import get_jamla
 from flask import Blueprint
 
 builder = Blueprint('builder', __name__, template_folder='templates')
-#import pdb;pdb.set_trace()
 
 @builder.route('/start-building', methods=['GET'])
 def start_building():
@@ -103,6 +102,12 @@ def save_items():
     draftJamla['payment_providers']['gocardless']['variable_payments_supported'] = True
     draftJamla['payment_providers']['gocardless']['access_token'] = ''
     draftJamla['payment_providers']['gocardless']['environment'] = ''
+
+    # Integrations                                                               
+    draftJamla['integrations'] = {}                                              
+    draftJamla['integrations']['google_tag_manager'] = {}                        
+    draftJamla['integrations']['google_tag_manager']['active'] = False           
+    draftJamla['integrations']['google_tag_manager']['container_id'] = ''    
 
 
     subdomain = create_subdomain_string(draftJamla)
