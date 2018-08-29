@@ -107,7 +107,12 @@ def save_items():
     draftJamla['integrations'] = {}                                              
     draftJamla['integrations']['google_tag_manager'] = {}                        
     draftJamla['integrations']['google_tag_manager']['active'] = False           
-    draftJamla['integrations']['google_tag_manager']['container_id'] = ''    
+    draftJamla['integrations']['google_tag_manager']['container_id'] = ''
+
+    # Tawk                                                                       
+    draftJamla['integrations']['tawk'] = {}                                      
+    draftJamla['integrations']['tawk']['active'] = False                         
+    draftJamla['integrations']['tawk']['property_id'] = ''
 
 
     subdomain = create_subdomain_string(draftJamla)
