@@ -40,7 +40,7 @@ def deploy():
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
-	# Clone subscribie repo & set-up .env files
+	    # Clone subscribie repo & set-up .env files
         try:
             git.Git(dstDir).clone("https://github.com/Subscribie/subscribie")
             # Generate config.py file
@@ -48,9 +48,6 @@ def deploy():
             configfile = response.read()
             with open(dstDir + 'subscribie' + '/instance/config.py', 'wb') as fh:
                 fh.write(configfile)
-
-            # Copy Jamla file into repo
-            shutil.move(dstDir + filename + '.yaml', dstDir + 'jamla.yaml')
 
         except Exception as e:
             print "Did not clone subscribie for some reason"
