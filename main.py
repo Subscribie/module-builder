@@ -89,6 +89,7 @@ def deploy():
             '--SUCCESS_REDIRECT_URL', 'https://' + webaddress + '/complete_mandate',
             '--THANKYOU_URL', 'https://' + webaddress + '/thankyou',
             '--EMAIL_HOST', app.config['DEPLOY_EMAIL_HOST'],
+            '--EMAIL_LOGIN_FROM', app.config['EMAIL_LOGIN_FROM'],
             '--GOCARDLESS_CLIENT_ID', app.config['DEPLOY_GOCARDLESS_CLIENT_ID'],
             '--GOCARDLESS_CLIENT_SECRET', app.config['DEPLOY_GOCARDLESS_CLIENT_SECRET'],
         ])
