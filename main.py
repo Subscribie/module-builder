@@ -53,6 +53,13 @@ def deploy():
             print "Did not clone subscribie for some reason"
             print e.message, e.args
             pass
+        # Clone Subscriber Matching Service
+        try:
+            git.Git(dstDir).clone('https://github.com/Subscribie/subscription-management-software')
+        except Exception as e:
+            print "Didn't clone subscriber matching service"
+            print e.message, e.args
+
         # Run subscribie_cli init
         subprocess32.call('subscribie init', cwd= ''.join([dstDir, 'subscribie']), shell=True)
 	shutil.move(''.join([dstDir, 'subscribie/', 'data.db']), dstDir)
@@ -102,6 +109,12 @@ def deploy():
         subprocess32.call('subscribie setconfig ' + settings, cwd = cliWorkingDir\
                           , shell=True)
 
+        fp.close()
+
+        fp = open(dstDir + 'jamla.yaml', 'w+')
+        jamla['modules_path'] = dstDir + 'subscription-management-software'
+        output = yaml.dump(jamla)
+        fp.write(output)
         fp.close()
         # Store submitted icons in sites staic folder
         if 'icons' in request.files:
