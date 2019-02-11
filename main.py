@@ -142,7 +142,7 @@ def deploy():
 
         try:
             # Reload apache with new vhost
-            subprocess32.call("sudo /etc/init.d/apache2 reload", shell=True)
+            subprocess32.call("sudo /etc/init.d/apache2 graceful", shell=True)
         except Exception as e:
             print "Problem reloading apache:"
             print e
