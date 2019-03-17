@@ -1,6 +1,13 @@
+from os import path
+import logging
+import logging.config
+log_file_path = path.join(path.dirname(path.abspath(__file__)), 'logging.conf')
+logging.config.fileConfig(log_file_path)
+# Create logger
+logger = logging.getLogger('subscribie_module_builder')
 import os, errno, shutil
-import urllib2
-import subprocess32
+import urllib.request
+import subprocess
 from flask import Flask, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import git
@@ -44,25 +51,25 @@ def deploy():
         try:
             git.Git(dstDir).clone("https://github.com/Subscribie/subscribie")
             # Generate config.py file
-            response = urllib2.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/config.py.example')
+            response = urllib.request.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/config.py.example')
             configfile = response.read()
             with open(dstDir + 'subscribie' + '/instance/config.py', 'wb') as fh:
                 fh.write(configfile)
 
         except Exception as e:
-            print "Did not clone subscribie for some reason"
-            print e.message, e.args
+            logger.error("Did not clone subscribie for some reason")
+            logging.error("%s %s", e.message, e.args)
             pass
         # Clone Subscriber Matching Service
         try:
             git.Git(dstDir).clone('https://github.com/Subscribie/subscription-management-software')
         except Exception as e:
-            print "Didn't clone subscriber matching service"
-            print e.message, e.args
+            logger.error("Didn't clone subscriber matching service")
+            logger.error("%s %s", e.message, e.args)
 
         # Run subscribie_cli init
-        subprocess32.call('subscribie init', cwd= ''.join([dstDir, 'subscribie']), shell=True)
-	shutil.move(''.join([dstDir, 'subscribie/', 'data.db']), dstDir)
+        subprocess.run('subscribie init', cwd= ''.join([dstDir, 'subscribie']), shell=True, capture_output=True)
+        shutil.move(''.join([dstDir, 'subscribie/', 'data.db']), dstDir)
         # Run subscribie_cli migrations
         subprocess32.call('subscribie migrate --DB_FULL_PATH ' + dstDir + \
                           'data.db', \
@@ -137,15 +144,15 @@ def deploy():
             fp.write(ssl + "\n")
             fp.close()
         except:
-            print "Skipping as " + webaddress + "already exists."
+            logger.error("Skipping as %s already exits",  webaddress)
             pass
 
         try:
             # Reload apache with new vhost
             subprocess32.call("sudo /etc/init.d/apache2 graceful", shell=True)
         except Exception as e:
-            print "Problem reloading apache:"
-            print e
+            logger.error("Problem reloading apache:")
+            logger.error(e)
             pass
     login_url = ''.join(['https://', webaddress, '/login/', login_token])
 
