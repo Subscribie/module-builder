@@ -91,7 +91,7 @@ def save_items():
             item['primary_icon'] = {'src': '/static/' + filename, 'type': ''}
         else:
             item['primary_icon'] = {'src':False, 'type': False}
-        print item
+        print(item)
         items.append(item)
         draftJamla['items'] = items
 
@@ -137,7 +137,7 @@ def save_items():
 
     subdomain = create_subdomain_string(draftJamla)
     session['site-url'] = 'https://' + subdomain.lower() + '.subscriby.shop'
-    stream = file(subdomain + '.yaml', 'w')
+    stream = open(subdomain + '.yaml', 'w')
     # Save to yml
     yaml.safe_dump(draftJamla, stream,default_flow_style=False)
     if 'COUCHDB_ENABLED' in app.config and \
@@ -186,7 +186,7 @@ def choose_package(sitename=None):
     return render_template('select-package.html', jamla=jamla)
 
 def journey_complete_subscriber(sender, **kw):
-    print "Journery Complete! Send an email or something.."
+    print("Journery Complete! Send an email or something..")
     try:
         email = kw['email']
         sender = "hello@example.co.uk"
@@ -199,7 +199,7 @@ def journey_complete_subscriber(sender, **kw):
         mail = Mail(current_app)
         mail.send(msg)
     except Exception:
-        print "Error sending journey_complete_subscriber email"
+        print ("Error sending journey_complete_subscriber email")
         pass
 
 def is_valid_sku(sku):
