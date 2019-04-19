@@ -18,8 +18,28 @@ from subscribie.forms import ItemsForm
 from subscribie import (current_app, Jamla)
 from subscribie.db import get_jamla
 from flask import Blueprint
+import json
 
 builder = Blueprint('builder', __name__, template_folder='templates')
+
+def get_couchdb_url():
+  couch_con_url = ''.join([app.config['COUCHDB_SCHEME'], 
+                              app.config['COUCHDB_USER'], ':',
+                              app.config['COUCHDB_PASS'], '@',
+                              app.config['COUCHDB_IP'], ':',
+                              str(app.config['COUCHDB_PORT']), '/',
+                              app.config['COUCHDB_DBNAME']])
+  return couch_con_url
+
+def getLatestCouchDBRevision(host, docid):
+  req = requests.get(host + '/' + docid)
+  resp = json.loads(req.text)
+  if '_rev' in resp:
+    revisionId = resp['_rev']
+  else:
+    revisionId = None
+  return revisionId
+
 
 @builder.route('/start-building', methods=['GET'])
 def start_building():
@@ -120,8 +140,37 @@ def save_items():
     stream = file(subdomain + '.yaml', 'w')
     # Save to yml
     yaml.safe_dump(draftJamla, stream,default_flow_style=False)
-    # Generate site
+    if 'COUCHDB_ENABLED' in app.config and \
+        app.config['COUCHDB_ENABLED'] is True:
+      # Put to CouchDB
+      try:
+        docid = subdomain.lower()
+        couch_con_url = get_couchdb_url()
+        revisionId = getLatestCouchDBRevision(couch_con_url, docid)
+        revision = '' if revisionId is None else "?rev=" + revisionId
+        req = requests.put(couch_con_url + '/' + docid + revision, json=draftJamla)
+        # Attach images to doc
+        for index, item in enumerate(form.title.data):
+          # Store each file as attatchement to doc
+          f = getItem(form.image.data, index)
+          if f:
+            filename = secure_filename(f.filename)
+            files = {filename: f} # Requests format
+            revisionId = getLatestCouchDBRevision(couch_con_url, docid)
+            req = requests.put(couch_con_url + '/' + docid + '/' + filename \
+                                + '?rev=' + revisionId, files=files)
+            response = json.loads(req.text)
+            revisionId = response['rev']
+      except KeyError:
+        print("""Error: CouchDB config not set correctly. 
+               See config.py.example for this module (Builder module)""")
+        pass
+    
     create_subdomain(jamla=draftJamla)
+    # Generate site (legacy method)
+    if 'DISABLE_LEGACY_BUILD_METHOD' not in app.config:
+      deployJamla(subdomain + '.yaml')
+    # Redirect to activation page
     url = 'https://' + request.host + '/activate/' + subdomain
     return redirect(url) 
 
@@ -174,7 +223,6 @@ def create_subdomain(jamla=None):
         ('ttl', 60),
     ]
     r = requests.post('https://api.cloudns.net/dns/add-record.json', headers=headers, data=data)
-    deployJamla(subdomain + '.yaml')
 
 @builder.route('/sendJamla')
 def deployJamla(filename):
