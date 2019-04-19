@@ -147,6 +147,18 @@ def save_items():
       revisionId = getLatestCouchDBRevision(couch_con_url, docid)
       revision = '' if revisionId is None else "?rev=" + revisionId
       req = requests.put(couch_con_url + '/' + docid + revision, json=draftJamla)
+      # Attach images to doc
+      for index, item in enumerate(form.title.data):
+        # Store each file as attatchement to doc
+        f = getItem(form.image.data, index)
+        if f:
+          filename = secure_filename(f.filename)
+          files = {filename: f} # Requests format
+          revisionId = getLatestCouchDBRevision(couch_con_url, docid)
+          req = requests.put(couch_con_url + '/' + docid + '/' + filename \
+                              + '?rev=' + revisionId, files=files)
+          response = json.loads(req.text)
+          revisionId = response['rev']
     except KeyError:
       print("""Error: CouchDB config not set correctly. 
              See config.py.example for this module (Builder module)""")
