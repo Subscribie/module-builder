@@ -166,11 +166,12 @@ def save_items():
                See config.py.example for this module (Builder module)""")
         pass
     
+    create_subdomain(jamla=draftJamla)
     # Generate site (legacy method)
     if 'DISABLE_LEGACY_BUILD_METHOD' not in app.config:
-      create_subdomain(jamla=draftJamla)
-
-    url = 'http://' + request.host + '/activate/' + subdomain
+      deployJamla(subdomain + '.yaml')
+    # Redirect to activation page
+    url = 'https://' + request.host + '/activate/' + subdomain
     return redirect(url) 
 
 @builder.route('/activate/<sitename>')
@@ -222,7 +223,6 @@ def create_subdomain(jamla=None):
         ('ttl', 60),
     ]
     r = requests.post('https://api.cloudns.net/dns/add-record.json', headers=headers, data=data)
-    deployJamla(subdomain + '.yaml')
 
 @builder.route('/sendJamla')
 def deployJamla(filename):
