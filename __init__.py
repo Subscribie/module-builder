@@ -22,13 +22,27 @@ import json
 
 builder = Blueprint('builder', __name__, template_folder='templates')
 
+def getConfig(name=None):
+  if name is None:
+    allConfigs = {}
+    for key,value in enumerate(app.config):
+      allConfigs[key] = value
+    for key,value in enumerate(os.environ):
+      allConfigs[key] = value;
+    import pdb;pdb.set_trace()
+    return allConfigs
+  try:
+    return app.config[name]
+  except KeyError:
+    return os.getenv(name, '')
+
 def get_couchdb_url():
-  couch_con_url = ''.join([app.config['COUCHDB_SCHEME'], 
-                              app.config['COUCHDB_USER'], ':',
-                              app.config['COUCHDB_PASS'], '@',
-                              app.config['COUCHDB_IP'], ':',
-                              str(app.config['COUCHDB_PORT']), '/',
-                              app.config['COUCHDB_DBNAME']])
+  couch_con_url = ''.join([getConfig('COUCHDB_SCHEME'), 
+                              getConfig('COUCHDB_USER'), ':',
+                              getConfig('COUCHDB_PASS'), '@',
+                              getConfig('COUCHDB_IP'), ':',
+                              str(getConfig('COUCHDB_PORT')), '/',
+                              getConfig('COUCHDB_DBNAME')])
   return couch_con_url
 
 def getLatestCouchDBRevision(host, docid):
@@ -86,7 +100,7 @@ def save_items():
         f = getItem(form.image.data, index)
         if f:
             filename = secure_filename(f.filename)
-            src = os.path.join(app.config['UPLOADED_IMAGES_DEST'], filename)
+            src = os.path.join(getConfig('UPLOADED_IMAGES_DEST'), filename)
             f.save(src)
             item['primary_icon'] = {'src': '/static/' + filename, 'type': ''}
         else:
@@ -140,8 +154,8 @@ def save_items():
     stream = open(subdomain + '.yaml', 'w')
     # Save to yml
     yaml.safe_dump(draftJamla, stream,default_flow_style=False)
-    if 'COUCHDB_ENABLED' in app.config and \
-        app.config['COUCHDB_ENABLED'] is True:
+    if 'COUCHDB_ENABLED' in getConfig() and \
+        getConfig('COUCHDB_ENABLED') is True:
       # Put to CouchDB
       try:
         docid = subdomain.lower()
@@ -168,7 +182,7 @@ def save_items():
     
     create_subdomain(jamla=draftJamla)
     # Generate site (legacy method)
-    if 'DISABLE_LEGACY_BUILD_METHOD' not in app.config:
+    if 'DISABLE_LEGACY_BUILD_METHOD' not in getConfig():
       deployJamla(subdomain + '.yaml')
     # Redirect to activation page
     url = 'https://' + request.host + '/activate/' + subdomain
@@ -214,19 +228,19 @@ def create_subdomain(jamla=None):
         'Content-Type': 'application/x-www-form-urlencoded',
     }
     data = [
-        ('sub-auth-id', app.config["BUILDER_SUB_AUTH_ID"]),
-        ('auth-password', app.config["BUILDER_SUB_AUTH_PASSWORD"]),
+        ('sub-auth-id', getConfig("BUILDER_SUB_AUTH_ID")),
+        ('auth-password', getConfig("BUILDER_SUB_AUTH_PASSWORD")),
         ('domain-name', 'subscriby.shop'),
         ('record-type', 'A'),
         ('host', subdomain),
-        ('record', app.config['BUILDER_DEPLOY_WEB_HOST']),
+        ('record', getConfig('BUILDER_DEPLOY_WEB_HOST')),
         ('ttl', 60),
     ]
     r = requests.post('https://api.cloudns.net/dns/add-record.json', headers=headers, data=data)
 
 @builder.route('/sendJamla')
 def deployJamla(filename):
-    url = app.config['JAMLA_DEPLOY_URL']
+    url = getConfig('JAMLA_DEPLOY_URL')
     #Prepare post data
     multiple_files = [
     ]
@@ -237,7 +251,7 @@ def deployJamla(filename):
     icon_paths = jamlaApp.get_primary_icons(jamlaApp.load(filename))
     for icon_path in icon_paths:
         iconFileName = os.path.split(icon_path)[1]
-        src = os.path.join(app.config['UPLOADED_IMAGES_DEST'], iconFileName)
+        src = os.path.join(getConfig('UPLOADED_IMAGES_DEST'), iconFileName)
         multiple_files.append(('icons', (iconFileName, open(src, 'rb'))))
 
     r = requests.post(url, files=multiple_files)
