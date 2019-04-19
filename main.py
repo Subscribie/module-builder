@@ -1,6 +1,6 @@
 import os, errno, shutil
-import urllib2
-import subprocess32
+from urllib.request import urlopen
+import subprocess
 from flask import Flask, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import git
@@ -44,27 +44,27 @@ def deploy():
         try:
             git.Git(dstDir).clone("https://github.com/Subscribie/subscribie")
             # Generate config.py file
-            response = urllib2.urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/config.py.example')
+            response = urlopen('https://raw.githubusercontent.com/Subscribie/subscribie/master/subscribie/config.py.example')
             configfile = response.read()
             with open(dstDir + 'subscribie' + '/instance/config.py', 'wb') as fh:
                 fh.write(configfile)
 
         except Exception as e:
-            print "Did not clone subscribie for some reason"
-            print e.message, e.args
+            print("Did not clone subscribie for some reason")
+            print(e.message, e.args)
             pass
         # Clone Subscriber Matching Service
         try:
             git.Git(dstDir).clone('https://github.com/Subscribie/subscription-management-software')
         except Exception as e:
-            print "Didn't clone subscriber matching service"
-            print e.message, e.args
+            print("Didn't clone subscriber matching service")
+            print(e.message, e.args)
 
         # Run subscribie_cli init
-        subprocess32.call('subscribie init', cwd= ''.join([dstDir, 'subscribie']), shell=True)
-	shutil.move(''.join([dstDir, 'subscribie/', 'data.db']), dstDir)
+        subprocess.call('subscribie init', cwd= ''.join([dstDir, 'subscribie']), shell=True)
+        shutil.move(''.join([dstDir, 'subscribie/', 'data.db']), dstDir)
         # Run subscribie_cli migrations
-        subprocess32.call('subscribie migrate --DB_FULL_PATH ' + dstDir + \
+        subprocess.call('subscribie migrate --DB_FULL_PATH ' + dstDir + \
                           'data.db', \
                           cwd = ''.join([dstDir, 'subscribie']), shell=True)
 
@@ -106,7 +106,7 @@ def deploy():
             '--GOCARDLESS_CLIENT_ID', app.config['DEPLOY_GOCARDLESS_CLIENT_ID'],
             '--GOCARDLESS_CLIENT_SECRET', app.config['DEPLOY_GOCARDLESS_CLIENT_SECRET'],
         ])
-        subprocess32.call('subscribie setconfig ' + settings, cwd = cliWorkingDir\
+        subprocess.call('subscribie setconfig ' + settings, cwd = cliWorkingDir\
                           , shell=True)
 
         fp.close()
@@ -137,15 +137,15 @@ def deploy():
             fp.write(ssl + "\n")
             fp.close()
         except:
-            print "Skipping as " + webaddress + "already exists."
+            print ("Skipping as " + webaddress + "already exists.")
             pass
 
         try:
             # Reload apache with new vhost
-            subprocess32.call("sudo /etc/init.d/apache2 graceful", shell=True)
+            subprocess.call("sudo /etc/init.d/apache2 graceful", shell=True)
         except Exception as e:
-            print "Problem reloading apache:"
-            print e
+            print ("Problem reloading apache:")
+            print (e)
             pass
     login_url = ''.join(['https://', webaddress, '/login/', login_token])
 
