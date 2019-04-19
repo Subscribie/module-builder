@@ -140,32 +140,37 @@ def save_items():
     stream = file(subdomain + '.yaml', 'w')
     # Save to yml
     yaml.safe_dump(draftJamla, stream,default_flow_style=False)
-    # Put to CouchDB
-    try:
-      docid = subdomain.lower()
-      couch_con_url = get_couchdb_url()
-      revisionId = getLatestCouchDBRevision(couch_con_url, docid)
-      revision = '' if revisionId is None else "?rev=" + revisionId
-      req = requests.put(couch_con_url + '/' + docid + revision, json=draftJamla)
-      # Attach images to doc
-      for index, item in enumerate(form.title.data):
-        # Store each file as attatchement to doc
-        f = getItem(form.image.data, index)
-        if f:
-          filename = secure_filename(f.filename)
-          files = {filename: f} # Requests format
-          revisionId = getLatestCouchDBRevision(couch_con_url, docid)
-          req = requests.put(couch_con_url + '/' + docid + '/' + filename \
-                              + '?rev=' + revisionId, files=files)
-          response = json.loads(req.text)
-          revisionId = response['rev']
-    except KeyError:
-      print("""Error: CouchDB config not set correctly. 
-             See config.py.example for this module (Builder module)""")
-      pass
-    # Generate site
-    create_subdomain(jamla=draftJamla)
-    url = 'https://' + request.host + '/activate/' + subdomain
+    if 'COUCHDB_ENABLED' in app.config and \
+        app.config['COUCHDB_ENABLED'] is True:
+      # Put to CouchDB
+      try:
+        docid = subdomain.lower()
+        couch_con_url = get_couchdb_url()
+        revisionId = getLatestCouchDBRevision(couch_con_url, docid)
+        revision = '' if revisionId is None else "?rev=" + revisionId
+        req = requests.put(couch_con_url + '/' + docid + revision, json=draftJamla)
+        # Attach images to doc
+        for index, item in enumerate(form.title.data):
+          # Store each file as attatchement to doc
+          f = getItem(form.image.data, index)
+          if f:
+            filename = secure_filename(f.filename)
+            files = {filename: f} # Requests format
+            revisionId = getLatestCouchDBRevision(couch_con_url, docid)
+            req = requests.put(couch_con_url + '/' + docid + '/' + filename \
+                                + '?rev=' + revisionId, files=files)
+            response = json.loads(req.text)
+            revisionId = response['rev']
+      except KeyError:
+        print("""Error: CouchDB config not set correctly. 
+               See config.py.example for this module (Builder module)""")
+        pass
+    
+    # Generate site (legacy method)
+    if 'DISABLE_LEGACY_BUILD_METHOD' not in app.config:
+      create_subdomain(jamla=draftJamla)
+
+    url = 'http://' + request.host + '/activate/' + subdomain
     return redirect(url) 
 
 @builder.route('/activate/<sitename>')
