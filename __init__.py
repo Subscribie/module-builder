@@ -29,7 +29,6 @@ def getConfig(name=None):
       allConfigs[key] = value
     for key,value in enumerate(os.environ):
       allConfigs[key] = value;
-    import pdb;pdb.set_trace()
     return allConfigs
   try:
     return app.config[name]
