@@ -159,6 +159,8 @@ def save_items():
       # Put to CouchDB
       try:
         docid = subdomain.lower()
+        # Set queue_state to 'deploy'
+        draftJamla['queue_state'] = 'deploy'
         couch_con_url = get_couchdb_url()
         revisionId = getLatestCouchDBRevision(couch_con_url, docid)
         revision = '' if revisionId is None else "?rev=" + revisionId
