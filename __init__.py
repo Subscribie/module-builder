@@ -183,7 +183,7 @@ def save_items():
     
     create_subdomain(jamla=draftJamla)
     # Generate site (legacy method)
-    if 'DISABLE_LEGACY_BUILD_METHOD' not in getConfig():
+    if 'DISABLE_LEGACY_BUILD_METHOD' not in os.environ:
       deployJamla(subdomain + '.yaml')
     # Redirect to activation page
     url = 'https://' + request.host + '/activate/' + subdomain
