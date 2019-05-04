@@ -38,7 +38,7 @@ def getConfig(name=None):
 def get_couchdb_url():
   couch_con_url = ''.join([getConfig('COUCHDB_SCHEME'), 
                               getConfig('COUCHDB_USER'), ':',
-                              getConfig('COUCHDB_PASS'), '@',
+                              getConfig('COUCHDB_PASSWORD'), '@',
                               getConfig('COUCHDB_IP'), ':',
                               str(getConfig('COUCHDB_PORT')), '/',
                               getConfig('COUCHDB_DBNAME')])
