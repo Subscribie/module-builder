@@ -25,15 +25,24 @@ builder = Blueprint('builder', __name__, template_folder='templates')
 def getConfig(name=None):
   if name is None:
     allConfigs = {}
-    for key,value in enumerate(app.config):
-      allConfigs[key] = value
     for key,value in enumerate(os.environ):
       allConfigs[key] = value;
+    for key,value in enumerate(app.config):
+      allConfigs[key] = value
     return allConfigs
-  try:
+  try: #Default get from os environment
+    print("NOTICE: Attempting to find {} in os environ".format(name))
+    return os.environ[name]
+  except KeyError:
+    pass
+  try: # Fallback get from app config
+    print("NOTICE: Attempting to find {} in app config".format(name))
     return app.config[name]
   except KeyError:
-    return os.getenv(name, '')
+    pass
+
+  print("NOTICE: Could not loate value for config: {}".format(name))
+  return False
 
 def get_couchdb_url():
   couch_con_url = ''.join([getConfig('COUCHDB_SCHEME'), 
@@ -153,9 +162,9 @@ def save_items():
     stream = open(subdomain + '.yaml', 'w')
     # Save to yml
     yaml.safe_dump(draftJamla, stream,default_flow_style=False)
-    if 'COUCHDB_ENABLED' in getConfig() and \
-        bool(getConfig('COUCHDB_ENABLED')) is True:
+    if bool(getConfig('COUCHDB_ENABLED')) is True:
       # Put to CouchDB
+      print("NOTICE: Attempting to post to couchdb")
       try:
         docid = subdomain.lower()
         # Set queue_state to 'deploy'
@@ -176,14 +185,13 @@ def save_items():
                                 + '?rev=' + revisionId, files=files)
             response = json.loads(req.text)
             revisionId = response['rev']
-      except KeyError:
-        print("""Error: CouchDB config not set correctly. 
-               See config.py.example for this module (Builder module)""")
-        pass
-    
-    create_subdomain(jamla=draftJamla)
+      except Exception as e:
+        print("ERROR: Could not post to couchdb {}".format(e))
+    else:
+      print("NOTICE: Not pushing to couchdb becase COUCHDB_ENABLED is not set")
     # Generate site (legacy method)
     if 'DISABLE_LEGACY_BUILD_METHOD' not in os.environ:
+      create_subdomain(jamla=draftJamla)
       deployJamla(subdomain + '.yaml')
     # Redirect to activation page
     url = 'https://' + request.host + '/activate/' + subdomain
