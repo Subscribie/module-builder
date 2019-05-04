@@ -154,7 +154,7 @@ def save_items():
     # Save to yml
     yaml.safe_dump(draftJamla, stream,default_flow_style=False)
     if 'COUCHDB_ENABLED' in getConfig() and \
-        getConfig('COUCHDB_ENABLED') is True:
+        bool(getConfig('COUCHDB_ENABLED')) is True:
       # Put to CouchDB
       try:
         docid = subdomain.lower()
