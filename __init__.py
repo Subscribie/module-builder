@@ -103,7 +103,6 @@ def save_items():
         item['requirements'] = {};
         item['requirements']['instant_payment'] = getItem(form.instant_payment.data, index)
         item['requirements']['subscription'] = getItem(form.subscription.data, index)
-        item['modules'] = ['builder']
         # Image storage
         f = getItem(form.image.data, index)
         if f:
