@@ -19,7 +19,7 @@ app.config.from_pyfile('/'.join([curDir, '.env']))
 @app.route('/deploy', methods=['GET', 'POST'])
 def deploy():
     if 'file' not in request.files:
-        return 'No file part'
+        return 'No file part.'
     file = request.files['file']
     # if user does not select file, browser also
     # submit a empty part without filename
@@ -61,10 +61,12 @@ def deploy():
             print(e.message, e.args)
 
         # Run subscribie_cli init
-        subprocess.call('subscribie init', cwd= ''.join([dstDir, 'subscribie']), shell=True)
+        call = subprocess.call('export LC_ALL=C.UTF-8; export LANG=C.UTF-8; subscribie init', cwd= ''.join([dstDir, 'subscribie']), shell=True)
+        print(call)
+    
         shutil.move(''.join([dstDir, 'subscribie/', 'data.db']), dstDir)
         # Run subscribie_cli migrations
-        subprocess.call('subscribie migrate --DB_FULL_PATH ' + dstDir + \
+        subprocess.call('export LC_ALL=C.UTF-8; export LANG=C.UTF-8; subscribie migrate --DB_FULL_PATH ' + dstDir + \
                           'data.db', \
                           cwd = ''.join([dstDir, 'subscribie']), shell=True)
 
@@ -95,7 +97,6 @@ def deploy():
             '--DB_FULL_PATH', dstDir + 'data.db',
             '--SUCCESS_REDIRECT_URL', 'https://' + webaddress + '/complete_mandate',
             '--THANKYOU_URL', 'https://' + webaddress + '/thankyou',
-            '--EMAIL_HOST', app.config['DEPLOY_EMAIL_HOST'],
             '--MAIL_SERVER', app.config['MAIL_SERVER'],
             '--MAIL_PORT', "25",
             '--MAIL_DEFAULT_SENDER', app.config['EMAIL_LOGIN_FROM'],
@@ -106,7 +107,7 @@ def deploy():
             '--GOCARDLESS_CLIENT_ID', app.config['DEPLOY_GOCARDLESS_CLIENT_ID'],
             '--GOCARDLESS_CLIENT_SECRET', app.config['DEPLOY_GOCARDLESS_CLIENT_SECRET'],
         ])
-        subprocess.call('subscribie setconfig ' + settings, cwd = cliWorkingDir\
+        subprocess.call('export LC_ALL=C.UTF-8; export LANG=C.UTF-8; subscribie setconfig ' + settings, cwd = cliWorkingDir\
                           , shell=True)
 
         fp.close()
