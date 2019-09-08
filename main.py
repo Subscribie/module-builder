@@ -112,7 +112,7 @@ def deploy():
         fp.close()
 
         fp = open(dstDir + 'jamla.yaml', 'w+')
-        jamla['modules_path'] = dstDir + 'subscription-management-software'
+        jamla['modules_path'] = [ dstDir + 'subscription-management-software' ]
         output = yaml.dump(jamla)
         fp.write(output)
         fp.close()
