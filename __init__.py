@@ -78,6 +78,11 @@ def save_items():
     form = ItemsForm()
     draftJamla['version'] = 1
     draftJamla['modules_path'] = '../../../'
+    draftJamla['modules'] = [
+      {'name': 'module_seo_page_title', 
+       'src': 'https://github.com/Subscribie/module-seo-page-title.git'
+      }
+    ]
     draftJamla['users'] = [form.email.data]
     session['email'] = form.email.data
     company_name = form.company_name.data
