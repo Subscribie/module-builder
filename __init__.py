@@ -81,7 +81,10 @@ def save_items():
     draftJamla['modules'] = [
       {'name': 'module_seo_page_title', 
        'src': 'https://github.com/Subscribie/module-seo-page-title.git'
-      }
+      },
+      {'name': 'module-iframe-embed',
+       'src': 'https://github.com/Subscribie/module-iframe-embed.git'
+      },
     ]
     draftJamla['users'] = [form.email.data]
     session['email'] = form.email.data
