@@ -82,7 +82,7 @@ def save_items():
       {'name': 'module_seo_page_title', 
        'src': 'https://github.com/Subscribie/module-seo-page-title.git'
       },
-      {'name': 'module-iframe-embed',
+      {'name': 'module_iframe_embed',
        'src': 'https://github.com/Subscribie/module-iframe-embed.git'
       },
     ]
