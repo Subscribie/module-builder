@@ -59,6 +59,11 @@ def deploy():
         except Exception as e:
             print("Didn't clone subscriber matching service")
             print(e.message, e.args)
+        # Create virtualenv & install subscribie requirements to it
+        print("Creating virtualenv")
+        call = subprocess.call('export LC_ALL=C.UTF-8; export LANG=C.UTF-8; virtualenv -p python3 venv', cwd= ''.join([dstDir, 'subscribie']), shell=True)
+        # Activate virtualenv and install requirements
+        call = subprocess.call('export LC_ALL=C.UTF-8; export LANG=C.UTF-8; . venv/bin/activate;pip install -r requirements.txt', cwd= ''.join([dstDir, 'subscribie']), shell=True)
 
         # Run subscribie_cli init
         call = subprocess.call('export LC_ALL=C.UTF-8; export LANG=C.UTF-8; subscribie init', cwd= ''.join([dstDir, 'subscribie']), shell=True)
