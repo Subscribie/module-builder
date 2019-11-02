@@ -85,12 +85,20 @@ def save_items():
       {'name': 'module_iframe_embed',
        'src': 'https://github.com/Subscribie/module-iframe-embed.git'
       },
+      {'name': 'module_style_shop',
+       'src': 'https://github.com/Subscribie/module-style-shop.git'
+      }
     ]
     draftJamla['users'] = [form.email.data]
     session['email'] = form.email.data
     company_name = form.company_name.data
     draftJamla['company'] = {'name':company_name, 'logo':'', 'start_image':''}
     draftJamla['theme'] = { 'name': 'jesmond', 'static_folder': './static/' }
+
+    # Custom styles prepare as empty
+    draftJamla['theme']['options']= {}
+    draftJamla['theme']['options']['styles'] = []
+
     items = []
     for index, item in enumerate(form.title.data):
         item = {}
@@ -163,7 +171,6 @@ def save_items():
     draftJamla['integrations']['tawk'] = {}                                      
     draftJamla['integrations']['tawk']['active'] = False                         
     draftJamla['integrations']['tawk']['property_id'] = ''
-
 
     subdomain = create_subdomain_string(draftJamla)
     session['site-url'] = 'https://' + subdomain.lower() + '.subscriby.shop'
