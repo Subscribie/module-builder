@@ -141,10 +141,10 @@ def deploy():
             contents = f.read()
             # Append uwsgi's subscribe-to line with hostname of new site:
             contents += "\nsubscribe-to = /tmp/sock2:" + webaddress + "\n"
-            # Writeout app.ini config to file. uwsgi watches for .ini files
+            # Writeout <webaddress>.ini config to file. uwsgi watches for .ini files
             # uwsgi will automatically detect this .ini file and start
             # routing requests to the site
-            with open(dstDir + '/' + 'app.ini', 'w') as f:
+            with open(dstDir + '/' + webaddress + '.ini', 'w') as f:
                 f.write(contents)
 
     login_url = ''.join(['https://', webaddress, '/login/', login_token])
