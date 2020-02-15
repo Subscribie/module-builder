@@ -9,6 +9,7 @@ import sqlite3
 import datetime
 from base64 import b64encode, urlsafe_b64encode
 import random
+from pathlib import Path
 
 app = Flask(__name__)
 # Load .env settings
@@ -33,6 +34,9 @@ def deploy():
         # Create directory for site
         try:
             dstDir = app.config['SITES_DIRECTORY'] + webaddress + '/'
+            if Path(dstDir).exists():
+                print("Site {} already exists. Exiting...".format(webaddress))
+                exit()
             os.mkdir(dstDir)
             file.save(os.path.join(dstDir, filename + '.yaml'))
             # Rename to jamla.yaml
@@ -127,32 +131,22 @@ def deploy():
             for icon in request.files.getlist('icons'):
                 iconFilename = secure_filename(icon.filename)
                 icon.save(os.path.join(static_folder, iconFilename))
-        # Append new site to apache config
-        vhost = " ".join(["Use VHost", webaddress, app.config['APACHE_USER'], dstDir])
-        ssl = " ".join(["Use SSL", webaddress, '443', app.config['APACHE_USER'], dstDir])
-        #Verify Vhost isn't already present
-        try: 
-            fp = open(app.config['APACHE_CONF_FILE'], "a+")
-            for line in fp:
-                if webaddress in line:
-                    fp.close()
-                    raise
 
-            fp = open(app.config['APACHE_CONF_FILE'], "a+")
-            fp.write(vhost + "\n")
-            fp.write(ssl + "\n")
-            fp.close()
-        except:
-            print ("Skipping as " + webaddress + "already exists.")
-            pass
+        # Begin uwsgi vassal config creation
+        # Open application skeleton (app.skel) file and append 
+        # "subscribe-to = <website-hostname>" config entry for the new 
+        # sites webaddress so that uwsgi's fastrouter can route the hostname.
+        curDir = os.path.dirname(os.path.realpath(__file__))
+        with open(curDir + '/' + 'app.skel') as f:
+            contents = f.read()
+            # Append uwsgi's subscribe-to line with hostname of new site:
+            contents += "\nsubscribe-to = /tmp/sock2:" + webaddress + "\n"
+            # Writeout app.ini config to file. uwsgi watches for .ini files
+            # uwsgi will automatically detect this .ini file and start
+            # routing requests to the site
+            with open(dstDir + '/' + 'app.ini', 'w') as f:
+                f.write(contents)
 
-        try:
-            # Reload apache with new vhost
-            subprocess.call("sudo /etc/init.d/apache2 graceful", shell=True)
-        except Exception as e:
-            print ("Problem reloading apache:")
-            print (e)
-            pass
     login_url = ''.join(['https://', webaddress, '/login/', login_token])
 
     return login_url
