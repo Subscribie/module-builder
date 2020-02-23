@@ -102,6 +102,9 @@ def save_items():
     draftJamla['theme']['options']= {}
     draftJamla['theme']['options']['styles'] = []
 
+    # Pages as empty array
+    draftJamla['pages'] = []
+
     items = []
     for index, item in enumerate(form.title.data):
         item = {}
