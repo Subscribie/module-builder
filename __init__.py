@@ -87,6 +87,9 @@ def save_items():
       },
       {'name': 'module_style_shop',
        'src': 'https://github.com/Subscribie/module-style-shop.git'
+      },
+      {'name': 'module_pages',
+       'src': 'https://github.com/Subscribie/module-pages.git'
       }
     ]
     draftJamla['users'] = [form.email.data]
