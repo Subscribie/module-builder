@@ -30,7 +30,7 @@ def deploy():
         # Store submitted jamla file in its site folder
         filename = secure_filename(file.filename)
         filename = filename.split('.')[0]
-        webaddress = filename.lower() + '.subscriby.shop'
+        webaddress = filename.lower() + '.' + app.config['SUBSCRIBIE_DOMAIN']
         # Create directory for site
         try:
             dstDir = app.config['SITES_DIRECTORY'] + webaddress + '/'
