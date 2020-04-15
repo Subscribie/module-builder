@@ -19,6 +19,7 @@ from subscribie import (current_app, Jamla)
 from subscribie.db import get_jamla
 from flask import Blueprint
 import json
+import uuid
 
 builder = Blueprint('builder', __name__, template_folder='templates')
 
@@ -108,6 +109,7 @@ def save_items():
     items = []
     for index, item in enumerate(form.title.data):
         item = {}
+        item['uuid'] = str(uuid.uuid4())
         item['title'] = getItem(form.title.data, index)
         item['sku'] = getItem(form.title.data, index)
         item['sell_price'] = getItem(form.sell_price.data, index) or 0
