@@ -10,8 +10,17 @@ import datetime
 from base64 import b64encode, urlsafe_b64encode
 import random
 from pathlib import Path
+from flask_migrate import upgrade
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+
 
 app = Flask(__name__)
+
+db = SQLAlchemy()
+db.init_app(app)
+Migrate(app, db)
+
 # Load .env settings
 curDir = os.path.dirname(os.path.realpath(__file__))
 app.config.from_pyfile('/'.join([curDir, '.env']))
@@ -74,10 +83,10 @@ def deploy():
         print(call)
     
         shutil.move(''.join([dstDir, 'subscribie/', 'data.db']), dstDir)
-        # Run subscribie_cli migrations
-        subprocess.call('export LC_ALL=C.UTF-8; export LANG=C.UTF-8; subscribie migrate --DB_FULL_PATH ' + dstDir + \
-                          'data.db', \
-                          cwd = ''.join([dstDir, 'subscribie']), shell=True)
+
+        # Migrate the database
+        app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + dstDir + 'data.db'
+        upgrade(directory=dstDir + 'subscribie/migrations')
 
         # Seed users table with site owners email address so they can login
         fp = open(dstDir + 'jamla.yaml', 'r')
