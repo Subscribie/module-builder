@@ -5,3 +5,5 @@ flask_mail
 GitPython
 requests>=2.20.0
 pyyaml
+flask_sqlalchemy
+flask_migrate
