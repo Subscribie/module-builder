@@ -223,6 +223,14 @@ def save_items():
 @builder.route('/activate/<sitename>')
 def choose_package(sitename=None):
     jamla = get_jamla()
+    items = []                                                               
+    for item in jamla['items']:                                              
+        try:                                                                 
+            if item['archived'] is not True:                                 
+                items.append(item)                                           
+        except KeyError:                                                     
+            items.append(item) # if key is absent, assume not archived
+    jamla['items'] = items
     try:
         plan = session['plan']
         if session['plan'] and is_valid_sku(plan):
