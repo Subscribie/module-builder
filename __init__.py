@@ -214,7 +214,6 @@ def save_items():
       print("NOTICE: Not pushing to couchdb becase COUCHDB_ENABLED is not set")
     # Generate site (legacy method)
     if 'DISABLE_LEGACY_BUILD_METHOD' not in os.environ:
-      create_subdomain(jamla=draftJamla)
       deployJamla(subdomain + '.yaml')
     # Redirect to activation page
     url = 'https://' + request.host + '/activate/' + subdomain
@@ -262,21 +261,6 @@ def is_valid_sku(sku):
             return True
     return False
 
-def create_subdomain(jamla=None):
-    subdomain = create_subdomain_string(jamla)
-    headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-    }
-    data = [
-        ('sub-auth-id', getConfig("BUILDER_SUB_AUTH_ID")),
-        ('auth-password', getConfig("BUILDER_SUB_AUTH_PASSWORD")),
-        ('domain-name', 'subscriby.shop'),
-        ('record-type', 'A'),
-        ('host', subdomain),
-        ('record', getConfig('BUILDER_DEPLOY_WEB_HOST')),
-        ('ttl', 60),
-    ]
-    r = requests.post('https://api.cloudns.net/dns/add-record.json', headers=headers, data=data)
 
 @builder.route('/sendJamla')
 def deployJamla(filename):
