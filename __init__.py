@@ -70,7 +70,6 @@ def start_building():
     return render_template('start-building.html', form=form)
 
 
-
 @builder.route('/start-building', methods=['POST'])
 def save_items():
     payload = {}
@@ -134,45 +133,6 @@ def save_items():
         print(item)
         items.append(item)
         payload['items'] = items
-
-    # Payment provider information
-    payload['payment_providers'] = {}
-    payload['payment_providers']['stripe'] = {}
-    payload['payment_providers']['gocardless'] = {}
-    payload['payment_providers']['paypal'] = {}
-
-    # Paypal
-    payload['payment_providers']['paypal']['sepa_direct_supported'] = False
-    payload['payment_providers']['paypal']['subscription_supported'] = True
-    payload['payment_providers']['paypal']['instant_payment_supported'] = True
-    payload['payment_providers']['paypal']['variable_payments_supported'] = False
-
-    # Stripe
-    payload['payment_providers']['stripe']['sepa_direct_supported'] = True
-    payload['payment_providers']['stripe']['subscription_supported'] = True
-    payload['payment_providers']['stripe']['instant_payment_supported'] = True
-    payload['payment_providers']['stripe']['variable_payments_supported'] = True
-    payload['payment_providers']['stripe']['publishable_key'] = ''
-    payload['payment_providers']['stripe']['secret_key'] = ''
-
-    # Gocardless
-    payload['payment_providers']['gocardless']['sepa_direct_supported'] = True
-    payload['payment_providers']['gocardless']['subscription_supported'] = True
-    payload['payment_providers']['gocardless']['instant_payment_supported'] = True
-    payload['payment_providers']['gocardless']['variable_payments_supported'] = True
-    payload['payment_providers']['gocardless']['access_token'] = ''
-    payload['payment_providers']['gocardless']['environment'] = ''
-
-    # Integrations                                                               
-    payload['integrations'] = {}                                              
-    payload['integrations']['google_tag_manager'] = {}                        
-    payload['integrations']['google_tag_manager']['active'] = False           
-    payload['integrations']['google_tag_manager']['container_id'] = ''
-
-    # Tawk                                                                       
-    payload['integrations']['tawk'] = {}                                      
-    payload['integrations']['tawk']['active'] = False                         
-    payload['integrations']['tawk']['property_id'] = ''
 
     subdomain = create_subdomain_string(payload)
     session['site-url'] = 'https://' + subdomain.lower() + '.subscriby.shop'
