@@ -15,8 +15,7 @@ from base64 import urlsafe_b64encode
 from contextlib import contextmanager
 from subscribie.signals import journey_complete
 from subscribie.forms import ItemsForm
-from subscribie import (current_app, Jamla)
-from subscribie.db import get_jamla
+from subscribie import (current_app)
 from flask import Blueprint
 import json
 import uuid
@@ -66,20 +65,19 @@ def getLatestCouchDBRevision(host, docid):
 
 @builder.route('/start-building', methods=['GET'])
 def start_building():
-    jamla = get_jamla()
     session['plan'] = str(request.args.get('plan'))
     form = ItemsForm()
-    return render_template('start-building.html', jamla=jamla, form=form)
+    return render_template('start-building.html', form=form)
 
 
 
 @builder.route('/start-building', methods=['POST'])
 def save_items():
-    draftJamla = {}
+    payload = {}
     form = ItemsForm()
-    draftJamla['version'] = 1
-    draftJamla['modules_path'] = '../../../'
-    draftJamla['modules'] = [
+    payload['version'] = 1
+    payload['modules_path'] = '../../../'
+    payload['modules'] = [
       {'name': 'module_seo_page_title', 
        'src': 'https://github.com/Subscribie/module-seo-page-title.git'
       },
@@ -93,18 +91,18 @@ def save_items():
        'src': 'https://github.com/Subscribie/module-pages.git'
       }
     ]
-    draftJamla['users'] = [form.email.data]
+    payload['users'] = [form.email.data]
     session['email'] = form.email.data
     company_name = form.company_name.data
-    draftJamla['company'] = {'name':company_name, 'logo':'', 'start_image':''}
-    draftJamla['theme'] = { 'name': 'jesmond', 'static_folder': './static/' }
+    payload['company'] = {'name':company_name, 'logo':'', 'start_image':''}
+    payload['theme'] = { 'name': 'jesmond', 'static_folder': './static/' }
 
     # Custom styles prepare as empty
-    draftJamla['theme']['options']= {}
-    draftJamla['theme']['options']['styles'] = []
+    payload['theme']['options']= {}
+    payload['theme']['options']['styles'] = []
 
     # Pages as empty array
-    draftJamla['pages'] = []
+    payload['pages'] = []
 
     items = []
     for index, item in enumerate(form.title.data):
@@ -119,10 +117,6 @@ def save_items():
         item['selling_points'] = getItem(form.selling_points.data, index)
         item['subscription_terms'] = {'minimum_term_months': 12}
         item['primary_colour'] = "#e73b1a"
-        item['icons'] = [{'src':'images/item3148.png',
-                          'size':'48x48', 'type':'image/png'},
-                         {'src':'images/item3192.png', 'size':'192x192',
-                          'type':'image/png'}]
         # Item requirements
         item['requirements'] = {};
         item['requirements']['instant_payment'] = getItem(form.instant_payment.data, index)
@@ -139,82 +133,55 @@ def save_items():
             item['primary_icon'] = {'src':False, 'type': False}
         print(item)
         items.append(item)
-        draftJamla['items'] = items
+        payload['items'] = items
 
     # Payment provider information
-    draftJamla['payment_providers'] = {}
-    draftJamla['payment_providers']['stripe'] = {}
-    draftJamla['payment_providers']['gocardless'] = {}
-    draftJamla['payment_providers']['paypal'] = {}
+    payload['payment_providers'] = {}
+    payload['payment_providers']['stripe'] = {}
+    payload['payment_providers']['gocardless'] = {}
+    payload['payment_providers']['paypal'] = {}
 
     # Paypal
-    draftJamla['payment_providers']['paypal']['sepa_direct_supported'] = False
-    draftJamla['payment_providers']['paypal']['subscription_supported'] = True
-    draftJamla['payment_providers']['paypal']['instant_payment_supported'] = True
-    draftJamla['payment_providers']['paypal']['variable_payments_supported'] = False
+    payload['payment_providers']['paypal']['sepa_direct_supported'] = False
+    payload['payment_providers']['paypal']['subscription_supported'] = True
+    payload['payment_providers']['paypal']['instant_payment_supported'] = True
+    payload['payment_providers']['paypal']['variable_payments_supported'] = False
 
     # Stripe
-    draftJamla['payment_providers']['stripe']['sepa_direct_supported'] = True
-    draftJamla['payment_providers']['stripe']['subscription_supported'] = True
-    draftJamla['payment_providers']['stripe']['instant_payment_supported'] = True
-    draftJamla['payment_providers']['stripe']['variable_payments_supported'] = True
-    draftJamla['payment_providers']['stripe']['publishable_key'] = ''
-    draftJamla['payment_providers']['stripe']['secret_key'] = ''
+    payload['payment_providers']['stripe']['sepa_direct_supported'] = True
+    payload['payment_providers']['stripe']['subscription_supported'] = True
+    payload['payment_providers']['stripe']['instant_payment_supported'] = True
+    payload['payment_providers']['stripe']['variable_payments_supported'] = True
+    payload['payment_providers']['stripe']['publishable_key'] = ''
+    payload['payment_providers']['stripe']['secret_key'] = ''
 
     # Gocardless
-    draftJamla['payment_providers']['gocardless']['sepa_direct_supported'] = True
-    draftJamla['payment_providers']['gocardless']['subscription_supported'] = True
-    draftJamla['payment_providers']['gocardless']['instant_payment_supported'] = True
-    draftJamla['payment_providers']['gocardless']['variable_payments_supported'] = True
-    draftJamla['payment_providers']['gocardless']['access_token'] = ''
-    draftJamla['payment_providers']['gocardless']['environment'] = ''
+    payload['payment_providers']['gocardless']['sepa_direct_supported'] = True
+    payload['payment_providers']['gocardless']['subscription_supported'] = True
+    payload['payment_providers']['gocardless']['instant_payment_supported'] = True
+    payload['payment_providers']['gocardless']['variable_payments_supported'] = True
+    payload['payment_providers']['gocardless']['access_token'] = ''
+    payload['payment_providers']['gocardless']['environment'] = ''
 
     # Integrations                                                               
-    draftJamla['integrations'] = {}                                              
-    draftJamla['integrations']['google_tag_manager'] = {}                        
-    draftJamla['integrations']['google_tag_manager']['active'] = False           
-    draftJamla['integrations']['google_tag_manager']['container_id'] = ''
+    payload['integrations'] = {}                                              
+    payload['integrations']['google_tag_manager'] = {}                        
+    payload['integrations']['google_tag_manager']['active'] = False           
+    payload['integrations']['google_tag_manager']['container_id'] = ''
 
     # Tawk                                                                       
-    draftJamla['integrations']['tawk'] = {}                                      
-    draftJamla['integrations']['tawk']['active'] = False                         
-    draftJamla['integrations']['tawk']['property_id'] = ''
+    payload['integrations']['tawk'] = {}                                      
+    payload['integrations']['tawk']['active'] = False                         
+    payload['integrations']['tawk']['property_id'] = ''
 
-    subdomain = create_subdomain_string(draftJamla)
+    subdomain = create_subdomain_string(payload)
     session['site-url'] = 'https://' + subdomain.lower() + '.subscriby.shop'
-    stream = open(subdomain + '.yaml', 'w')
-    # Save to yml
-    yaml.safe_dump(draftJamla, stream,default_flow_style=False)
-    if bool(getConfig('COUCHDB_ENABLED')) is True:
-      # Put to CouchDB
-      print("NOTICE: Attempting to post to couchdb")
-      try:
-        docid = subdomain.lower()
-        # Set queue_state to 'deploy'
-        draftJamla['queue_state'] = 'deploy'
-        couch_con_url = get_couchdb_url()
-        revisionId = getLatestCouchDBRevision(couch_con_url, docid)
-        revision = '' if revisionId is None else "?rev=" + revisionId
-        req = requests.put(couch_con_url + '/' + docid + revision, json=draftJamla)
-        # Attach images to doc
-        for index, item in enumerate(form.title.data):
-          # Store each file as attatchement to doc
-          f = getItem(form.image.data, index)
-          if f:
-            filename = secure_filename(f.filename)
-            files = {filename: f} # Requests format
-            revisionId = getLatestCouchDBRevision(couch_con_url, docid)
-            req = requests.put(couch_con_url + '/' + docid + '/' + filename \
-                                + '?rev=' + revisionId, files=files)
-            response = json.loads(req.text)
-            revisionId = response['rev']
-      except Exception as e:
-        print("ERROR: Could not post to couchdb {}".format(e))
-    else:
-      print("NOTICE: Not pushing to couchdb becase COUCHDB_ENABLED is not set")
-    # Generate site (legacy method)
-    if 'DISABLE_LEGACY_BUILD_METHOD' not in os.environ:
-      deployJamla(subdomain + '.yaml')
+
+    # Save to json
+    output = json.dumps(payload)
+    with open(subdomain + '.json', 'w') as fp:
+        fp.write(json.dumps(payload))
+    deployJamla(subdomain + '.json')
     # Redirect to activation page
     url = 'https://' + request.host + '/activate/' + subdomain
     return redirect(url) 
@@ -265,21 +232,10 @@ def is_valid_sku(sku):
 @builder.route('/sendJamla')
 def deployJamla(filename):
     url = getConfig('JAMLA_DEPLOY_URL')
-    #Prepare post data
-    multiple_files = [
-    ]
-    #Add jamla file to post data
-    multiple_files.append(('file', (filename, open(filename, 'rb'))))
-    #Get primary icons
-    jamlaApp = Jamla()
-    icon_paths = jamlaApp.get_primary_icons(jamlaApp.load(filename))
-    for icon_path in icon_paths:
-        iconFileName = os.path.split(icon_path)[1]
-        src = os.path.join(getConfig('UPLOADED_IMAGES_DEST'), iconFileName)
-        multiple_files.append(('icons', (iconFileName, open(src, 'rb'))))
-
-    r = requests.post(url, files=multiple_files)
-    session['login-url'] = r.text
+    with open(filename) as fp:
+        payload = json.loads(fp.read())
+        r = requests.post(url, json=payload)
+        session['login-url'] = r.text
     return "Sent jamla file for deployment"
 
 def create_subdomain_string(jamla=None):
