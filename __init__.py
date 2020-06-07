@@ -15,7 +15,7 @@ from base64 import urlsafe_b64encode
 from contextlib import contextmanager
 from subscribie.signals import journey_complete
 from subscribie.forms import ItemsForm
-from subscribie import (current_app)
+from subscribie import (current_app, Item)
 from flask import Blueprint
 import json
 import uuid
@@ -65,7 +65,6 @@ def getLatestCouchDBRevision(host, docid):
 
 @builder.route('/start-building', methods=['GET'])
 def start_building():
-    session['plan'] = str(request.args.get('plan'))
     form = ItemsForm()
     return render_template('start-building.html', form=form)
 
@@ -148,22 +147,8 @@ def save_items():
 
 @builder.route('/activate/<sitename>')
 def choose_package(sitename=None):
-    jamla = get_jamla()
-    items = []                                                               
-    for item in jamla['items']:                                              
-        try:                                                                 
-            if item['archived'] is not True:                                 
-                items.append(item)                                           
-        except KeyError:                                                     
-            items.append(item) # if key is absent, assume not archived
-    jamla['items'] = items
-    try:
-        plan = session['plan']
-        if session['plan'] and is_valid_sku(plan):
-           return redirect(url_for('views.new_customer', plan=plan))
-    except Exception:
-        pass
-    return render_template('select-package.html', jamla=jamla)
+    items = Item.query.filter_by(archived=0)
+    return render_template('select-package.html', items=items)
 
 def journey_complete_subscriber(sender, **kw):
     print("Journery Complete! Send an email or something..")
