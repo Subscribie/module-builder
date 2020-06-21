@@ -14,7 +14,7 @@ import requests
 from base64 import urlsafe_b64encode
 from contextlib import contextmanager
 from subscribie.signals import journey_complete
-from subscribie.forms import ItemsForm
+from .forms import SignupForm
 from subscribie import (current_app, Item)
 from flask import Blueprint
 import json
@@ -65,14 +65,14 @@ def getLatestCouchDBRevision(host, docid):
 
 @builder.route('/start-building', methods=['GET'])
 def start_building():
-    form = ItemsForm()
+    form = SignupForm()
     return render_template('start-building.html', form=form)
 
 
 @builder.route('/start-building', methods=['POST'])
 def save_items():
     payload = {}
-    form = ItemsForm()
+    form = SignupForm()
     payload['version'] = 1
     payload['modules_path'] = '../../../'
     payload['modules'] = [
@@ -91,6 +91,7 @@ def save_items():
     ]
     payload['users'] = [form.email.data]
     session['email'] = form.email.data
+    payload['password'] = form.password.data
     company_name = form.company_name.data
     payload['company'] = {'name':company_name, 'logo':'', 'start_image':''}
     payload['theme'] = { 'name': 'jesmond', 'static_folder': './static/' }
@@ -120,15 +121,7 @@ def save_items():
         item['requirements']['instant_payment'] = getItem(form.instant_payment.data, index)
         item['requirements']['subscription'] = getItem(form.subscription.data, index)
         item['requirements']['note_to_seller_required'] = False
-        # Image storage
-        f = getItem(form.image.data, index)
-        if f:
-            filename = secure_filename(f.filename)
-            src = os.path.join(getConfig('UPLOADED_IMAGES_DEST'), filename)
-            f.save(src)
-            item['primary_icon'] = {'src': '/static/' + filename, 'type': ''}
-        else:
-            item['primary_icon'] = {'src':False, 'type': False}
+        item['primary_icon'] = {'src':False, 'type': False}
         print(item)
         items.append(item)
         payload['items'] = items
