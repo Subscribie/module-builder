@@ -171,12 +171,6 @@ def journey_complete_subscriber(sender, **kw):
         print ("Error sending journey_complete_subscriber email")
         pass
 
-def is_valid_sku(sku):
-    for item in jamla['items']:
-        if item['sku'] == sku:
-            return True
-    return False
-
 
 @builder.route('/sendJamla')
 def deployJamla(filename):
