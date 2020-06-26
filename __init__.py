@@ -1,7 +1,7 @@
 import os, re
 import sys
 from flask import (Flask, render_template, session, redirect, url_for, escape,
-    request, current_app as app)
+    request, flash, current_app as app)
 from werkzeug.utils import secure_filename
 from flask_wtf import FlaskForm
 from wtforms import (StringField, FloatField, FieldList, FileField, validators,
@@ -15,10 +15,12 @@ from base64 import urlsafe_b64encode
 from contextlib import contextmanager
 from subscribie.signals import journey_complete
 from .forms import SignupForm
+from subscribie.forms import LoginForm
 from subscribie import (current_app, Item)
 from flask import Blueprint
 import json
 import uuid
+import sqlite3
 
 builder = Blueprint('builder', __name__, template_folder='templates')
 
@@ -136,6 +138,15 @@ def save_items():
     deployJamla(subdomain + '.json')
     # Redirect to activation page
     url = 'https://' + request.host + '/activate/' + subdomain
+
+    # Store new site in builder_sites table to allow logging in from subscibie site
+    con = sqlite3.connect(app.config["DB_FULL_PATH"])
+    cur = con.cursor()
+    query = "INSERT INTO builder_sites (site_url, email) VALUES (?, ?)"
+    con.execute(query, (session["site-url"], session['email'].lower()))
+    con.commit()
+
+
     return redirect(url) 
 
 @builder.route('/activate/<sitename>')
@@ -183,6 +194,35 @@ def create_subdomain_string(jamla=None):
         subdomain = re.sub(r'\W+', '', jamla['company']['name'])
     return subdomain
 
+@builder.route('/shop-owner-login/', methods=["GET", "POST"])
+def show_owner_login():
+    """Locate and redirect shop owner to their shop url
+
+    Shops are hosted on their own instance, with their own database
+    so we must direct them to their shop, by:
+
+    - Searching for their shop url, via email
+    - Redirect user to their shop's login page
+    """
+    if request.method == "POST":
+        email = request.form['email'].lower()
+        con = sqlite3.connect(app.config["DB_FULL_PATH"])
+        cur = con.cursor()
+        query = "SELECT site_url FROM builder_sites WHERE email = ?"
+        cur.execute(query, (email,))
+        result = cur.fetchone()
+        if result is None:
+            flash("Site not found, please use the email used during sign-up")
+            return redirect(url_for('builder.show_owner_login'))
+        else:
+            # Redirect user to their shop url
+            site_url = result[0]
+            destination = site_url + "/auth/login"
+            return redirect(destination)
+            
+    if request.method == "GET":
+        form = LoginForm()
+        return render_template("login.html", form=form)
 
 def getItem(container, i, default=None):
     try:
