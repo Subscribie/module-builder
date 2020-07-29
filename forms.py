@@ -48,8 +48,11 @@ class SignupForm(StripWhitespaceForm):
     sell_price = FieldList(
         FloatField("Up-front Price", [validators.optional()]), min_entries=1
     )
-    monthly_price = FieldList(
-        FloatField("Monthly Price", [validators.optional()]), min_entries=1
+    interval_amount = FieldList(                                                 
+        FloatField("Reccuring Amount", [validators.optional()]), min_entries=1   
+    )                                                                            
+    interval_unit = FieldList(                                                   
+        StringField("Interval Unit", [validators.optional()]), min_entries=1     
     )
     selling_points = FieldList(
         FieldList(
