@@ -16,7 +16,7 @@ from contextlib import contextmanager
 from subscribie.signals import journey_complete
 from .forms import SignupForm
 from subscribie.forms import LoginForm
-from subscribie import (current_app, Item)
+from subscribie import (current_app, Plan)
 from flask import Blueprint
 import json
 import uuid
@@ -72,7 +72,7 @@ def start_building():
 
 
 @builder.route('/start-building', methods=['POST'])
-def save_items():
+def save_plans():
     payload = {}
     form = SignupForm()
     payload['version'] = 1
@@ -105,33 +105,33 @@ def save_items():
     # Pages as empty array
     payload['pages'] = []
 
-    items = []
-    for index, item in enumerate(form.title.data):
-        item = {}
-        item['uuid'] = str(uuid.uuid4())
-        item['title'] = getItem(form.title.data, index)
-        item['sku'] = getItem(form.title.data, index)
-        if getItem(form.sell_price.data, index) is None:
-            item['sell_price'] = 0
+    plans = []
+    for index, plan in enumerate(form.title.data):
+        plan = {}
+        plan['uuid'] = str(uuid.uuid4())
+        plan['title'] = getPlan(form.title.data, index)
+        plan['sku'] = getPlan(form.title.data, index)
+        if getPlan(form.sell_price.data, index) is None:
+            plan['sell_price'] = 0
         else:
-            item['sell_price'] = int(getItem(form.sell_price.data, index)) * 100
-        if getItem(form.interval_amount.data, index) is None:
-            item['interval_amount'] = 0
+            plan['sell_price'] = int(getPlan(form.sell_price.data, index)) * 100
+        if getPlan(form.interval_amount.data, index) is None:
+            plan['interval_amount'] = 0
         else:
-            item['interval_amount'] = getItem(form.interval_amount.data, index) * 100
-        item['interval_unit'] = getItem(form.interval_unit.data, index)
-        item['selling_points'] = getItem(form.selling_points.data, index)
-        item['subscription_terms'] = {'minimum_term_months': 12}
-        item['primary_colour'] = "#e73b1a"
-        # Item requirements
-        item['requirements'] = {};
-        item['requirements']['instant_payment'] = getItem(form.instant_payment.data, index)
-        item['requirements']['subscription'] = getItem(form.subscription.data, index)
-        item['requirements']['note_to_seller_required'] = False
-        item['primary_icon'] = {'src':False, 'type': False}
-        print(item)
-        items.append(item)
-        payload['items'] = items
+            plan['interval_amount'] = getPlan(form.interval_amount.data, index) * 100
+        plan['interval_unit'] = getPlan(form.interval_unit.data, index)
+        plan['selling_points'] = getPlan(form.selling_points.data, index)
+        plan['subscription_terms'] = {'minimum_term_months': 12}
+        plan['primary_colour'] = "#e73b1a"
+        # Plan requirements
+        plan['requirements'] = {};
+        plan['requirements']['instant_payment'] = getPlan(form.instant_payment.data, index)
+        plan['requirements']['subscription'] = getPlan(form.subscription.data, index)
+        plan['requirements']['note_to_seller_required'] = False
+        plan['primary_icon'] = {'src':False, 'type': False}
+        print(plan)
+        plans.append(plan)
+        payload['plans'] = plans
 
     subdomain = create_subdomain_string(payload)
     session['site-url'] = 'https://' + subdomain.lower() + '.subscriby.shop'
@@ -156,8 +156,8 @@ def save_items():
 
 @builder.route('/activate/<sitename>')
 def choose_package(sitename=None):
-    items = Item.query.filter_by(archived=0)
-    return render_template('select-package.html', items=items)
+    plans = Plan.query.filter_by(archived=0)
+    return render_template('select-package.html', plans=plans)
 
 def journey_complete_subscriber(sender, **kw):
     print("Journery Complete! Send an email or something..")
@@ -223,7 +223,7 @@ def show_owner_login():
         form = LoginForm()
         return render_template("login.html", form=form)
 
-def getItem(container, i, default=None):
+def getPlan(container, i, default=None):
     try:
         return container[i]
     except IndexError:
