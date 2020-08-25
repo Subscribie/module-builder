@@ -163,7 +163,7 @@ def journey_complete_subscriber(sender, **kw):
     print("Journery Complete! Send an email or something..")
     try:
         email = kw['email']
-        sender = "hello@example.co.uk"
+        sender = app.config.get("MAIL_DEFAULT_SENDER", "hello@example.com")
         login_url = session['login-url']
         msg  = Message(subject="Subscription Website Activated",
                        body=login_url,
