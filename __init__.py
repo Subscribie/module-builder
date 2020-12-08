@@ -206,10 +206,11 @@ def journey_complete_subscriber(sender, **kw):
             recipients=[email],
         )
         # Load builder module env
-        mail = Mail(current_app)
+        mail = Mail(app)
         mail.send(msg)
-    except Exception:
+    except Exception as e:
         print("Error sending journey_complete_subscriber email")
+        print(e)
         pass
 
 
