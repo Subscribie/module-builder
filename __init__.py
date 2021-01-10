@@ -233,7 +233,7 @@ def create_subdomain_string(jamla=None):
 
 
 @builder.route("/shop-owner-login/", methods=["GET", "POST"])
-def show_owner_login():
+def shop_owner_login():
     """Locate and redirect shop owner to their shop url
 
     Shops are hosted on their own instance, with their own database
@@ -251,7 +251,7 @@ def show_owner_login():
         result = cur.fetchone()
         if result is None:
             flash("Site not found, please use the email used during sign-up")
-            return redirect(url_for("builder.show_owner_login"))
+            return redirect(url_for("builder.shop_owner_login"))
         else:
             # Redirect user to their shop url
             site_url = result[0]
