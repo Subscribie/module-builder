@@ -1,34 +1,17 @@
-import os, re
-import sys
+import os
+import re
 from flask import (
-    Flask,
     render_template,
     session,
     redirect,
     url_for,
-    escape,
     request,
     flash,
     current_app as app,
 )
-from werkzeug.utils import secure_filename
-from flask_wtf import FlaskForm
-from wtforms import (
-    StringField,
-    FloatField,
-    FieldList,
-    FileField,
-    validators,
-    BooleanField,
-    TextField,
-)
-from wtforms.validators import DataRequired
 from flask_mail import Mail, Message
-import yaml
-from yaml import load, dump
 import requests
 from base64 import urlsafe_b64encode
-from contextlib import contextmanager
 from subscribie.signals import journey_complete
 from .forms import SignupForm
 from subscribie.forms import LoginForm
@@ -170,7 +153,6 @@ def save_plans():
     session["site-url"] = "https://" + subdomain.lower() + ".subscriby.shop"
 
     # Save to json
-    output = json.dumps(payload)
     with open(subdomain + ".json", "w") as fp:
         fp.write(json.dumps(payload))
     deployJamla(subdomain + ".json")
@@ -179,7 +161,6 @@ def save_plans():
 
     # Store new site in builder_sites table to allow logging in from subscibie site
     con = sqlite3.connect(app.config["DB_FULL_PATH"])
-    cur = con.cursor()
     query = "INSERT INTO builder_sites (site_url, email) VALUES (?, ?)"
     con.execute(query, (session["site-url"], session["email"].lower()))
     con.commit()
