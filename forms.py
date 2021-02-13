@@ -3,16 +3,12 @@ from wtforms import (
     StringField,
     FloatField,
     FieldList,
-    FileField,
     validators,
     BooleanField,
     TextField,
-    HiddenField,
     TextAreaField,
 )
-from wtforms.validators import Optional, DataRequired, Email as EmailValid
-from flask_wtf.file import FileField, FileAllowed, FileRequired
-from flask_uploads import UploadSet, IMAGES
+from wtforms.validators import DataRequired
 
 
 class StripWhitespaceForm(FlaskForm):
@@ -33,26 +29,40 @@ def strip_whitespace(value):
 class SignupForm(StripWhitespaceForm):
     email = TextField("Email", [validators.Email(), validators.DataRequired()])
     password = StringField("password", validators=[DataRequired()])
-    title = FieldList(StringField("Title", [validators.DataRequired()]), min_entries=1)
+    title = FieldList(
+        StringField("Title", [validators.DataRequired()]), min_entries=1
+    )  # noqa: E501
     company_name = TextField("Company Name")
     slogan = TextField("Slogan")
     instant_payment = FieldList(
         BooleanField("Up-Front Payment", default=False), min_entries=1
     )
     uuid = FieldList(StringField(), min_entries=1)
-    subscription = FieldList(BooleanField("Subscription", default=False), min_entries=1)
-    note_to_seller_required = FieldList(BooleanField("Require note from customer", default=False), min_entries=1)
+    subscription = FieldList(
+        BooleanField("Subscription", default=False), min_entries=1
+    )  # noqa: E501
+    note_to_seller_required = FieldList(
+        BooleanField("Require note from customer", default=False),
+        min_entries=1,  # noqa: E501
+    )
     # Allow seller to say what additional information they need
-    note_to_buyer_message = FieldList(TextAreaField(u'Note to buyer', [validators.optional(), validators.length(max=500)]))
-    days_before_first_charge = FieldList(StringField("Days before first charge"))
+    note_to_buyer_message = FieldList(
+        TextAreaField(
+            u"Note to buyer",
+            [validators.optional(), validators.length(max=500)],  # noqa: E501
+        )
+    )
+    days_before_first_charge = FieldList(
+        StringField("Days before first charge")
+    )  # noqa: E501
     sell_price = FieldList(
         FloatField("Up-front Price", [validators.optional()]), min_entries=1
     )
-    interval_amount = FieldList(                                                 
-        FloatField("Reccuring Amount", [validators.optional()]), min_entries=1   
-    )                                                                            
-    interval_unit = FieldList(                                                   
-        StringField("Interval Unit", [validators.optional()]), min_entries=1     
+    interval_amount = FieldList(
+        FloatField("Reccuring Amount", [validators.optional()]), min_entries=1
+    )
+    interval_unit = FieldList(
+        StringField("Interval Unit", [validators.optional()]), min_entries=1
     )
     selling_points = FieldList(
         FieldList(

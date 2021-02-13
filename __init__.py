@@ -128,11 +128,15 @@ def save_plans():
         if getPlan(form.sell_price.data, index) is None:
             plan["sell_price"] = 0
         else:
-            plan["sell_price"] = int(getPlan(form.sell_price.data, index)) * 100
+            plan["sell_price"] = (
+                int(getPlan(form.sell_price.data, index)) * 100
+            )  # noqa: E501
         if getPlan(form.interval_amount.data, index) is None:
             plan["interval_amount"] = 0
         else:
-            plan["interval_amount"] = getPlan(form.interval_amount.data, index) * 100
+            plan["interval_amount"] = (
+                getPlan(form.interval_amount.data, index) * 100
+            )  # noqa: E501
         plan["interval_unit"] = getPlan(form.interval_unit.data, index)
         plan["selling_points"] = getPlan(form.selling_points.data, index)
         plan["subscription_terms"] = {"minimum_term_months": 12}
@@ -142,7 +146,9 @@ def save_plans():
         plan["requirements"]["instant_payment"] = getPlan(
             form.instant_payment.data, index
         )
-        plan["requirements"]["subscription"] = getPlan(form.subscription.data, index)
+        plan["requirements"]["subscription"] = getPlan(
+            form.subscription.data, index
+        )  # noqa: E501
         plan["requirements"]["note_to_seller_required"] = False
         plan["primary_icon"] = {"src": False, "type": False}
         print(plan)
@@ -153,13 +159,14 @@ def save_plans():
     session["site-url"] = "https://" + subdomain.lower() + ".subscriby.shop"
 
     # Save to json
+    json.dumps(payload)
     with open(subdomain + ".json", "w") as fp:
         fp.write(json.dumps(payload))
     deployJamla(subdomain + ".json")
     # Redirect to activation page
     url = "https://" + request.host + "/activate/" + subdomain
 
-    # Store new site in builder_sites table to allow logging in from subscibie site
+    # Store new site in builder_sites table to allow logging in from subscibie site # noqa: E501
     con = sqlite3.connect(app.config["DB_FULL_PATH"])
     query = "INSERT INTO builder_sites (site_url, email) VALUES (?, ?)"
     con.execute(query, (session["site-url"], session["email"].lower()))
