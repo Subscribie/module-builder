@@ -170,8 +170,9 @@ def save_plans():
     try:
         token = app.config.get("TELEGRAM_TOKEN", None)
         chat_id = app.config.get("TELEGRAM_CHAT_ID", None)
+        new_site_url = session["site-url"]
         requests.get(
-            f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{url}"
+            f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}"
         )
     except Exception:
         pass
