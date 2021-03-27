@@ -166,6 +166,16 @@ def save_plans():
     # Redirect to activation page
     url = "https://" + request.host + "/activate/" + subdomain
 
+    # Inform
+    try:
+        token = app.config.get("TELEGRAM_TOKEN", None)
+        chat_id = app.config.get("TELEGRAM_CHAT_ID", None)
+        requests.get(
+            f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{url}"
+        )
+    except Exception:
+        pass
+
     # Store new site in builder_sites table to allow logging in from subscibie site # noqa: E501
     con = sqlite3.connect(app.config["DB_FULL_PATH"])
     query = "INSERT INTO builder_sites (site_url, email) VALUES (?, ?)"
