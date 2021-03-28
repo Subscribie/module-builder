@@ -16,6 +16,7 @@ from subscribie.signals import journey_complete
 from .forms import SignupForm
 from subscribie.forms import LoginForm
 from subscribie.models import Plan
+from subscribie.tasks import task_queue
 from flask import Blueprint
 import json
 import uuid
@@ -171,8 +172,10 @@ def save_plans():
         token = app.config.get("TELEGRAM_TOKEN", None)
         chat_id = app.config.get("TELEGRAM_CHAT_ID", None)
         new_site_url = session["site-url"]
-        requests.get(
-            f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}"
+        task_queue.put(
+            lambda: requests.get(
+                f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}"
+            )
         )
     except Exception:
         pass
