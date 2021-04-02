@@ -48,16 +48,6 @@ def getConfig(name=None):
     return False
 
 
-def getLatestCouchDBRevision(host, docid):
-    req = requests.get(host + "/" + docid)
-    resp = json.loads(req.text)
-    if "_rev" in resp:
-        revisionId = resp["_rev"]
-    else:
-        revisionId = None
-    return revisionId
-
-
 @builder.route("/start-building", methods=["GET"])
 def start_building():
     form = SignupForm()
