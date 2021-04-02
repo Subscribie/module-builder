@@ -48,24 +48,6 @@ def getConfig(name=None):
     return False
 
 
-def get_couchdb_url():
-    couch_con_url = "".join(
-        [
-            getConfig("COUCHDB_SCHEME"),
-            getConfig("COUCHDB_USER"),
-            ":",
-            getConfig("COUCHDB_PASSWORD"),
-            "@",
-            getConfig("COUCHDB_IP"),
-            ":",
-            str(getConfig("COUCHDB_PORT")),
-            "/",
-            getConfig("COUCHDB_DBNAME"),
-        ]
-    )
-    return couch_con_url
-
-
 def getLatestCouchDBRevision(host, docid):
     req = requests.get(host + "/" + docid)
     resp = json.loads(req.text)
