@@ -92,7 +92,7 @@ def save_plans():
                 getPlan(form.interval_amount.data, index) * 100
             )  # noqa: E501
         plan["interval_unit"] = getPlan(form.interval_unit.data, index)
-        plan["selling_points"] = getPlan(form.selling_points.data, index)
+        plan["description"] = request.form.get("description", "")
         plan["subscription_terms"] = {"minimum_term_months": 12}
         plan["primary_colour"] = "#e73b1a"
         # Plan requirements
