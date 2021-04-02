@@ -69,25 +69,6 @@ def save_plans():
     payload = {}
     form = SignupForm()
     payload["version"] = 1
-    payload["modules_path"] = "../../../"
-    payload["modules"] = [
-        {
-            "name": "module_seo_page_title",
-            "src": "https://github.com/Subscribie/module-seo-page-title.git",
-        },
-        {
-            "name": "module_iframe_embed",
-            "src": "https://github.com/Subscribie/module-iframe-embed.git",
-        },
-        {
-            "name": "module_style_shop",
-            "src": "https://github.com/Subscribie/module-style-shop.git",
-        },
-        {
-            "name": "module_pages",
-            "src": "https://github.com/Subscribie/module-pages.git",
-        },
-    ]
     payload["users"] = [form.email.data]
     session["email"] = form.email.data
     payload["password"] = form.password.data
