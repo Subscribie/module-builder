@@ -117,8 +117,6 @@ def save_plans():
     with open(subdomain + ".json", "w") as fp:
         fp.write(json.dumps(payload))
     deployJamla(subdomain + ".json")
-    # Redirect to activation page
-    url = "https://" + request.host + "/activate/" + subdomain
 
     # Inform
     try:
@@ -127,7 +125,7 @@ def save_plans():
         new_site_url = session["site-url"]
         task_queue.put(
             lambda: requests.get(
-                f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}"
+                f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}"  # noqa
             )
         )
     except Exception:
@@ -139,7 +137,8 @@ def save_plans():
     con.execute(query, (session["site-url"], session["email"].lower()))
     con.commit()
 
-    return redirect(url)
+    # Redirect to their site
+    return redirect(session["site-url"])
 
 
 @builder.route("/activate/<sitename>")

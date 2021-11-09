@@ -64,10 +64,6 @@ class SignupForm(StripWhitespaceForm):
     interval_unit = FieldList(
         StringField("Interval Unit", [validators.optional()]), min_entries=1
     )
-    selling_points = FieldList(
-        FieldList(
-            StringField("Unique Selling Point", [validators.DataRequired()]),
-            min_entries=3,
-        ),
-        min_entries=1,
+    description = FieldList(
+        StringField("Interval Unit", [validators.optional()]), min_entries=1
     )
