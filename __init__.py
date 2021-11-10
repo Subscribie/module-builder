@@ -137,6 +137,9 @@ def save_plans():
     con.execute(query, (session["site-url"], session["email"].lower()))
     con.commit()
 
+    from time import sleep
+
+    sleep(3)
     # Redirect to their site
     return redirect(session["site-url"])
 
