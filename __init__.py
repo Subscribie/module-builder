@@ -16,7 +16,6 @@ from subscribie.signals import journey_complete
 from .forms import SignupForm
 from subscribie.forms import LoginForm
 from subscribie.models import Plan
-from subscribie.tasks import task_queue
 from flask import Blueprint
 import json
 import uuid
@@ -123,13 +122,11 @@ def save_plans():
         token = app.config.get("TELEGRAM_TOKEN", None)
         chat_id = app.config.get("TELEGRAM_CHAT_ID", None)
         new_site_url = session["site-url"]
-        task_queue.put(
-            lambda: requests.get(
-                f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}"  # noqa
-            )
+        requests.get(
+            f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}"
         )
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"Telegram not sent: {e}")
 
     # Store new site in builder_sites table to allow logging in from subscibie site # noqa: E501
     con = sqlite3.connect(app.config["DB_FULL_PATH"])
@@ -139,7 +136,7 @@ def save_plans():
 
     from time import sleep
 
-    sleep(3)
+    sleep(5)
     # Redirect to their site
     return redirect(session["site-url"])
 
