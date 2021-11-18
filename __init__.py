@@ -13,6 +13,7 @@ from flask_mail import Mail, Message
 import requests
 from base64 import urlsafe_b64encode
 from subscribie.signals import journey_complete
+from subscribie.tasks import task_queue
 from .forms import SignupForm
 from subscribie.forms import LoginForm
 from subscribie.models import Plan
@@ -125,8 +126,10 @@ def save_plans():
         token = app.config.get("TELEGRAM_TOKEN", None)
         chat_id = app.config.get("TELEGRAM_CHAT_ID", None)
         new_site_url = session["site-url"]
-        requests.get(
-            f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}"  # noqa
+        task_queue.put(
+            lambda: requests.get(
+                f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}"  # noqa
+            )
         )
     except Exception as e:
         print(f"Telegram not sent: {e}")
@@ -137,9 +140,6 @@ def save_plans():
     con.execute(query, (session["site-url"], session["email"].lower()))
     con.commit()
 
-    from time import sleep
-
-    sleep(3)
     # Redirect to their site, auto login using login_token
     auto_login_url = f'{session["site-url"]}/auth/login/{login_token}'
     return redirect(auto_login_url)
