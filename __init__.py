@@ -16,6 +16,7 @@ from subscribie.signals import journey_complete
 from .forms import SignupForm
 from subscribie.forms import LoginForm
 from subscribie.models import Plan
+from subscribie.auth import generate_login_token
 from flask import Blueprint
 import json
 import uuid
@@ -56,11 +57,13 @@ def start_building():
 @builder.route("/start-building", methods=["POST"])
 def save_plans():
     payload = {}
+    login_token = generate_login_token()
     form = SignupForm()
     payload["version"] = 1
     payload["users"] = [form.email.data]
     session["email"] = form.email.data
     payload["password"] = form.password.data
+    payload["login_token"] = login_token
     company_name = form.company_name.data
     payload["company"] = {"name": company_name, "logo": "", "start_image": ""}
     payload["theme"] = {"name": "jesmond", "static_folder": "./static/"}
@@ -123,12 +126,12 @@ def save_plans():
         chat_id = app.config.get("TELEGRAM_CHAT_ID", None)
         new_site_url = session["site-url"]
         requests.get(
-            f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}"
+            f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}"  # noqa
         )
     except Exception as e:
         print(f"Telegram not sent: {e}")
 
-    # Store new site in builder_sites table to allow logging in from subscibie site # noqa: E501
+    # Store new site in builder_sites table to allow logging in from subscribie site # noqa: E501
     con = sqlite3.connect(app.config["DB_FULL_PATH"])
     query = "INSERT INTO builder_sites (site_url, email) VALUES (?, ?)"
     con.execute(query, (session["site-url"], session["email"].lower()))
@@ -136,9 +139,10 @@ def save_plans():
 
     from time import sleep
 
-    sleep(5)
-    # Redirect to their site
-    return redirect(session["site-url"])
+    sleep(3)
+    # Redirect to their site, auto login using login_token
+    auto_login_url = f'{session["site-url"]}/auth/login/{login_token}'
+    return redirect(auto_login_url)
 
 
 @builder.route("/activate/<sitename>")
