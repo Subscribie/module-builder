@@ -16,13 +16,22 @@ from subscribie.signals import journey_complete
 from .forms import SignupForm
 from subscribie.forms import LoginForm
 from subscribie.models import Plan
-from subscribie.auth import generate_login_token
+from subscribie.auth import generate_login_token, login_required
 from flask import Blueprint
 import json
 import uuid
 import sqlite3
+from subscribie.database import database
 
 builder = Blueprint("builder", __name__, template_folder="templates")
+
+
+class Shop(database.Model):
+    __tablename__ = "builder_sites"
+    __table_args__ = {"extend_existing": True}
+
+    site_url = database.Column(database.String(), primary_key=True)
+    email = database.Column(database.String())
 
 
 def getConfig(name=None):
@@ -219,6 +228,14 @@ def shop_owner_login():
     if request.method == "GET":
         form = LoginForm()
         return render_template("login.html", form=form)
+
+
+@builder.route("/admin/shops", methods=["GET"])
+@login_required
+def shops():
+    """List all shops"""
+    shops = Shop.query.all()
+    return render_template("shops.html", shops=shops)
 
 
 def getPlan(container, i, default=None):
