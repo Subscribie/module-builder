@@ -157,6 +157,7 @@ def save_plans():
 @builder.route("/activate/<sitename>")
 def choose_package(sitename=None):
     plans = Plan.query.filter_by(archived=0)
+    session["sitename"] = sitename
     return render_template("select-package.html", plans=plans)
 
 
