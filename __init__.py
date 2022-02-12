@@ -1,4 +1,3 @@
-import os
 import re
 from flask import (
     render_template,
@@ -11,7 +10,6 @@ from flask import (
 )
 from flask_mail import Mail, Message
 import requests
-from base64 import urlsafe_b64encode
 from subscribie.signals import journey_complete
 from subscribie.tasks import task_queue
 from .forms import SignupForm
@@ -35,43 +33,28 @@ class Shop(database.Model):
     email = database.Column(database.String())
 
 
-def getConfig(name=None):
-    if name is None:
-        allConfigs = {}
-        for key, value in enumerate(os.environ):
-            allConfigs[key] = value
-        for key, value in enumerate(app.config):
-            allConfigs[key] = value
-        return allConfigs
-    try:  # Default get from os environment
-        print("NOTICE: Attempting to find {} in os environ".format(name))
-        return os.environ[name]
-    except KeyError:
-        pass
-    try:  # Fallback get from app config
-        print("NOTICE: Attempting to find {} in app config".format(name))
-        return app.config[name]
-    except KeyError:
-        pass
-
-    print("NOTICE: Could not loate value for config: {}".format(name))
-    return False
-
-
 @builder.route("/start-building", methods=["GET"])
 def start_building():
     form = SignupForm()
     return render_template("start-building.html", form=form)
 
 
-@builder.route("/start-building", methods=["POST"])
-def save_plans():
+def submit_new_site_build(
+    form, domain, subdomain, login_token, app_config=None
+):  # noqa: E501
+    """Submit a new site build
+    Take form submission and build new site from it
+
+    :param form: The metadata for a new shop
+    :param domain: The domain for new shop e.g. example.com
+    :param login_token: Login token for first time login
+    :param subdomain: The subdomain for new shop e.g. abc. Which
+    :param app_config: The flask app config type casted to a dict
+        when combined with domain, becomes abc.example.com
+    """
     payload = {}
-    login_token = generate_login_token()
-    form = SignupForm()
     payload["version"] = 1
     payload["users"] = [form.email.data]
-    session["email"] = form.email.data
     payload["password"] = form.password.data
     payload["login_token"] = login_token
     company_name = form.company_name.data
@@ -104,7 +87,7 @@ def save_plans():
                 getPlan(form.interval_amount.data, index) * 100
             )  # noqa: E501
         plan["interval_unit"] = getPlan(form.interval_unit.data, index)
-        plan["description"] = request.form.get("description", "")
+        plan["description"] = getPlan(form.description.data, index)
         plan["subscription_terms"] = {"minimum_term_months": 12}
         plan["primary_colour"] = "#e73b1a"
         # Plan requirements
@@ -120,21 +103,18 @@ def save_plans():
         print(plan)
         plans.append(plan)
         payload["plans"] = plans
-
-    subdomain = create_subdomain_string(payload)
-    session["site-url"] = "https://" + subdomain.lower() + ".subscriby.shop"
-
     # Save to json
     json.dumps(payload)
     with open(subdomain + ".json", "w") as fp:
         fp.write(json.dumps(payload))
-    deployJamla(subdomain + ".json")
+    deploy_url = app_config.get("JAMLA_DEPLOY_URL")
+    deployJamla(subdomain + ".json", deploy_url=deploy_url)
 
     # Inform
     try:
-        token = app.config.get("TELEGRAM_TOKEN", None)
-        chat_id = app.config.get("TELEGRAM_CHAT_ID", None)
-        new_site_url = session["site-url"]
+        token = app_config.get("TELEGRAM_TOKEN", None)
+        chat_id = app_config.get("TELEGRAM_CHAT_ID", None)
+        new_site_url = f"https://{subdomain}.{domain}"
         task_queue.put(
             lambda: requests.get(
                 f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}"  # noqa
@@ -144,14 +124,38 @@ def save_plans():
         print(f"Telegram not sent: {e}")
 
     # Store new site in builder_sites table to allow logging in from subscribie site # noqa: E501
-    con = sqlite3.connect(app.config["DB_FULL_PATH"])
+    con = sqlite3.connect(app_config.get("DB_FULL_PATH"))
+    email = form.email.data
     query = "INSERT INTO builder_sites (site_url, email) VALUES (?, ?)"
-    con.execute(query, (session["site-url"], session["email"].lower()))
+    con.execute(query, (new_site_url, email.lower()))
     con.commit()
+
+
+@builder.route("/start-building", methods=["POST"])
+def save_plans():
+    form = SignupForm()
+    session["email"] = form.email.data
+    domain = app.config.get("SUBSCRIBIE_DOMAIN", ".subscriby.shop")
+    subdomain = create_subdomain_string(form.company_name.data)
+
+    login_token = generate_login_token()
+
+    # Start new site build in background thread
+    app_config = dict(app.config)
+    task_queue.put(
+        lambda: submit_new_site_build(
+            form, domain, subdomain, login_token, app_config
+        )  # noqa: E501
+    )  # noqa: E501
+
+    session[
+        "site-url"
+    ] = f'https://{subdomain}.{app.config.get("SUBSCRIBIE_DOMAIN", ".subscriby.shop")}'  # noqa: E501
 
     # Redirect to their site, auto login using login_token
     auto_login_url = f'{session["site-url"]}/auth/login/{login_token}'
-    return redirect(auto_login_url)
+    session["login-url"] = auto_login_url
+    return auto_login_url
 
 
 @builder.route("/activate/<sitename>")
@@ -183,20 +187,15 @@ def journey_complete_subscriber(sender, **kw):
 
 
 @builder.route("/sendJamla")
-def deployJamla(filename):
-    url = getConfig("JAMLA_DEPLOY_URL")
+def deployJamla(filename, deploy_url=None):
     with open(filename) as fp:
         payload = json.loads(fp.read())
-        r = requests.post(url, json=payload)
-        session["login-url"] = r.text
+        requests.post(deploy_url, json=payload)
     return "Sent jamla file for deployment"
 
 
-def create_subdomain_string(jamla=None):
-    if jamla is None:
-        subdomain = urlsafe_b64encode(os.urandom(5)).replace("=", "")
-    else:
-        subdomain = re.sub(r"\W+", "", jamla["company"]["name"])
+def create_subdomain_string(company_name=None):
+    subdomain = re.sub(r"\W+", "", company_name).lower()
     return subdomain
 
 
