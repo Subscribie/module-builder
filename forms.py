@@ -5,7 +5,6 @@ from wtforms import (
     FieldList,
     validators,
     BooleanField,
-    TextField,
     TextAreaField,
 )
 from wtforms.validators import DataRequired
@@ -27,13 +26,13 @@ def strip_whitespace(value):
 
 
 class SignupForm(StripWhitespaceForm):
-    email = TextField("Email", [validators.Email(), validators.DataRequired()])
+    email = StringField("Email", [validators.Email(), validators.DataRequired()])
     password = StringField("password", validators=[DataRequired()])
     title = FieldList(
         StringField("Title", [validators.DataRequired()]), min_entries=1
     )  # noqa: E501
-    company_name = TextField("Company Name")
-    slogan = TextField("Slogan")
+    company_name = StringField("Company Name")
+    slogan = StringField("Slogan")
     instant_payment = FieldList(
         BooleanField("Up-Front Payment", default=False), min_entries=1
     )
