@@ -236,6 +236,7 @@ def shop_owner_login():
 def shops():
     """List all shops"""
     shops = Shop.query.all()
+    shops = reversed(shops)
     return render_template("shops.html", shops=shops)
 
 
