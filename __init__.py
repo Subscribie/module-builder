@@ -21,11 +21,12 @@ import json
 import uuid
 import sqlite3
 from subscribie.database import database
+from subscribie.schemas import Shop
 
 builder = Blueprint("builder", __name__, template_folder="templates")
 
 
-class Shop(database.Model):
+class ShopInDB(database.Model):
     __tablename__ = "builder_sites"
     __table_args__ = {"extend_existing": True}
 
@@ -52,28 +53,17 @@ def submit_new_site_build(
     :param app_config: The flask app config type casted to a dict
         when combined with domain, becomes abc.example.com
     """
-    payload = {}
-    payload["version"] = 1
-    payload["users"] = [form.email.data]
-    payload["password"] = form.password.data
-    payload["login_token"] = login_token
-    company_name = form.company_name.data
-    payload["company"] = {"name": company_name, "logo": "", "start_image": ""}
-    payload["theme"] = {"name": "jesmond", "static_folder": "./static/"}
+    postData = form.data
+    postData["users"] = [form.data.get("email", None)]
+    postData["version"] = 1
+    postData["login_token"] = login_token
+    postData["plans"] = []
+    postData["company"] = {"name": form.data.get("company_name", None)}
 
-    # Custom styles prepare as empty
-    payload["theme"]["options"] = {}
-    payload["theme"]["options"]["styles"] = []
-
-    # Pages as empty array
-    payload["pages"] = []
-
-    plans = []
     for index, plan in enumerate(form.title.data):
         plan = {}
         plan["uuid"] = str(uuid.uuid4())
         plan["title"] = getPlan(form.title.data, index)
-        plan["sku"] = getPlan(form.title.data, index)
         if getPlan(form.sell_price.data, index) is None:
             plan["sell_price"] = 0
         else:
@@ -89,7 +79,6 @@ def submit_new_site_build(
         plan["interval_unit"] = getPlan(form.interval_unit.data, index)
         plan["description"] = getPlan(form.description.data, index)
         plan["subscription_terms"] = {"minimum_term_months": 12}
-        plan["primary_colour"] = "#e73b1a"
         # Plan requirements
         plan["requirements"] = {}
         plan["requirements"]["instant_payment"] = getPlan(
@@ -99,16 +88,16 @@ def submit_new_site_build(
             form.subscription.data, index
         )  # noqa: E501
         plan["requirements"]["note_to_seller_required"] = False
-        plan["primary_icon"] = {"src": False, "type": False}
         print(plan)
-        plans.append(plan)
-        payload["plans"] = plans
+        postData["plans"].append(plan)
+
+    shop = Shop(**postData)
+
     # Save to json
-    json.dumps(payload)
     with open(subdomain + ".json", "w") as fp:
-        fp.write(json.dumps(payload))
+        fp.write(json.dumps(postData))
     deploy_url = app_config.get("JAMLA_DEPLOY_URL")
-    deployJamla(subdomain + ".json", deploy_url=deploy_url)
+    deploy(shop, deploy_url=deploy_url)
 
     # Inform
     try:
@@ -187,11 +176,9 @@ def journey_complete_subscriber(sender, **kw):
 
 
 @builder.route("/sendJamla")
-def deployJamla(filename, deploy_url=None):
-    with open(filename) as fp:
-        payload = json.loads(fp.read())
-        requests.post(deploy_url, json=payload)
-    return "Sent jamla file for deployment"
+def deploy(shop, deploy_url=None):
+    requests.post(deploy_url, json=shop.json())
+    return "New shop deployment requested"
 
 
 def create_subdomain_string(company_name=None):
@@ -234,7 +221,7 @@ def shop_owner_login():
 @login_required
 def shops():
     """List all shops"""
-    shops = Shop.query.all()
+    shops = ShopInDB.query.all()
     shops = reversed(shops)
     return render_template("shops.html", shops=shops)
 
