@@ -40,7 +40,7 @@ def start_building():
 
 
 def submit_new_site_build(
-    form, domain, subdomain, login_token, app_config=None
+    form, domain, subdomain, login_token, app_config=None, session=None
 ):  # noqa: E501
     """Submit a new site build
     Take form submission and build new site from it
@@ -51,6 +51,7 @@ def submit_new_site_build(
     :param subdomain: The subdomain for new shop e.g. abc. Which
     :param app_config: The flask app config type casted to a dict
         when combined with domain, becomes abc.example.com
+    :param session: The serialized flask session data
     """
     payload = {}
     payload["version"] = 1
@@ -143,17 +144,23 @@ def save_plans():
 
     login_token = generate_login_token()
 
-    # Start new site build in background thread
-    app_config = dict(app.config)
-    task_queue.put(
-        lambda: submit_new_site_build(
-            form, domain, subdomain, login_token, app_config
-        )  # noqa: E501
-    )  # noqa: E501
-
     session[
         "site-url"
     ] = f'https://{subdomain}.{app.config.get("SUBSCRIBIE_DOMAIN", ".subscriby.shop")}'  # noqa: E501
+
+    # Start new site build in background thread
+    app_config = dict(app.config)
+    session_dict = dict(session)
+    task_queue.put(
+        lambda: submit_new_site_build(
+            form,
+            domain,
+            subdomain,
+            login_token,
+            app_config,
+            session=session_dict,  # noqa: E501
+        )
+    )  # noqa: E501
 
     # Redirect to their site, auto login using login_token
     auto_login_url = f'{session["site-url"]}/auth/login/{login_token}'
