@@ -62,28 +62,6 @@ def submit_new_site_build(
     postData["plans"] = []
     postData["company"] = {"name": form.data.get("company_name", None)}
 
-
-    payload = {}
-    payload["version"] = 1
-    payload["users"] = [form.email.data]
-    payload["password"] = form.password.data
-    payload["login_token"] = login_token
-    company_name = form.company_name.data
-    payload["company"] = {"name": company_name, "logo": "", "start_image": ""}
-    # If possible, get country code and send to subscribie deployer
-    # Ref: https://github.com/Subscribie/module-builder/issues/33
-    payload["country_code"] = session.get("country_code", "GB")
-    payload["theme"] = {"name": "jesmond", "static_folder": "./static/"}
-
-    # Custom styles prepare as empty
-    payload["theme"]["options"] = {}
-    payload["theme"]["options"]["styles"] = []
-
-    # Pages as empty array
-    payload["pages"] = []
-
-    plans = []
-
     for index, plan in enumerate(form.title.data):
         plan = {}
         plan["uuid"] = str(uuid.uuid4())
