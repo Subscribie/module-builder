@@ -41,7 +41,7 @@ def start_building():
 
 
 def submit_new_site_build(
-    form, domain, subdomain, login_token, app_config=None
+    form, domain, subdomain, login_token, app_config=None, session=None
 ):  # noqa: E501
     """Submit a new site build
     Take form submission and build new site from it
@@ -52,13 +52,37 @@ def submit_new_site_build(
     :param subdomain: The subdomain for new shop e.g. abc. Which
     :param app_config: The flask app config type casted to a dict
         when combined with domain, becomes abc.example.com
+    :param session: The serialized flask session data
     """
+
     postData = form.data
     postData["users"] = [form.data.get("email", None)]
     postData["version"] = 1
     postData["login_token"] = login_token
     postData["plans"] = []
     postData["company"] = {"name": form.data.get("company_name", None)}
+
+
+    payload = {}
+    payload["version"] = 1
+    payload["users"] = [form.email.data]
+    payload["password"] = form.password.data
+    payload["login_token"] = login_token
+    company_name = form.company_name.data
+    payload["company"] = {"name": company_name, "logo": "", "start_image": ""}
+    # If possible, get country code and send to subscribie deployer
+    # Ref: https://github.com/Subscribie/module-builder/issues/33
+    payload["country_code"] = session.get("country_code", "GB")
+    payload["theme"] = {"name": "jesmond", "static_folder": "./static/"}
+
+    # Custom styles prepare as empty
+    payload["theme"]["options"] = {}
+    payload["theme"]["options"]["styles"] = []
+
+    # Pages as empty array
+    payload["pages"] = []
+
+    plans = []
 
     for index, plan in enumerate(form.title.data):
         plan = {}
@@ -104,11 +128,12 @@ def submit_new_site_build(
         token = app_config.get("TELEGRAM_TOKEN", None)
         chat_id = app_config.get("TELEGRAM_CHAT_ID", None)
         new_site_url = f"https://{subdomain}.{domain}"
-        task_queue.put(
-            lambda: requests.get(
-                f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}"  # noqa
+        if subdomain != "demo":
+            task_queue.put(
+                lambda: requests.get(
+                    f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}"  # noqa
+                )
             )
-        )
     except Exception as e:
         print(f"Telegram not sent: {e}")
 
@@ -129,17 +154,23 @@ def save_plans():
 
     login_token = generate_login_token()
 
-    # Start new site build in background thread
-    app_config = dict(app.config)
-    task_queue.put(
-        lambda: submit_new_site_build(
-            form, domain, subdomain, login_token, app_config
-        )  # noqa: E501
-    )  # noqa: E501
-
     session[
         "site-url"
     ] = f'https://{subdomain}.{app.config.get("SUBSCRIBIE_DOMAIN", ".subscriby.shop")}'  # noqa: E501
+
+    # Start new site build in background thread
+    app_config = dict(app.config)
+    session_dict = dict(session)
+    task_queue.put(
+        lambda: submit_new_site_build(
+            form,
+            domain,
+            subdomain,
+            login_token,
+            app_config,
+            session=session_dict,  # noqa: E501
+        )
+    )  # noqa: E501
 
     # Redirect to their site, auto login using login_token
     auto_login_url = f'{session["site-url"]}/auth/login/{login_token}'
