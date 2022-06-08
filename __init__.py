@@ -119,11 +119,12 @@ def submit_new_site_build(
         token = app_config.get("TELEGRAM_TOKEN", None)
         chat_id = app_config.get("TELEGRAM_CHAT_ID", None)
         new_site_url = f"https://{subdomain}.{domain}"
-        task_queue.put(
-            lambda: requests.get(
-                f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}"  # noqa
+        if subdomain != "demo":
+            task_queue.put(
+                lambda: requests.get(
+                    f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}"  # noqa
+                )
             )
-        )
     except Exception as e:
         print(f"Telegram not sent: {e}")
 
