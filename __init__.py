@@ -62,7 +62,7 @@ def submit_new_site_build(
     payload["company"] = {"name": company_name, "logo": "", "start_image": ""}
     # If possible, get country code and send to subscribie deployer
     # Ref: https://github.com/Subscribie/module-builder/issues/33
-    payload["country_code"] = session.get("country_code", "GB")
+    payload["country_code"] = session.get("country_code", "US")
     payload["theme"] = {"name": "jesmond", "static_folder": "./static/"}
 
     # Custom styles prepare as empty
