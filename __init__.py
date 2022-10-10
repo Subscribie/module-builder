@@ -21,6 +21,9 @@ import json
 import uuid
 import sqlite3
 from subscribie.database import database
+import logging
+
+log = logging.getLogger(__name__)
 
 builder = Blueprint("builder", __name__, template_folder="templates")
 
@@ -201,7 +204,10 @@ def journey_complete_subscriber(sender, **kw):
 def deployJamla(filename, deploy_url=None):
     with open(filename) as fp:
         payload = json.loads(fp.read())
-        requests.post(deploy_url, json=payload)
+        log.debug(f"Deploying new shop: {deploy_url}")
+        req = requests.post(deploy_url, json=payload)
+        log.debug(f"status_code from {deploy_url} was {req.status_code}")
+        req.raise_for_status()
     return "Sent jamla file for deployment"
 
 
