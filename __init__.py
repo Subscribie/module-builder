@@ -10,7 +10,7 @@ from flask import (
 )
 from flask_mail import Mail, Message
 import requests
-from subscribie.signals import journey_complete
+from subscribie.signals import signal_journey_complete
 from subscribie.tasks import task_queue
 from .forms import SignupForm
 from subscribie.forms import LoginForm
@@ -264,4 +264,4 @@ def getPlan(container, i, default=None):
 
 
 # Subscribers
-journey_complete.connect(journey_complete_subscriber)
+signal_journey_complete.connect(journey_complete_subscriber)
