@@ -10,7 +10,7 @@ from flask import (
 )
 from flask_mail import Mail, Message
 import requests
-from subscribie.signals import journey_complete
+from subscribie.signals import signal_journey_complete
 from subscribie.tasks import task_queue
 from .forms import SignupForm
 from subscribie.forms import LoginForm
@@ -34,21 +34,6 @@ class Shop(database.Model):
 
     site_url = database.Column(database.String(), primary_key=True)
     email = database.Column(database.String())
-
-
-def get_client_ip():
-    client_ip = request.headers.get("X-Forwarded-For")
-    if client_ip:
-        # The request was sent through a proxy server, so the
-        # client IP address is in the X-Forwarded-For header.
-        # Get the last IP address in the list.
-        client_ip = client_ip.split(",")[-1].strip()
-    else:
-        # The request was not sent through a proxy server, so
-        # the client IP address is in the remote_addr attribute.
-        client_ip = request.remote_addr
-
-    return client_ip
 
 
 @builder.route("/start-building", methods=["GET"])
@@ -137,11 +122,10 @@ def submit_new_site_build(
         token = app_config.get("TELEGRAM_TOKEN", None)
         chat_id = app_config.get("TELEGRAM_CHAT_ID", None)
         new_site_url = f"https://{subdomain}.{domain}"
-        client_ip = get_client_ip()
         if subdomain != "demo":
             task_queue.put(
                 lambda: requests.get(
-                    f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}%20fromIp%20{client_ip}"  # noqa
+                    f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}"  # noqa
                 )
             )
     except Exception as e:
@@ -280,4 +264,4 @@ def getPlan(container, i, default=None):
 
 
 # Subscribers
-journey_complete.connect(journey_complete_subscriber)
+signal_journey_complete.connect(journey_complete_subscriber)
