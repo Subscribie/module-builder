@@ -36,6 +36,21 @@ class Shop(database.Model):
     email = database.Column(database.String())
 
 
+def get_client_ip():
+    client_ip = request.headers.get("X-Forwarded-For")
+    if client_ip:
+        # The request was sent through a proxy server, so the
+        # client IP address is in the X-Forwarded-For header.
+        # Get the last IP address in the list.
+        client_ip = client_ip.split(",")[-1].strip()
+    else:
+        # The request was not sent through a proxy server, so
+        # the client IP address is in the remote_addr attribute.
+        client_ip = request.remote_addr
+
+    return client_ip
+
+
 @builder.route("/start-building", methods=["GET"])
 def start_building():
     form = SignupForm()
@@ -122,10 +137,11 @@ def submit_new_site_build(
         token = app_config.get("TELEGRAM_TOKEN", None)
         chat_id = app_config.get("TELEGRAM_CHAT_ID", None)
         new_site_url = f"https://{subdomain}.{domain}"
+        client_ip = get_client_ip()
         if subdomain != "demo":
             task_queue.put(
                 lambda: requests.get(
-                    f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}"  # noqa
+                    f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text=NewShop%20{new_site_url}%20fromIp%20{client_ip}"  # noqa
                 )
             )
     except Exception as e:
