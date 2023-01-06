@@ -1,9 +1,9 @@
 click
-Flask>=1,<2
+Flask
 flask_wtf
 flask_mail
 GitPython
-requests>=2.20.0
+requests
 pyyaml
 flask_sqlalchemy
 flask_migrate
