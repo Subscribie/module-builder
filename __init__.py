@@ -58,8 +58,14 @@ def start_building():
 
 
 def submit_new_site_build(
-    form, domain, subdomain, login_token, app_config=None, session=None
-):  # noqa: E501
+    form,
+    domain,
+    subdomain,
+    login_token,
+    app_config=None,
+    session=None,
+    client_ip=None,  # noqa: E501
+):
     """Submit a new site build
     Take form submission and build new site from it
 
@@ -122,7 +128,7 @@ def submit_new_site_build(
         )  # noqa: E501
         plan["requirements"]["note_to_seller_required"] = False
         plan["primary_icon"] = {"src": False, "type": False}
-        print(plan)
+        log.debug(plan)
         plans.append(plan)
         payload["plans"] = plans
     # Save to json
@@ -137,7 +143,6 @@ def submit_new_site_build(
         token = app_config.get("TELEGRAM_TOKEN", None)
         chat_id = app_config.get("TELEGRAM_CHAT_ID", None)
         new_site_url = f"https://{subdomain}.{domain}"
-        client_ip = get_client_ip()
         if subdomain != "demo":
             task_queue.put(
                 lambda: requests.get(
@@ -145,7 +150,7 @@ def submit_new_site_build(
                 )
             )
     except Exception as e:
-        print(f"Telegram not sent: {e}")
+        log.error(f"Telegram not sent: {e}")
 
     # Store new site in builder_sites table to allow logging in from subscribie site # noqa: E501
     con = sqlite3.connect(app_config.get("DB_FULL_PATH"))
@@ -157,6 +162,10 @@ def submit_new_site_build(
 
 @builder.route("/start-building", methods=["POST"])
 def save_plans():
+    app_config = dict(app.config)
+    form = SignupForm()
+    domain = app.config.get("SUBSCRIBIE_DOMAIN", ".subscriby.shop")
+    subdomain = create_subdomain_string(form.company_name.data)
     form = SignupForm()
     session["email"] = form.email.data
     domain = app.config.get("SUBSCRIBIE_DOMAIN", ".subscriby.shop")
@@ -171,6 +180,7 @@ def save_plans():
     # Start new site build in background thread
     app_config = dict(app.config)
     session_dict = dict(session)
+    client_ip = get_client_ip()
     task_queue.put(
         lambda: submit_new_site_build(
             form,
@@ -179,6 +189,7 @@ def save_plans():
             login_token,
             app_config,
             session=session_dict,  # noqa: E501
+            client_ip=client_ip,
         )
     )  # noqa: E501
 
@@ -196,7 +207,7 @@ def choose_package(sitename=None):
 
 
 def journey_complete_subscriber(sender, **kw):
-    print("Journery Complete! Send an email or something..")
+    log.debug("Journery Complete! Send an email or something..")
     try:
         email = kw["email"]
         sender = app.config.get("MAIL_DEFAULT_SENDER", "hello@example.com")
@@ -211,9 +222,7 @@ def journey_complete_subscriber(sender, **kw):
         mail = Mail(app)
         mail.send(msg)
     except Exception as e:
-        print("Error sending journey_complete_subscriber email")
-        print(e)
-        pass
+        log.error(f"Error sending journey_complete_subscriber email: {e}")
 
 
 @builder.route("/sendJamla")
