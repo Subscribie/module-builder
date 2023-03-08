@@ -58,7 +58,7 @@ def submit_new_site_build(
     """
     payload = {}
     payload["version"] = 1
-    payload["users"] = [form.email.data]
+    payload["users"] = [form.email.data.lower()]
     payload["password"] = form.password.data
     payload["login_token"] = login_token
     company_name = form.company_name.data
@@ -133,16 +133,16 @@ def submit_new_site_build(
 
     # Store new site in builder_sites table to allow logging in from subscribie site # noqa: E501
     con = sqlite3.connect(app_config.get("DB_FULL_PATH"))
-    email = form.email.data
+    email = form.email.data.lower()
     query = "INSERT INTO builder_sites (site_url, email) VALUES (?, ?)"
-    con.execute(query, (new_site_url, email.lower()))
+    con.execute(query, (new_site_url, email))
     con.commit()
 
 
 @builder.route("/start-building", methods=["POST"])
 def save_plans():
     form = SignupForm()
-    session["email"] = form.email.data
+    session["email"] = form.email.data.lower()
     domain = app.config.get("SUBSCRIBIE_DOMAIN", ".subscriby.shop")
     subdomain = create_subdomain_string(form.company_name.data)
 
@@ -182,7 +182,7 @@ def choose_package(sitename=None):
 def journey_complete_subscriber(sender, **kw):
     print("Journery Complete! Send an email or something..")
     try:
-        email = kw["email"]
+        email = kw["email"].lower()
         sender = app.config.get("MAIL_DEFAULT_SENDER", "hello@example.com")
         login_url = session["login-url"]
         msg = Message(
