@@ -1,3 +1,15 @@
+# v0.0.2 (Fri Dec 29 2023)
+
+#### ⚠️ Pushed to `main`
+
+- chmod 0-create-builder_sites-table.py ([@chrisjsimpson](https://github.com/chrisjsimpson))
+
+#### Authors: 1
+
+- [@chrisjsimpson](https://github.com/chrisjsimpson)
+
+---
+
 # v0.0.1 (Fri Jan 06 2023)
 
 :tada: This release contains work from new contributors! :tada:
