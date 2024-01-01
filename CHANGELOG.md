@@ -1,3 +1,16 @@
+# v0.0.3 (Mon Jan 01 2024)
+
+#### ⚠️ Pushed to `main`
+
+- Fix #54 pass SUBSCRIBIE_DOMAIN to start-building.html template ([@chrisjsimpson](https://github.com/chrisjsimpson))
+- Add SHOPS_SUBDOMAIN to config.py.example ([@chrisjsimpson](https://github.com/chrisjsimpson))
+
+#### Authors: 1
+
+- [@chrisjsimpson](https://github.com/chrisjsimpson)
+
+---
+
 # v0.0.2 (Fri Dec 29 2023)
 
 #### ⚠️ Pushed to `main`
