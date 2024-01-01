@@ -54,7 +54,11 @@ def get_client_ip():
 @builder.route("/start-building", methods=["GET"])
 def start_building():
     form = SignupForm()
-    return render_template("start-building.html", form=form)
+    app_config = dict(app.config)
+    SUBSCRIBIE_DOMAIN = app_config.get("SUBSCRIBIE_DOMAIN")
+    return render_template(
+        "start-building.html", form=form, SUBSCRIBIE_DOMAIN=SUBSCRIBIE_DOMAIN
+    )
 
 
 def submit_new_site_build(
