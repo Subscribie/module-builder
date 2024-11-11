@@ -172,14 +172,35 @@ def save_plans():
     subdomain = create_subdomain_string(form.company_name.data)
     form = SignupForm()
     session["email"] = form.email.data
+
+    # Verify that subscriber email address is not
+    # a suspected SUSPECTED_SPAM_EMAIL_DOMAINS
+    con = sqlite3.connect(app.config["DB_FULL_PATH"])
+    cur = con.cursor()
+    # Query to select all domains from the spam_email_domain table
+    query = "SELECT domain FROM spam_email_domain"
+    cur.execute(query)
+    SUSPECTED_SPAM_EMAIL_DOMAINS = [row[0] for row in cur.fetchall()]
+    con.close()
+
+    log.error(f"SUSPECTED_SPAM_EMAIL_DOMAINS: {SUSPECTED_SPAM_EMAIL_DOMAINS}")
+    user_email_domain = session["email"].split("@")[1]
+    log.error(f"user_email_domain: {user_email_domain}")
+    if user_email_domain in SUSPECTED_SPAM_EMAIL_DOMAINS:
+        log.error(
+            f"SUSPECTED_SPAM_EMAIL_DOMAIN {user_email_domain} "
+            "attempted to connect stripe"
+        )
+        return "<h1>Please contact support before signing-up, thank you.</h1>"
+
     domain = app.config.get("SUBSCRIBIE_DOMAIN", ".subscriby.shop")
     subdomain = create_subdomain_string(form.company_name.data)
 
     login_token = generate_login_token()
 
-    session[
-        "site-url"
-    ] = f'https://{subdomain}.{app.config.get("SUBSCRIBIE_DOMAIN", ".subscriby.shop")}'  # noqa: E501
+    session["site-url"] = (
+        f'https://{subdomain}.{app.config.get("SUBSCRIBIE_DOMAIN", ".subscriby.shop")}'  # noqa: E501
+    )
 
     # Start new site build in background thread
     app_config = dict(app.config)
