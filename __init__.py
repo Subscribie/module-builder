@@ -14,7 +14,7 @@ from subscribie.signals import signal_journey_complete
 from subscribie.tasks import task_queue
 from .forms import SignupForm
 from subscribie.forms import LoginForm
-from subscribie.models import Plan
+from subscribie.models import Plan, SpamEmailDomain
 from subscribie.auth import generate_login_token, login_required
 from flask import Blueprint
 import json
@@ -175,6 +175,7 @@ def save_plans():
 
     # Verify that subscriber email address is not
     # a suspected SUSPECTED_SPAM_EMAIL_DOMAINS
+
     con = sqlite3.connect(app.config["DB_FULL_PATH"])
     cur = con.cursor()
     # Query to select all domains from the spam_email_domain table
@@ -186,6 +187,8 @@ def save_plans():
     log.error(f"SUSPECTED_SPAM_EMAIL_DOMAINS: {SUSPECTED_SPAM_EMAIL_DOMAINS}")
     user_email_domain = session["email"].split("@")[1]
     log.error(f"user_email_domain: {user_email_domain}")
+    user_email_domain = session["email"].split("@")[1]
+
     if user_email_domain in SUSPECTED_SPAM_EMAIL_DOMAINS:
         log.error(
             f"SUSPECTED_SPAM_EMAIL_DOMAIN {user_email_domain} "
