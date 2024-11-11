@@ -175,8 +175,20 @@ def save_plans():
 
     # Verify that subscriber email address is not
     # a suspected SUSPECTED_SPAM_EMAIL_DOMAINS
-    SUSPECTED_SPAM_EMAIL_DOMAINS = [d.domain for d in SpamEmailDomain.query.all()]
+
+    con = sqlite3.connect(app.config["DB_FULL_PATH"])
+    cur = con.cursor()
+    # Query to select all domains from the spam_email_domain table
+    query = "SELECT domain FROM spam_email_domain"
+    cur.execute(query)
+    SUSPECTED_SPAM_EMAIL_DOMAINS = [row[0] for row in cur.fetchall()]
+    con.close()
+
+    log.error(f"SUSPECTED_SPAM_EMAIL_DOMAINS: {SUSPECTED_SPAM_EMAIL_DOMAINS}")
     user_email_domain = session["email"].split("@")[1]
+    log.error(f"user_email_domain: {user_email_domain}")
+    user_email_domain = session["email"].split("@")[1]
+
     if user_email_domain in SUSPECTED_SPAM_EMAIL_DOMAINS:
         log.error(
             f"SUSPECTED_SPAM_EMAIL_DOMAIN {user_email_domain} "
